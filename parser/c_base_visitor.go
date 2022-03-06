@@ -44,6 +44,10 @@ func (v *BaseCVisitor) VisitAssignmentExpression(ctx *AssignmentExpressionContex
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitBinaryExpression(ctx *BinaryExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitConstantExpression(ctx *ConstantExpressionContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -53,6 +57,10 @@ func (v *BaseCVisitor) VisitIdentifierExpression(ctx *IdentifierExpressionContex
 }
 
 func (v *BaseCVisitor) VisitAssignementOperator(ctx *AssignementOperatorContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitBinaryOperator(ctx *BinaryOperatorContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 

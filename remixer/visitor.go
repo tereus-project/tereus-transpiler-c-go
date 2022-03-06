@@ -235,6 +235,18 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 		}
 
 		return ast.NewASTExpressionBinary(left, child.AssignementOperator().GetText(), right), nil
+	case *parser.BinaryExpressionContext:
+		left, e := v.VisitExpression(child.Expression(0))
+		if e != nil {
+			return nil, e
+		}
+
+		right, e := v.VisitExpression(child.Expression(1))
+		if e != nil {
+			return nil, e
+		}
+
+		return ast.NewASTExpressionBinary(left, child.BinaryOperator().GetText(), right), nil
 	}
 
 	return nil, v.NotImplementedError(ctx.(*parser.ExpressionContext).BaseParserRuleContext)

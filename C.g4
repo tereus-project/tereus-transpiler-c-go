@@ -28,7 +28,8 @@ expression:
 	Identifier									# IdentifierExpression
 	| Constant									# ConstantExpression
 	| '(' expression ')'						# ParenthesizedExpression
-	| expression assignementOperator expression	# AssignmentExpression;
+	| expression assignementOperator expression	# AssignmentExpression
+	| expression binaryOperator expression		# BinaryExpression;
 
 assignementOperator:
 	'='
@@ -42,6 +43,24 @@ assignementOperator:
 	| '&='
 	| '^='
 	| '|=';
+
+binaryOperator:
+	'*'
+	| '/'
+	| '%'
+	| '+'
+	| '-'
+	| '<<'
+	| '>>'
+	| '&'
+	| '^'
+	| '|'
+	| '<'
+	| '>'
+	| '<='
+	| '>='
+	| '=='
+	| '!=';
 
 block: '{' statement* '}';
 

@@ -35,6 +35,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#AssignmentExpression.
 	VisitAssignmentExpression(ctx *AssignmentExpressionContext) interface{}
 
+	// Visit a parse tree produced by CParser#BinaryExpression.
+	VisitBinaryExpression(ctx *BinaryExpressionContext) interface{}
+
 	// Visit a parse tree produced by CParser#ConstantExpression.
 	VisitConstantExpression(ctx *ConstantExpressionContext) interface{}
 
@@ -43,6 +46,9 @@ type CVisitor interface {
 
 	// Visit a parse tree produced by CParser#assignementOperator.
 	VisitAssignementOperator(ctx *AssignementOperatorContext) interface{}
+
+	// Visit a parse tree produced by CParser#binaryOperator.
+	VisitBinaryOperator(ctx *BinaryOperatorContext) interface{}
 
 	// Visit a parse tree produced by CParser#block.
 	VisitBlock(ctx *BlockContext) interface{}
