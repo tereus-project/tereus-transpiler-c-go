@@ -24,6 +24,10 @@ func (v *BaseCVisitor) VisitFunctionArguments(ctx *FunctionArgumentsContext) int
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitFunctionReturn(ctx *FunctionReturnContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitTypeSpecifier(ctx *TypeSpecifierContext) interface{} {
 	return v.VisitChildren(ctx)
 }

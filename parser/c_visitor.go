@@ -20,6 +20,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#functionArguments.
 	VisitFunctionArguments(ctx *FunctionArgumentsContext) interface{}
 
+	// Visit a parse tree produced by CParser#functionReturn.
+	VisitFunctionReturn(ctx *FunctionReturnContext) interface{}
+
 	// Visit a parse tree produced by CParser#typeSpecifier.
 	VisitTypeSpecifier(ctx *TypeSpecifierContext) interface{}
 

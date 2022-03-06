@@ -10,6 +10,8 @@ functionDeclaration:
 functionArguments:
 	typeSpecifier Identifier (',' functionArguments)?;
 
+functionReturn: 'return' expression;
+
 typeSpecifier:
 	'void'
 	| 'int'
@@ -43,7 +45,7 @@ assignementOperator:
 
 block: '{' statement* '}';
 
-statement: (variableDeclaration | expression) ';';
+statement: (variableDeclaration | expression | functionReturn) ';';
 
 Break: 'break';
 Case: 'case';

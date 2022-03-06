@@ -154,6 +154,15 @@ func (v *Visitor) VisitFunctionArguments(ctx *parser.FunctionArgumentsContext) (
 	return args, nil
 }
 
+func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (*ast.ASTFunctionReturn, error) {
+	expression, e := v.VisitExpression(ctx.Expression())
+	if e != nil {
+		return nil, e
+	}
+
+	return ast.NewASTFunctionReturn(expression), nil
+}
+
 func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.ASTType, error) {
 	if child := ctx.Void(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindVoid, "void"), nil
@@ -251,6 +260,8 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
 	} else if child := ctx.Expression(); child != nil {
 		return v.VisitExpression(child)
+	} else if child := ctx.FunctionReturn(); child != nil {
+		return v.VisitFunctionReturn(child.(*parser.FunctionReturnContext))
 	}
 
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
