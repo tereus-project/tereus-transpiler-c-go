@@ -3,6 +3,7 @@ package remixer
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/tereus-project/tereus-remixer-c-go/parser"
@@ -131,9 +132,33 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (string, 
 	return "", v.NotImplementedError(ctx.BaseParserRuleContext)
 }
 
-func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext) {}
+func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext) (string, error) {
+	typ, e := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	if e != nil {
+		return "", e
+	}
 
-func (v *Visitor) VisitExpression(ctx *parser.ExpressionContext) {}
+	name := ctx.Identifier().GetText()
+
+	if child := ctx.Expression(); child != nil {
+		expression, e := v.VisitExpression(child.(*parser.ExpressionContext))
+		if e != nil {
+			return "", e
+		}
+
+		return fmt.Sprintf("%s := %s", name, expression), nil
+	}
+
+	return fmt.Sprintf("var %s %s", name, typ), nil
+}
+
+func (v *Visitor) VisitExpression(ctx *parser.ExpressionContext) (string, error) {
+	if child := ctx.Constant(); child != nil {
+		return child.GetText(), nil
+	}
+
+	return "", v.NotImplementedError(ctx.BaseParserRuleContext)
+}
 
 func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (string, error) {
 	output := ""
@@ -147,9 +172,19 @@ func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (string, error) {
 		output += statement
 	}
 
-	return "{\n" + output + "\n}", nil
+	lines := strings.Split(output, "\n")
+
+	for i, line := range lines {
+		lines[i] = "    " + line
+	}
+
+	return "{\n" + strings.Join(lines, "\n") + "\n}", nil
 }
 
 func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (string, error) {
+	if child := ctx.VariableDeclaration(); child != nil {
+		return v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
+	}
+
 	return "", v.NotImplementedError(ctx.BaseParserRuleContext)
 }
