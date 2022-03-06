@@ -1,23 +1,32 @@
 package remixer
 
 import (
-	"os"
+	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/tereus-project/tereus-remixer-c-go/parser"
 )
 
 func Remix(entrypoint string) error {
-	code, e := os.ReadFile(entrypoint)
+	visitor, e := NewVisitor(entrypoint)
 	if e != nil {
-		panic(e)
+		return e
 	}
 
-	input := antlr.NewInputStream(string(code))
+	input := antlr.NewInputStream(visitor.Code)
 	lexer := parser.NewCLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
 	p := parser.NewCParser(stream)
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+
+	tree := p.TranslationUnit()
+
+	output, e := visitor.VisitTranslationUnit(tree.(*parser.TranslationUnitContext))
+	if e != nil {
+		return e
+	}
+
+	fmt.Println(output)
 
 	return nil
 }
