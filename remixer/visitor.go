@@ -169,6 +169,16 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 		return ast.NewASTType(ast.ASTTypeKindFloat32, "float32"), nil
 	} else if child := ctx.Double(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindFloat64, "float64"), nil
+	} else if child := ctx.Star(); child != nil {
+		pointerType, e := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+		if e != nil {
+			return nil, e
+		}
+
+		typ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
+		typ.PointerType = pointerType
+
+		return typ, nil
 	}
 
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)

@@ -17,7 +17,8 @@ typeSpecifier:
 	| 'long'
 	| 'char'
 	| 'float'
-	| 'double';
+	| 'double'
+	| typeSpecifier '*';
 
 variableDeclaration: typeSpecifier Identifier ('=' expression)?;
 

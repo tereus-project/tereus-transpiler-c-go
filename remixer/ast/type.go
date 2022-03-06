@@ -14,6 +14,7 @@ const (
 	ASTTypeKindFloat64
 
 	ASTTypeKindArray
+	ASTTypeKindPointer
 
 	ASTTypeKindStruct
 )
@@ -22,7 +23,8 @@ type ASTType struct {
 	Kind ASTTypeKind
 	Name string
 
-	ArrayType *ASTType
+	ArrayType   *ASTType
+	PointerType *ASTType
 }
 
 func NewASTType(kind ASTTypeKind, name string) *ASTType {
@@ -34,7 +36,7 @@ func NewASTType(kind ASTTypeKind, name string) *ASTType {
 
 func (t *ASTType) String() string {
 	switch t.Kind {
-	case ASTTypeKindArray:
+	case ASTTypeKindArray, ASTTypeKindPointer:
 		return fmt.Sprintf("[]%s", t.ArrayType.String())
 	default:
 		return t.Name
