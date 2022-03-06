@@ -19,9 +19,9 @@ func Remix(entrypoint string) error {
 	p := parser.NewCParser(stream)
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 
-	tree := p.TranslationUnit()
+	tree := p.Translation()
 
-	output, e := visitor.VisitTranslationUnit(tree.(*parser.TranslationUnitContext))
+	output, e := visitor.VisitTranslation(tree.(*parser.TranslationContext))
 	if e != nil {
 		return e
 	}
