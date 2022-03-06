@@ -45,3 +45,22 @@ func main() {
 
 	testRemix(t, source, target)
 }
+
+func TestMainWithArgcAndArgv(t *testing.T) {
+	source := `
+int main(int argc, char **argv) {
+	
+}
+`
+
+	target := `
+package main
+
+func main() {
+	argc := len(os.Args)
+	argv := os.Args
+}
+`
+
+	testRemix(t, source, target)
+}

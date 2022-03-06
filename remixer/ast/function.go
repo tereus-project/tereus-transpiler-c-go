@@ -69,7 +69,7 @@ func (b *ASTBlock) String() string {
 	statements := make([]string, len(b.Statements))
 
 	for i, statement := range b.Statements {
-		statements[i] = "    " + statement.String()
+		statements[i] = "\t" + statement.String()
 	}
 
 	return "{\n" + strings.Join(statements, "\n") + "\n}"

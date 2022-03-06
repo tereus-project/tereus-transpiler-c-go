@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	mapset "github.com/deckarep/golang-set"
 	"github.com/tereus-project/tereus-remixer-c-go/parser"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer/ast"
 )
@@ -14,7 +15,7 @@ type Visitor struct {
 	Code string
 
 	Package string
-	Imports []string
+	Imports mapset.Set
 	Output  map[string]string
 }
 
@@ -29,16 +30,20 @@ func NewVisitor(path string) (*Visitor, error) {
 		Code: string(code),
 
 		Package: "main",
-		Imports: make([]string, 0),
+		Imports: mapset.NewSet(),
 		Output:  make(map[string]string, 0),
 	}
 
 	return visitor, nil
 }
 
-func (v *Visitor) NotImplementedError(token *antlr.BaseParserRuleContext) error {
+func (v *Visitor) TranslationError(token *antlr.BaseParserRuleContext, message string) error {
 	start := token.GetStart()
-	return fmt.Errorf("%s:%d:%d: %s", v.Path, start.GetLine(), start.GetColumn(), "not implemented")
+	return fmt.Errorf("%s:%d:%d: %s", v.Path, start.GetLine(), start.GetColumn(), message)
+}
+
+func (v *Visitor) NotImplementedError(token *antlr.BaseParserRuleContext) error {
+	return v.TranslationError(token, "not implemented")
 }
 
 func (v *Visitor) VisitTranslation(ctx *parser.TranslationContext) (string, error) {
@@ -86,10 +91,43 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 		}
 	}
 
+	argumentsInitialization := make([]ast.IASTItem, 0)
+
+	if name == "main" {
+		if len(function.Args) > 2 {
+			return nil, v.TranslationError(ctx.BaseParserRuleContext, "main function can only have 2 arguments")
+		}
+
+		if len(function.Args) >= 1 {
+			variable := ast.NewASTVariableDeclaration("argc", ast.NewASTType(ast.ASTTypeKindInt, "int"))
+
+			// TODO: change this to a proper structure when it gets implemented
+			variable.Expression = ast.NewASTExpressionLiteral("len(os.Args)")
+			v.Imports.Add("os")
+
+			argumentsInitialization = append(argumentsInitialization, variable)
+		}
+
+		if len(function.Args) >= 2 {
+			typ := ast.NewASTType(ast.ASTTypeKindArray, "array")
+			typ.ArrayType = ast.NewASTType(ast.ASTTypeKindRune, "string")
+			variable := ast.NewASTVariableDeclaration("argv", typ)
+
+			// TODO: change this to a proper structure when it gets implemented
+			variable.Expression = ast.NewASTExpressionLiteral("os.Args")
+
+			argumentsInitialization = append(argumentsInitialization, variable)
+		}
+
+		function.Args = nil
+	}
+
 	function.Body, e = v.VisitBlock(ctx.Block().(*parser.BlockContext))
 	if e != nil {
 		return nil, e
 	}
+
+	function.Body.Statements = append(argumentsInitialization, function.Body.Statements...)
 
 	return function, nil
 }
