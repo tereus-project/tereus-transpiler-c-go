@@ -102,7 +102,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 		}
 
 		if len(function.Args) >= 1 {
-			variable := ast.NewASTVariableDeclaration("argc", ast.NewASTType(ast.ASTTypeKindInt, "int"))
+			variable := ast.NewASTVariableDeclaration(function.Args[0].Name, ast.NewASTType(ast.ASTTypeKindInt, "int"))
 
 			// TODO: change this to a proper structure when it gets implemented
 			variable.Expression = ast.NewASTExpressionLiteral("len(os.Args)")
@@ -114,7 +114,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 		if len(function.Args) >= 2 {
 			typ := ast.NewASTType(ast.ASTTypeKindArray, "array")
 			typ.ArrayType = ast.NewASTType(ast.ASTTypeKindRune, "string")
-			variable := ast.NewASTVariableDeclaration("argv", typ)
+			variable := ast.NewASTVariableDeclaration(function.Args[1].Name, typ)
 
 			// TODO: change this to a proper structure when it gets implemented
 			variable.Expression = ast.NewASTExpressionLiteral("os.Args")
