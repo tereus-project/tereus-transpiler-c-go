@@ -10,176 +10,176 @@ func NewVisitor() *Visitor {
 	return &Visitor{}
 }
 
-func (v *Visitor) VisitPrimaryExpression(ctx *parser.PrimaryExpressionContext) interface{}
+func (v *Visitor) VisitPrimaryExpression(ctx *parser.PrimaryExpressionContext) {}
 
-func (v *Visitor) VisitGenericSelection(ctx *parser.GenericSelectionContext) interface{}
+func (v *Visitor) VisitGenericSelection(ctx *parser.GenericSelectionContext) {}
 
-func (v *Visitor) VisitGenericAssocList(ctx *parser.GenericAssocListContext) interface{}
+func (v *Visitor) VisitGenericAssocList(ctx *parser.GenericAssocListContext) {}
 
-func (v *Visitor) VisitGenericAssociation(ctx *parser.GenericAssociationContext) interface{}
+func (v *Visitor) VisitGenericAssociation(ctx *parser.GenericAssociationContext) {}
 
-func (v *Visitor) VisitPostfixExpression(ctx *parser.PostfixExpressionContext) interface{}
+func (v *Visitor) VisitPostfixExpression(ctx *parser.PostfixExpressionContext) {}
 
-func (v *Visitor) VisitArgumentExpressionList(ctx *parser.ArgumentExpressionListContext) interface{}
+func (v *Visitor) VisitArgumentExpressionList(ctx *parser.ArgumentExpressionListContext) {}
 
-func (v *Visitor) VisitUnaryExpression(ctx *parser.UnaryExpressionContext) interface{}
+func (v *Visitor) VisitUnaryExpression(ctx *parser.UnaryExpressionContext) {}
 
-func (v *Visitor) VisitUnaryOperator(ctx *parser.UnaryOperatorContext) interface{}
+func (v *Visitor) VisitUnaryOperator(ctx *parser.UnaryOperatorContext) {}
 
-func (v *Visitor) VisitCastExpression(ctx *parser.CastExpressionContext) interface{}
+func (v *Visitor) VisitCastExpression(ctx *parser.CastExpressionContext) {}
 
-func (v *Visitor) VisitMultiplicativeExpression(ctx *parser.MultiplicativeExpressionContext) interface{}
+func (v *Visitor) VisitMultiplicativeExpression(ctx *parser.MultiplicativeExpressionContext) {}
 
-func (v *Visitor) VisitAdditiveExpression(ctx *parser.AdditiveExpressionContext) interface{}
+func (v *Visitor) VisitAdditiveExpression(ctx *parser.AdditiveExpressionContext) {}
 
-func (v *Visitor) VisitShiftExpression(ctx *parser.ShiftExpressionContext) interface{}
+func (v *Visitor) VisitShiftExpression(ctx *parser.ShiftExpressionContext) {}
 
-func (v *Visitor) VisitRelationalExpression(ctx *parser.RelationalExpressionContext) interface{}
+func (v *Visitor) VisitRelationalExpression(ctx *parser.RelationalExpressionContext) {}
 
-func (v *Visitor) VisitEqualityExpression(ctx *parser.EqualityExpressionContext) interface{}
+func (v *Visitor) VisitEqualityExpression(ctx *parser.EqualityExpressionContext) {}
 
-func (v *Visitor) VisitAndExpression(ctx *parser.AndExpressionContext) interface{}
+func (v *Visitor) VisitAndExpression(ctx *parser.AndExpressionContext) {}
 
-func (v *Visitor) VisitExclusiveOrExpression(ctx *parser.ExclusiveOrExpressionContext) interface{}
+func (v *Visitor) VisitExclusiveOrExpression(ctx *parser.ExclusiveOrExpressionContext) {}
 
-func (v *Visitor) VisitInclusiveOrExpression(ctx *parser.InclusiveOrExpressionContext) interface{}
+func (v *Visitor) VisitInclusiveOrExpression(ctx *parser.InclusiveOrExpressionContext) {}
 
-func (v *Visitor) VisitLogicalAndExpression(ctx *parser.LogicalAndExpressionContext) interface{}
+func (v *Visitor) VisitLogicalAndExpression(ctx *parser.LogicalAndExpressionContext) {}
 
-func (v *Visitor) VisitLogicalOrExpression(ctx *parser.LogicalOrExpressionContext) interface{}
+func (v *Visitor) VisitLogicalOrExpression(ctx *parser.LogicalOrExpressionContext) {}
 
-func (v *Visitor) VisitConditionalExpression(ctx *parser.ConditionalExpressionContext) interface{}
+func (v *Visitor) VisitConditionalExpression(ctx *parser.ConditionalExpressionContext) {}
 
-func (v *Visitor) VisitAssignmentExpression(ctx *parser.AssignmentExpressionContext) interface{}
+func (v *Visitor) VisitAssignmentExpression(ctx *parser.AssignmentExpressionContext) {}
 
-func (v *Visitor) VisitAssignmentOperator(ctx *parser.AssignmentOperatorContext) interface{}
+func (v *Visitor) VisitAssignmentOperator(ctx *parser.AssignmentOperatorContext) {}
 
-func (v *Visitor) VisitExpression(ctx *parser.ExpressionContext) interface{}
+func (v *Visitor) VisitExpression(ctx *parser.ExpressionContext) {}
 
-func (v *Visitor) VisitConstantExpression(ctx *parser.ConstantExpressionContext) interface{}
+func (v *Visitor) VisitConstantExpression(ctx *parser.ConstantExpressionContext) {}
 
-func (v *Visitor) VisitDeclaration(ctx *parser.DeclarationContext) interface{}
+func (v *Visitor) VisitDeclaration(ctx *parser.DeclarationContext) {}
 
-func (v *Visitor) VisitDeclarationSpecifiers(ctx *parser.DeclarationSpecifiersContext) interface{}
+func (v *Visitor) VisitDeclarationSpecifiers(ctx *parser.DeclarationSpecifiersContext) {}
 
-func (v *Visitor) VisitDeclarationSpecifiers2(ctx *parser.DeclarationSpecifiers2Context) interface{}
+func (v *Visitor) VisitDeclarationSpecifiers2(ctx *parser.DeclarationSpecifiers2Context) {}
 
-func (v *Visitor) VisitDeclarationSpecifier(ctx *parser.DeclarationSpecifierContext) interface{}
+func (v *Visitor) VisitDeclarationSpecifier(ctx *parser.DeclarationSpecifierContext) {}
 
-func (v *Visitor) VisitInitDeclaratorList(ctx *parser.InitDeclaratorListContext) interface{}
+func (v *Visitor) VisitInitDeclaratorList(ctx *parser.InitDeclaratorListContext) {}
 
-func (v *Visitor) VisitInitDeclarator(ctx *parser.InitDeclaratorContext) interface{}
+func (v *Visitor) VisitInitDeclarator(ctx *parser.InitDeclaratorContext) {}
 
-func (v *Visitor) VisitStorageClassSpecifier(ctx *parser.StorageClassSpecifierContext) interface{}
+func (v *Visitor) VisitStorageClassSpecifier(ctx *parser.StorageClassSpecifierContext) {}
 
-func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) interface{}
+func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) {}
 
-func (v *Visitor) VisitStructOrUnionSpecifier(ctx *parser.StructOrUnionSpecifierContext) interface{}
+func (v *Visitor) VisitStructOrUnionSpecifier(ctx *parser.StructOrUnionSpecifierContext) {}
 
-func (v *Visitor) VisitStructOrUnion(ctx *parser.StructOrUnionContext) interface{}
+func (v *Visitor) VisitStructOrUnion(ctx *parser.StructOrUnionContext) {}
 
-func (v *Visitor) VisitStructDeclarationList(ctx *parser.StructDeclarationListContext) interface{}
+func (v *Visitor) VisitStructDeclarationList(ctx *parser.StructDeclarationListContext) {}
 
-func (v *Visitor) VisitStructDeclaration(ctx *parser.StructDeclarationContext) interface{}
+func (v *Visitor) VisitStructDeclaration(ctx *parser.StructDeclarationContext) {}
 
-func (v *Visitor) VisitSpecifierQualifierList(ctx *parser.SpecifierQualifierListContext) interface{}
+func (v *Visitor) VisitSpecifierQualifierList(ctx *parser.SpecifierQualifierListContext) {}
 
-func (v *Visitor) VisitStructDeclaratorList(ctx *parser.StructDeclaratorListContext) interface{}
+func (v *Visitor) VisitStructDeclaratorList(ctx *parser.StructDeclaratorListContext) {}
 
-func (v *Visitor) VisitStructDeclarator(ctx *parser.StructDeclaratorContext) interface{}
+func (v *Visitor) VisitStructDeclarator(ctx *parser.StructDeclaratorContext) {}
 
-func (v *Visitor) VisitEnumSpecifier(ctx *parser.EnumSpecifierContext) interface{}
+func (v *Visitor) VisitEnumSpecifier(ctx *parser.EnumSpecifierContext) {}
 
-func (v *Visitor) VisitEnumeratorList(ctx *parser.EnumeratorListContext) interface{}
+func (v *Visitor) VisitEnumeratorList(ctx *parser.EnumeratorListContext) {}
 
-func (v *Visitor) VisitEnumerator(ctx *parser.EnumeratorContext) interface{}
+func (v *Visitor) VisitEnumerator(ctx *parser.EnumeratorContext) {}
 
-func (v *Visitor) VisitEnumerationConstant(ctx *parser.EnumerationConstantContext) interface{}
+func (v *Visitor) VisitEnumerationConstant(ctx *parser.EnumerationConstantContext) {}
 
-func (v *Visitor) VisitAtomicTypeSpecifier(ctx *parser.AtomicTypeSpecifierContext) interface{}
+func (v *Visitor) VisitAtomicTypeSpecifier(ctx *parser.AtomicTypeSpecifierContext) {}
 
-func (v *Visitor) VisitTypeQualifier(ctx *parser.TypeQualifierContext) interface{}
+func (v *Visitor) VisitTypeQualifier(ctx *parser.TypeQualifierContext) {}
 
-func (v *Visitor) VisitFunctionSpecifier(ctx *parser.FunctionSpecifierContext) interface{}
+func (v *Visitor) VisitFunctionSpecifier(ctx *parser.FunctionSpecifierContext) {}
 
-func (v *Visitor) VisitAlignmentSpecifier(ctx *parser.AlignmentSpecifierContext) interface{}
+func (v *Visitor) VisitAlignmentSpecifier(ctx *parser.AlignmentSpecifierContext) {}
 
-func (v *Visitor) VisitDeclarator(ctx *parser.DeclaratorContext) interface{}
+func (v *Visitor) VisitDeclarator(ctx *parser.DeclaratorContext) {}
 
-func (v *Visitor) VisitDirectDeclarator(ctx *parser.DirectDeclaratorContext) interface{}
+func (v *Visitor) VisitDirectDeclarator(ctx *parser.DirectDeclaratorContext) {}
 
-func (v *Visitor) VisitGccDeclaratorExtension(ctx *parser.GccDeclaratorExtensionContext) interface{}
+func (v *Visitor) VisitGccDeclaratorExtension(ctx *parser.GccDeclaratorExtensionContext) {}
 
-func (v *Visitor) VisitGccAttributeSpecifier(ctx *parser.GccAttributeSpecifierContext) interface{}
+func (v *Visitor) VisitGccAttributeSpecifier(ctx *parser.GccAttributeSpecifierContext) {}
 
-func (v *Visitor) VisitGccAttributeList(ctx *parser.GccAttributeListContext) interface{}
+func (v *Visitor) VisitGccAttributeList(ctx *parser.GccAttributeListContext) {}
 
-func (v *Visitor) VisitGccAttribute(ctx *parser.GccAttributeContext) interface{}
+func (v *Visitor) VisitGccAttribute(ctx *parser.GccAttributeContext) {}
 
-func (v *Visitor) VisitNestedParenthesesBlock(ctx *parser.NestedParenthesesBlockContext) interface{}
+func (v *Visitor) VisitNestedParenthesesBlock(ctx *parser.NestedParenthesesBlockContext) {}
 
-func (v *Visitor) VisitPointer(ctx *parser.PointerContext) interface{}
+func (v *Visitor) VisitPointer(ctx *parser.PointerContext) {}
 
-func (v *Visitor) VisitTypeQualifierList(ctx *parser.TypeQualifierListContext) interface{}
+func (v *Visitor) VisitTypeQualifierList(ctx *parser.TypeQualifierListContext) {}
 
-func (v *Visitor) VisitParameterTypeList(ctx *parser.ParameterTypeListContext) interface{}
+func (v *Visitor) VisitParameterTypeList(ctx *parser.ParameterTypeListContext) {}
 
-func (v *Visitor) VisitParameterList(ctx *parser.ParameterListContext) interface{}
+func (v *Visitor) VisitParameterList(ctx *parser.ParameterListContext) {}
 
-func (v *Visitor) VisitParameterDeclaration(ctx *parser.ParameterDeclarationContext) interface{}
+func (v *Visitor) VisitParameterDeclaration(ctx *parser.ParameterDeclarationContext) {}
 
-func (v *Visitor) VisitIdentifierList(ctx *parser.IdentifierListContext) interface{}
+func (v *Visitor) VisitIdentifierList(ctx *parser.IdentifierListContext) {}
 
-func (v *Visitor) VisitTypeName(ctx *parser.TypeNameContext) interface{}
+func (v *Visitor) VisitTypeName(ctx *parser.TypeNameContext) {}
 
-func (v *Visitor) VisitAbstractDeclarator(ctx *parser.AbstractDeclaratorContext) interface{}
+func (v *Visitor) VisitAbstractDeclarator(ctx *parser.AbstractDeclaratorContext) {}
 
-func (v *Visitor) VisitDirectAbstractDeclarator(ctx *parser.DirectAbstractDeclaratorContext) interface{}
+func (v *Visitor) VisitDirectAbstractDeclarator(ctx *parser.DirectAbstractDeclaratorContext) {}
 
-func (v *Visitor) VisitTypedefName(ctx *parser.TypedefNameContext) interface{}
+func (v *Visitor) VisitTypedefName(ctx *parser.TypedefNameContext) {}
 
-func (v *Visitor) VisitInitializer(ctx *parser.InitializerContext) interface{}
+func (v *Visitor) VisitInitializer(ctx *parser.InitializerContext) {}
 
-func (v *Visitor) VisitInitializerList(ctx *parser.InitializerListContext) interface{}
+func (v *Visitor) VisitInitializerList(ctx *parser.InitializerListContext) {}
 
-func (v *Visitor) VisitDesignation(ctx *parser.DesignationContext) interface{}
+func (v *Visitor) VisitDesignation(ctx *parser.DesignationContext) {}
 
-func (v *Visitor) VisitDesignatorList(ctx *parser.DesignatorListContext) interface{}
+func (v *Visitor) VisitDesignatorList(ctx *parser.DesignatorListContext) {}
 
-func (v *Visitor) VisitDesignator(ctx *parser.DesignatorContext) interface{}
+func (v *Visitor) VisitDesignator(ctx *parser.DesignatorContext) {}
 
-func (v *Visitor) VisitStaticAssertDeclaration(ctx *parser.StaticAssertDeclarationContext) interface{}
+func (v *Visitor) VisitStaticAssertDeclaration(ctx *parser.StaticAssertDeclarationContext) {}
 
-func (v *Visitor) VisitStatement(ctx *parser.StatementContext) interface{}
+func (v *Visitor) VisitStatement(ctx *parser.StatementContext) {}
 
-func (v *Visitor) VisitLabeledStatement(ctx *parser.LabeledStatementContext) interface{}
+func (v *Visitor) VisitLabeledStatement(ctx *parser.LabeledStatementContext) {}
 
-func (v *Visitor) VisitCompoundStatement(ctx *parser.CompoundStatementContext) interface{}
+func (v *Visitor) VisitCompoundStatement(ctx *parser.CompoundStatementContext) {}
 
-func (v *Visitor) VisitBlockItemList(ctx *parser.BlockItemListContext) interface{}
+func (v *Visitor) VisitBlockItemList(ctx *parser.BlockItemListContext) {}
 
-func (v *Visitor) VisitBlockItem(ctx *parser.BlockItemContext) interface{}
+func (v *Visitor) VisitBlockItem(ctx *parser.BlockItemContext) {}
 
-func (v *Visitor) VisitExpressionStatement(ctx *parser.ExpressionStatementContext) interface{}
+func (v *Visitor) VisitExpressionStatement(ctx *parser.ExpressionStatementContext) {}
 
-func (v *Visitor) VisitSelectionStatement(ctx *parser.SelectionStatementContext) interface{}
+func (v *Visitor) VisitSelectionStatement(ctx *parser.SelectionStatementContext) {}
 
-func (v *Visitor) VisitIterationStatement(ctx *parser.IterationStatementContext) interface{}
+func (v *Visitor) VisitIterationStatement(ctx *parser.IterationStatementContext) {}
 
-func (v *Visitor) VisitForCondition(ctx *parser.ForConditionContext) interface{}
+func (v *Visitor) VisitForCondition(ctx *parser.ForConditionContext) {}
 
-func (v *Visitor) VisitForDeclaration(ctx *parser.ForDeclarationContext) interface{}
+func (v *Visitor) VisitForDeclaration(ctx *parser.ForDeclarationContext) {}
 
-func (v *Visitor) VisitForExpression(ctx *parser.ForExpressionContext) interface{}
+func (v *Visitor) VisitForExpression(ctx *parser.ForExpressionContext) {}
 
-func (v *Visitor) VisitJumpStatement(ctx *parser.JumpStatementContext) interface{}
+func (v *Visitor) VisitJumpStatement(ctx *parser.JumpStatementContext) {}
 
-func (v *Visitor) VisitCompilationUnit(ctx *parser.CompilationUnitContext) interface{}
+func (v *Visitor) VisitCompilationUnit(ctx *parser.CompilationUnitContext) {}
 
-func (v *Visitor) VisitTranslationUnit(ctx *parser.TranslationUnitContext) interface{}
+func (v *Visitor) VisitTranslationUnit(ctx *parser.TranslationUnitContext) {}
 
-func (v *Visitor) VisitExternalDeclaration(ctx *parser.ExternalDeclarationContext) interface{}
+func (v *Visitor) VisitExternalDeclaration(ctx *parser.ExternalDeclarationContext) {}
 
-func (v *Visitor) VisitFunctionDefinition(ctx *parser.FunctionDefinitionContext) interface{}
+func (v *Visitor) VisitFunctionDefinition(ctx *parser.FunctionDefinitionContext) {}
 
-func (v *Visitor) VisitDeclarationList(ctx *parser.DeclarationListContext) interface{}
+func (v *Visitor) VisitDeclarationList(ctx *parser.DeclarationListContext) {}
