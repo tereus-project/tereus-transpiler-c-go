@@ -141,7 +141,7 @@ func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContex
 	name := ctx.Identifier().GetText()
 
 	if child := ctx.Expression(); child != nil {
-		expression, e := v.VisitExpression(child.(*parser.ExpressionContext))
+		expression, e := v.VisitExpression(child)
 		if e != nil {
 			return "", e
 		}
@@ -152,16 +152,33 @@ func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContex
 	return fmt.Sprintf("var %s %s", name, typ), nil
 }
 
-func (v *Visitor) VisitExpression(ctx *parser.ExpressionContext) (string, error) {
-	if child := ctx.Constant(); child != nil {
+func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (string, error) {
+	switch child := ctx.(type) {
+	case *parser.IdentifierExpressionContext:
 		return child.GetText(), nil
+	case *parser.ConstantExpressionContext:
+		return child.GetText(), nil
+	case *parser.ParenthesizedExpressionContext:
+		return v.VisitExpression(child.Expression())
+	case *parser.AssignmentExpressionContext:
+		left, e := v.VisitExpression(child.Expression(0))
+		if e != nil {
+			return "", e
+		}
+
+		right, e := v.VisitExpression(child.Expression(1))
+		if e != nil {
+			return "", e
+		}
+
+		return fmt.Sprintf("%s %s %s", left, child.AssignementOperator().GetText(), right), nil
 	}
 
-	return "", v.NotImplementedError(ctx.BaseParserRuleContext)
+	return "", v.NotImplementedError(ctx.(*parser.ExpressionContext).BaseParserRuleContext)
 }
 
 func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (string, error) {
-	output := ""
+	statements := make([]string, 0)
 
 	for _, statement := range ctx.AllStatement() {
 		statement, e := v.VisitStatement(statement.(*parser.StatementContext))
@@ -169,21 +186,21 @@ func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (string, error) {
 			return "", e
 		}
 
-		output += statement
+		statements = append(statements, statement)
 	}
 
-	lines := strings.Split(output, "\n")
-
-	for i, line := range lines {
-		lines[i] = "    " + line
+	for i, line := range statements {
+		statements[i] = "    " + line
 	}
 
-	return "{\n" + strings.Join(lines, "\n") + "\n}", nil
+	return "{\n" + strings.Join(statements, "\n") + "\n}", nil
 }
 
 func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (string, error) {
 	if child := ctx.VariableDeclaration(); child != nil {
 		return v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
+	} else if child := ctx.Expression(); child != nil {
+		return v.VisitExpression(child)
 	}
 
 	return "", v.NotImplementedError(ctx.BaseParserRuleContext)

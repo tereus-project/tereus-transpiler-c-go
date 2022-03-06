@@ -32,7 +32,23 @@ func (v *BaseCVisitor) VisitVariableDeclaration(ctx *VariableDeclarationContext)
 	return v.VisitChildren(ctx)
 }
 
-func (v *BaseCVisitor) VisitExpression(ctx *ExpressionContext) interface{} {
+func (v *BaseCVisitor) VisitParenthesizedExpression(ctx *ParenthesizedExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitAssignmentExpression(ctx *AssignmentExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitConstantExpression(ctx *ConstantExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitIdentifierExpression(ctx *IdentifierExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitAssignementOperator(ctx *AssignementOperatorContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 

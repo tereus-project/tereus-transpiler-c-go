@@ -19,14 +19,30 @@ typeSpecifier:
 	| 'float'
 	| 'double';
 
-variableDeclaration:
-	typeSpecifier Identifier ('=' expression)? ';';
+variableDeclaration: typeSpecifier Identifier ('=' expression)?;
 
-expression: Identifier | Constant;
+expression:
+	Identifier									# IdentifierExpression
+	| Constant									# ConstantExpression
+	| '(' expression ')'						# ParenthesizedExpression
+	| expression assignementOperator expression	# AssignmentExpression;
+
+assignementOperator:
+	'='
+	| '*='
+	| '/='
+	| '%='
+	| '+='
+	| '-='
+	| '<<='
+	| '>>='
+	| '&='
+	| '^='
+	| '|=';
 
 block: '{' statement* '}';
 
-statement: variableDeclaration;
+statement: (variableDeclaration | expression) ';';
 
 Break: 'break';
 Case: 'case';

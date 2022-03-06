@@ -26,8 +26,20 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#variableDeclaration.
 	VisitVariableDeclaration(ctx *VariableDeclarationContext) interface{}
 
-	// Visit a parse tree produced by CParser#expression.
-	VisitExpression(ctx *ExpressionContext) interface{}
+	// Visit a parse tree produced by CParser#ParenthesizedExpression.
+	VisitParenthesizedExpression(ctx *ParenthesizedExpressionContext) interface{}
+
+	// Visit a parse tree produced by CParser#AssignmentExpression.
+	VisitAssignmentExpression(ctx *AssignmentExpressionContext) interface{}
+
+	// Visit a parse tree produced by CParser#ConstantExpression.
+	VisitConstantExpression(ctx *ConstantExpressionContext) interface{}
+
+	// Visit a parse tree produced by CParser#IdentifierExpression.
+	VisitIdentifierExpression(ctx *IdentifierExpressionContext) interface{}
+
+	// Visit a parse tree produced by CParser#assignementOperator.
+	VisitAssignementOperator(ctx *AssignementOperatorContext) interface{}
 
 	// Visit a parse tree produced by CParser#block.
 	VisitBlock(ctx *BlockContext) interface{}
