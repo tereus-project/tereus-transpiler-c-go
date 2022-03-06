@@ -64,3 +64,29 @@ func main() {
 
 	testRemix(t, source, target)
 }
+
+func TestFunctionCall(t *testing.T) {
+	source := `
+int add(int a, int b) {
+	return a + b;
+}
+
+int main() {
+	add(1, 2);
+}
+`
+
+	target := `
+package main
+
+func add(a int, b int) int {
+	return a + b
+}
+
+func main() {
+	add(1, 2)
+}
+`
+
+	testRemix(t, source, target)
+}

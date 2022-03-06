@@ -29,7 +29,8 @@ expression:
 	| Constant									# ConstantExpression
 	| '(' expression ')'						# ParenthesizedExpression
 	| expression assignementOperator expression	# AssignmentExpression
-	| expression binaryOperator expression		# BinaryExpression;
+	| expression binaryOperator expression		# BinaryExpression
+	| expression '(' functionCallArguments? ')'	# FunctionCallExpression;
 
 assignementOperator:
 	'='
@@ -61,6 +62,8 @@ binaryOperator:
 	| '>='
 	| '=='
 	| '!=';
+
+functionCallArguments: expression (',' functionCallArguments)?;
 
 block: '{' statement* '}';
 

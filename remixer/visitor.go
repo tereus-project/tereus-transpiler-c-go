@@ -37,9 +37,12 @@ func NewVisitor(path string) (*Visitor, error) {
 	return visitor, nil
 }
 
-func (v *Visitor) TranslationError(token *antlr.BaseParserRuleContext, message string) error {
-	start := token.GetStart()
+func (v *Visitor) PositionedTranslationError(start antlr.Token, message string) error {
 	return fmt.Errorf("%s:%d:%d: %s", v.Path, start.GetLine(), start.GetColumn(), message)
+}
+
+func (v *Visitor) TranslationError(token *antlr.BaseParserRuleContext, message string) error {
+	return v.PositionedTranslationError(token.GetStart(), message)
 }
 
 func (v *Visitor) NotImplementedError(token *antlr.BaseParserRuleContext) error {
@@ -142,8 +145,8 @@ func (v *Visitor) VisitFunctionArguments(ctx *parser.FunctionArgumentsContext) (
 
 	args := []*ast.ASTFunctionArgument{ast.NewASTFunctionArgument(name, typ)}
 
-	if ctx.FunctionArguments() != nil {
-		others, e := v.VisitFunctionArguments(ctx.FunctionArguments().(*parser.FunctionArgumentsContext))
+	if child := ctx.FunctionArguments(); child != nil {
+		others, e := v.VisitFunctionArguments(child.(*parser.FunctionArgumentsContext))
 		if e != nil {
 			return nil, e
 		}
@@ -247,9 +250,45 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 		}
 
 		return ast.NewASTExpressionBinary(left, child.BinaryOperator().GetText(), right), nil
+	case *parser.FunctionCallExpressionContext:
+		expression, e := v.VisitExpression(child.Expression())
+		if e != nil {
+			return nil, e
+		}
+
+		var args []ast.IASTExpression
+
+		if child := child.FunctionCallArguments(); child != nil {
+			args, e = v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext))
+			if e != nil {
+				return nil, e
+			}
+		}
+
+		return ast.NewASTExpressionFunctionCall(expression, args), nil
 	}
 
-	return nil, v.NotImplementedError(ctx.(*parser.ExpressionContext).BaseParserRuleContext)
+	return nil, v.PositionedTranslationError(ctx.GetStart(), "not implemented")
+}
+
+func (v *Visitor) VisitFunctionCallArguments(ctx *parser.FunctionCallArgumentsContext) ([]ast.IASTExpression, error) {
+	expression, e := v.VisitExpression(ctx.Expression())
+	if e != nil {
+		return nil, e
+	}
+
+	args := []ast.IASTExpression{expression}
+
+	if child := ctx.FunctionCallArguments(); child != nil {
+		others, e := v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext))
+		if e != nil {
+			return nil, e
+		}
+
+		args = append(args, others...)
+	}
+
+	return args, nil
 }
 
 func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (*ast.ASTBlock, error) {
