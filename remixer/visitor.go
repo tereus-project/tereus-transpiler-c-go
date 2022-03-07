@@ -313,7 +313,34 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return v.VisitExpression(child)
 	} else if child := ctx.FunctionReturn(); child != nil {
 		return v.VisitFunctionReturn(child.(*parser.FunctionReturnContext))
+	} else if child := ctx.IfStatement(); child != nil {
+		return v.VisitIfStatement(child.(*parser.IfStatementContext))
+	} else if child := ctx.Block(); child != nil {
+		return v.VisitBlock(child.(*parser.BlockContext))
 	}
 
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
+}
+
+func (v *Visitor) VisitIfStatement(ctx *parser.IfStatementContext) (*ast.ASTIf, error) {
+	condition, e := v.VisitExpression(ctx.Expression())
+	if e != nil {
+		return nil, e
+	}
+
+	then, e := v.VisitStatement(ctx.Statement(0).(*parser.StatementContext))
+	if e != nil {
+		return nil, e
+	}
+
+	if_ := ast.NewASTIf(condition, then)
+
+	if ctx.Else() != nil {
+		if_.Else, e = v.VisitStatement(ctx.Statement(1).(*parser.StatementContext))
+		if e != nil {
+			return nil, e
+		}
+	}
+
+	return if_, nil
 }

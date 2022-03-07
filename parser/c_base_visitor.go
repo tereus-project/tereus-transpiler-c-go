@@ -79,3 +79,7 @@ func (v *BaseCVisitor) VisitBlock(ctx *BlockContext) interface{} {
 func (v *BaseCVisitor) VisitStatement(ctx *StatementContext) interface{} {
 	return v.VisitChildren(ctx)
 }
+
+func (v *BaseCVisitor) VisitIfStatement(ctx *IfStatementContext) interface{} {
+	return v.VisitChildren(ctx)
+}

@@ -67,7 +67,14 @@ functionCallArguments: expression (',' functionCallArguments)?;
 
 block: '{' statement* '}';
 
-statement: (variableDeclaration | expression | functionReturn) ';';
+statement: (
+		(variableDeclaration | expression | functionReturn) ';'
+	)
+	| ifStatement
+	| block;
+
+ifStatement:
+	'if' '(' expression ')' statement ('else' statement)?;
 
 Break: 'break';
 Case: 'case';
