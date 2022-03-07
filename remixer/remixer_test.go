@@ -56,6 +56,10 @@ int main(int argc, char **argv) {
 	target := `
 package main
 
+import (
+	"os"
+)
+
 func main() {
 	argc := len(os.Args)
 	argv := os.Args
@@ -107,12 +111,16 @@ int main() {
 	target := `
 package main
 
+import (
+	"os"
+)
+
 func main() {
 	a := 1
 	if a >= 1 {
 		a = 2
 	}
-	return 0
+	os.Exit(0)
 }
 `
 
@@ -130,9 +138,13 @@ int main() {
 	target := `
 package main
 
+import (
+	"os"
+)
+
 func main() {
 	a := -1
-	return 0
+	os.Exit(0)
 }
 `
 
@@ -151,10 +163,14 @@ int main() {
 	target := `
 package main
 
+import (
+	"os"
+)
+
 func main() {
 	a := 1
 	a++
-	return 0
+	os.Exit(0)
 }
 `
 
