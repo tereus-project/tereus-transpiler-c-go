@@ -30,5 +30,13 @@ func (f *ASTFor) String() string {
 		post = f.Post.String()
 	}
 
-	return fmt.Sprintf("for %s; %s; %s %s", init, cond, post, f.Statement.String())
+	statement := ""
+
+	if _, ok := f.Statement.(*ASTBlock); ok {
+		statement = f.Statement.String()
+	} else {
+		statement = NewASTBlock([]IASTItem{f.Statement}).String()
+	}
+
+	return fmt.Sprintf("for %s; %s; %s %s", init, cond, post, statement)
 }
