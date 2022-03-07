@@ -90,3 +90,31 @@ func main() {
 
 	testRemix(t, source, target)
 }
+
+func TestIfCondition(t *testing.T) {
+	source := `
+int main() {
+	int a = 1;
+
+	if (a >= 1) {
+		a = 2;
+	}
+
+	return 0;
+}
+`
+
+	target := `
+package main
+
+func main() {
+	a := 1
+	if a >= 1 {
+		a = 2
+	}
+	return 0
+}
+`
+
+	testRemix(t, source, target)
+}
