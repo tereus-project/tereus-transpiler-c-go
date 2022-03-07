@@ -35,6 +35,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#ParenthesizedExpression.
 	VisitParenthesizedExpression(ctx *ParenthesizedExpressionContext) interface{}
 
+	// Visit a parse tree produced by CParser#UnaryExpressionPost.
+	VisitUnaryExpressionPost(ctx *UnaryExpressionPostContext) interface{}
+
 	// Visit a parse tree produced by CParser#AssignmentExpression.
 	VisitAssignmentExpression(ctx *AssignmentExpressionContext) interface{}
 
@@ -58,6 +61,9 @@ type CVisitor interface {
 
 	// Visit a parse tree produced by CParser#binaryOperator.
 	VisitBinaryOperator(ctx *BinaryOperatorContext) interface{}
+
+	// Visit a parse tree produced by CParser#unaryOperatorPost.
+	VisitUnaryOperatorPost(ctx *UnaryOperatorPostContext) interface{}
 
 	// Visit a parse tree produced by CParser#unaryOperatorPre.
 	VisitUnaryOperatorPre(ctx *UnaryOperatorPreContext) interface{}

@@ -32,6 +32,7 @@ expression:
 	| Constant									# ConstantExpression
 	| '(' expression ')'						# ParenthesizedExpression
 	| expression '(' functionCallArguments? ')'	# FunctionCallExpression
+	| expression unaryOperatorPost				# UnaryExpressionPost
 	| unaryOperatorPre expression				# UnaryExpressionPre
 	| expression assignementOperator expression	# AssignmentExpression
 	| expression binaryOperator expression		# BinaryExpression;
@@ -66,6 +67,8 @@ binaryOperator:
 	| '>='
 	| '=='
 	| '!=';
+
+unaryOperatorPost: '++' | '--';
 
 unaryOperatorPre: '+' | '++' | '-' | '--' | '~' | '!';
 

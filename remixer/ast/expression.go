@@ -15,7 +15,12 @@ type ASTExpressionBinary struct {
 	Right    IASTExpression
 }
 
-type ASTExpressionUnary struct {
+type ASTExpressionUnaryPost struct {
+	Operand  IASTExpression
+	Operator string
+}
+
+type ASTExpressionUnaryPre struct {
 	Operator string
 	Operand  IASTExpression
 }
@@ -41,14 +46,25 @@ func (e *ASTExpressionBinary) String() string {
 	return fmt.Sprintf("%s %s %s", e.Left.String(), e.Operator, e.Right.String())
 }
 
-func NewASTExpressionUnary(operator string, operand IASTExpression) *ASTExpressionUnary {
-	return &ASTExpressionUnary{
+func NewASTExpressionUnaryPost(operand IASTExpression, operator string) *ASTExpressionUnaryPost {
+	return &ASTExpressionUnaryPost{
+		Operand:  operand,
+		Operator: operator,
+	}
+}
+
+func (e *ASTExpressionUnaryPost) String() string {
+	return fmt.Sprintf("%s%s", e.Operand.String(), e.Operator)
+}
+
+func NewASTExpressionUnaryPre(operator string, operand IASTExpression) *ASTExpressionUnaryPre {
+	return &ASTExpressionUnaryPre{
 		Operator: operator,
 		Operand:  operand,
 	}
 }
 
-func (e *ASTExpressionUnary) String() string {
+func (e *ASTExpressionUnaryPre) String() string {
 	return fmt.Sprintf("%s%s", e.Operator, e.Operand.String())
 }
 

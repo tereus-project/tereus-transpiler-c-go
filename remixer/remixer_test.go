@@ -138,3 +138,25 @@ func main() {
 
 	testRemix(t, source, target)
 }
+
+func TestUnaryPostExpression(t *testing.T) {
+	source := `
+int main() {
+	int a = 1;
+	a++;
+	return 0;
+}
+`
+
+	target := `
+package main
+
+func main() {
+	a := 1
+	a++
+	return 0
+}
+`
+
+	testRemix(t, source, target)
+}

@@ -44,6 +44,10 @@ func (v *BaseCVisitor) VisitParenthesizedExpression(ctx *ParenthesizedExpression
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitUnaryExpressionPost(ctx *UnaryExpressionPostContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitAssignmentExpression(ctx *AssignmentExpressionContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -73,6 +77,10 @@ func (v *BaseCVisitor) VisitAssignementOperator(ctx *AssignementOperatorContext)
 }
 
 func (v *BaseCVisitor) VisitBinaryOperator(ctx *BinaryOperatorContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitUnaryOperatorPost(ctx *UnaryOperatorPostContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
