@@ -102,10 +102,12 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 		}
 
 		if len(function.Args) >= 1 {
-			variable := ast.NewASTVariableDeclaration(function.Args[0].Name, ast.NewASTType(ast.ASTTypeKindInt, "int"))
+			variable := ast.NewASTVariableDeclaration(ast.NewASTType(ast.ASTTypeKindInt, "int"))
+			variable.Items = []*ast.ASTVariableDeclarationItem{
+				// TODO: change this to a proper structure when it gets implemented
+				ast.NewASTVariableDeclarationItem(function.Args[0].Name, ast.NewASTExpressionLiteral("len(os.Args)")),
+			}
 
-			// TODO: change this to a proper structure when it gets implemented
-			variable.Expression = ast.NewASTExpressionLiteral("len(os.Args)")
 			v.Imports.Add("os")
 
 			argumentsInitialization = append(argumentsInitialization, variable)
@@ -114,10 +116,12 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 		if len(function.Args) >= 2 {
 			typ := ast.NewASTType(ast.ASTTypeKindArray, "array")
 			typ.ArrayType = ast.NewASTType(ast.ASTTypeKindRune, "string")
-			variable := ast.NewASTVariableDeclaration(function.Args[1].Name, typ)
 
-			// TODO: change this to a proper structure when it gets implemented
-			variable.Expression = ast.NewASTExpressionLiteral("os.Args")
+			variable := ast.NewASTVariableDeclaration(typ)
+			variable.Items = []*ast.ASTVariableDeclarationItem{
+				// TODO: change this to a proper structure when it gets implemented
+				ast.NewASTVariableDeclarationItem(function.Args[1].Name, ast.NewASTExpressionLiteral("os.Args")),
+			}
 
 			argumentsInitialization = append(argumentsInitialization, variable)
 		}
@@ -196,28 +200,28 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
 }
 
-func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext) ([]*ast.ASTVariableDeclaration, error) {
+func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext) (*ast.ASTVariableDeclaration, error) {
 	typ, e := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
 	if e != nil {
 		return nil, e
 	}
 
-	variables, e := v.VisitVariableDeclarationList(ctx.VariableDeclarationList().(*parser.VariableDeclarationListContext))
+	variable := ast.NewASTVariableDeclaration(typ)
+
+	items, e := v.VisitVariableDeclarationList(ctx.VariableDeclarationList().(*parser.VariableDeclarationListContext))
 	if e != nil {
 		return nil, e
 	}
 
-	for _, variable := range variables {
-		variable.Type = typ
-	}
+	variable.Items = items
 
-	return variables, nil
+	return variable, nil
 }
 
-func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationListContext) ([]*ast.ASTVariableDeclaration, error) {
+func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationListContext) ([]*ast.ASTVariableDeclarationItem, error) {
 	name := ctx.Identifier().GetText()
 
-	variable := ast.NewASTVariableDeclaration(name, nil)
+	item := ast.NewASTVariableDeclarationItem(name, nil)
 
 	if child := ctx.Expression(); child != nil {
 		expression, e := v.VisitExpression(child)
@@ -225,10 +229,10 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 			return nil, e
 		}
 
-		variable.Expression = expression
+		item.Expression = expression
 	}
 
-	variables := []*ast.ASTVariableDeclaration{variable}
+	items := []*ast.ASTVariableDeclarationItem{item}
 
 	if child := ctx.VariableDeclarationList(); child != nil {
 		others, e := v.VisitVariableDeclarationList(child.(*parser.VariableDeclarationListContext))
@@ -236,10 +240,10 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 			return nil, e
 		}
 
-		variables = append(variables, others...)
+		items = append(items, others...)
 	}
 
-	return variables, nil
+	return items, nil
 }
 
 func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpression, error) {
@@ -332,24 +336,20 @@ func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (*ast.ASTBlock, error) {
 
 func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, error) {
 	if child := ctx.VariableDeclaration(); child != nil {
-		variables, e := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
+		variableDeclaration, e := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
 		if e != nil {
 			return nil, e
 		}
 
-		items := make([]ast.IASTItem, len(variables))
-
-		for i, variable := range variables {
-			items[i] = variable
-		}
-
-		return ast.NewASTMultipleStatements(items), nil
+		return variableDeclaration, nil
 	} else if child := ctx.Expression(); child != nil {
 		return v.VisitExpression(child)
 	} else if child := ctx.FunctionReturn(); child != nil {
 		return v.VisitFunctionReturn(child.(*parser.FunctionReturnContext))
 	} else if child := ctx.IfStatement(); child != nil {
 		return v.VisitIfStatement(child.(*parser.IfStatementContext))
+	} else if child := ctx.ForStatement(); child != nil {
+		return v.VisitForStatement(child.(*parser.ForStatementContext))
 	} else if child := ctx.Block(); child != nil {
 		return v.VisitBlock(child.(*parser.BlockContext))
 	}
@@ -378,4 +378,53 @@ func (v *Visitor) VisitIfStatement(ctx *parser.IfStatementContext) (*ast.ASTIf, 
 	}
 
 	return if_, nil
+}
+
+func (v *Visitor) VisitForStatement(ctx *parser.ForStatementContext) (*ast.ASTFor, error) {
+	for_ := ast.NewASTFor()
+
+	if child := ctx.GetInit(); child != nil {
+		expression, e := v.VisitExpression(child)
+		if e != nil {
+			return nil, e
+		}
+
+		for_.Init = expression
+	}
+
+	if child := ctx.VariableDeclaration(); child != nil {
+		variableDeclaration, e := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
+		if e != nil {
+			return nil, e
+		}
+
+		for_.Init = variableDeclaration
+	}
+
+	if child := ctx.GetCondition(); child != nil {
+		expression, e := v.VisitExpression(child)
+		if e != nil {
+			return nil, e
+		}
+
+		for_.Cond = expression
+	}
+
+	if child := ctx.GetPost(); child != nil {
+		expression, e := v.VisitExpression(child)
+		if e != nil {
+			return nil, e
+		}
+
+		for_.Post = expression
+	}
+
+	body, e := v.VisitStatement(ctx.Statement().(*parser.StatementContext))
+	if e != nil {
+		return nil, e
+	}
+
+	for_.Statement = body
+
+	return for_, e
 }

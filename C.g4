@@ -74,10 +74,16 @@ statement: (
 		(variableDeclaration | expression | functionReturn) ';'
 	)
 	| ifStatement
+	| forStatement
 	| block;
 
 ifStatement:
 	'if' '(' expression ')' statement ('else' statement)?;
+
+forStatement:
+	'for' '(' (init = expression | variableDeclaration)? ';' (
+		condition = expression
+	)? ';' (post = expression)? ')' statement;
 
 Break: 'break';
 Case: 'case';

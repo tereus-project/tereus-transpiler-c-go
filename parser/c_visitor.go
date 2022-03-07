@@ -67,4 +67,7 @@ type CVisitor interface {
 
 	// Visit a parse tree produced by CParser#ifStatement.
 	VisitIfStatement(ctx *IfStatementContext) interface{}
+
+	// Visit a parse tree produced by CParser#forStatement.
+	VisitForStatement(ctx *ForStatementContext) interface{}
 }

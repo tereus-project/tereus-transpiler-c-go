@@ -16,73 +16,83 @@ var _ = reflect.Copy
 var _ = strconv.Itoa
 
 var parserATN = []uint16{
-	3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 91, 154,
+	3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 91, 174,
 	4, 2, 9, 2, 4, 3, 9, 3, 4, 4, 9, 4, 4, 5, 9, 5, 4, 6, 9, 6, 4, 7, 9, 7,
 	4, 8, 9, 8, 4, 9, 9, 9, 4, 10, 9, 10, 4, 11, 9, 11, 4, 12, 9, 12, 4, 13,
-	9, 13, 4, 14, 9, 14, 4, 15, 9, 15, 4, 16, 9, 16, 3, 2, 7, 2, 34, 10, 2,
-	12, 2, 14, 2, 37, 11, 2, 3, 3, 3, 3, 3, 4, 3, 4, 3, 4, 3, 4, 5, 4, 45,
-	10, 4, 3, 4, 3, 4, 3, 4, 3, 5, 3, 5, 3, 5, 3, 5, 5, 5, 54, 10, 5, 3, 6,
-	3, 6, 3, 6, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 5, 7, 67, 10,
-	7, 3, 7, 3, 7, 7, 7, 71, 10, 7, 12, 7, 14, 7, 74, 11, 7, 3, 8, 3, 8, 3,
-	8, 3, 9, 3, 9, 3, 9, 5, 9, 82, 10, 9, 3, 9, 3, 9, 5, 9, 86, 10, 9, 3, 10,
-	3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 5, 10, 95, 10, 10, 3, 10, 3,
-	10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 5, 10,
-	108, 10, 10, 3, 10, 7, 10, 111, 10, 10, 12, 10, 14, 10, 114, 11, 10, 3,
-	11, 3, 11, 3, 12, 3, 12, 3, 13, 3, 13, 3, 13, 5, 13, 123, 10, 13, 3, 14,
-	3, 14, 7, 14, 127, 10, 14, 12, 14, 14, 14, 130, 11, 14, 3, 14, 3, 14, 3,
-	15, 3, 15, 3, 15, 5, 15, 137, 10, 15, 3, 15, 3, 15, 3, 15, 3, 15, 5, 15,
-	143, 10, 15, 3, 16, 3, 16, 3, 16, 3, 16, 3, 16, 3, 16, 3, 16, 5, 16, 152,
-	10, 16, 3, 16, 2, 4, 12, 18, 17, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22,
-	24, 26, 28, 30, 2, 4, 3, 2, 62, 72, 7, 2, 38, 44, 46, 46, 48, 52, 55, 55,
-	73, 74, 2, 163, 2, 35, 3, 2, 2, 2, 4, 38, 3, 2, 2, 2, 6, 40, 3, 2, 2, 2,
-	8, 49, 3, 2, 2, 2, 10, 55, 3, 2, 2, 2, 12, 66, 3, 2, 2, 2, 14, 75, 3, 2,
-	2, 2, 16, 78, 3, 2, 2, 2, 18, 94, 3, 2, 2, 2, 20, 115, 3, 2, 2, 2, 22,
-	117, 3, 2, 2, 2, 24, 119, 3, 2, 2, 2, 26, 124, 3, 2, 2, 2, 28, 142, 3,
-	2, 2, 2, 30, 144, 3, 2, 2, 2, 32, 34, 5, 4, 3, 2, 33, 32, 3, 2, 2, 2, 34,
-	37, 3, 2, 2, 2, 35, 33, 3, 2, 2, 2, 35, 36, 3, 2, 2, 2, 36, 3, 3, 2, 2,
-	2, 37, 35, 3, 2, 2, 2, 38, 39, 5, 6, 4, 2, 39, 5, 3, 2, 2, 2, 40, 41, 5,
-	12, 7, 2, 41, 42, 7, 78, 2, 2, 42, 44, 7, 32, 2, 2, 43, 45, 5, 8, 5, 2,
-	44, 43, 3, 2, 2, 2, 44, 45, 3, 2, 2, 2, 45, 46, 3, 2, 2, 2, 46, 47, 7,
-	33, 2, 2, 47, 48, 5, 26, 14, 2, 48, 7, 3, 2, 2, 2, 49, 50, 5, 12, 7, 2,
-	50, 53, 7, 78, 2, 2, 51, 52, 7, 61, 2, 2, 52, 54, 5, 8, 5, 2, 53, 51, 3,
-	2, 2, 2, 53, 54, 3, 2, 2, 2, 54, 9, 3, 2, 2, 2, 55, 56, 7, 20, 2, 2, 56,
-	57, 5, 18, 10, 2, 57, 11, 3, 2, 2, 2, 58, 59, 8, 7, 1, 2, 59, 67, 7, 30,
-	2, 2, 60, 67, 7, 18, 2, 2, 61, 67, 7, 21, 2, 2, 62, 67, 7, 19, 2, 2, 63,
-	67, 7, 5, 2, 2, 64, 67, 7, 14, 2, 2, 65, 67, 7, 10, 2, 2, 66, 58, 3, 2,
-	2, 2, 66, 60, 3, 2, 2, 2, 66, 61, 3, 2, 2, 2, 66, 62, 3, 2, 2, 2, 66, 63,
-	3, 2, 2, 2, 66, 64, 3, 2, 2, 2, 66, 65, 3, 2, 2, 2, 67, 72, 3, 2, 2, 2,
-	68, 69, 12, 3, 2, 2, 69, 71, 7, 48, 2, 2, 70, 68, 3, 2, 2, 2, 71, 74, 3,
-	2, 2, 2, 72, 70, 3, 2, 2, 2, 72, 73, 3, 2, 2, 2, 73, 13, 3, 2, 2, 2, 74,
-	72, 3, 2, 2, 2, 75, 76, 5, 12, 7, 2, 76, 77, 5, 16, 9, 2, 77, 15, 3, 2,
-	2, 2, 78, 81, 7, 78, 2, 2, 79, 80, 7, 62, 2, 2, 80, 82, 5, 18, 10, 2, 81,
-	79, 3, 2, 2, 2, 81, 82, 3, 2, 2, 2, 82, 85, 3, 2, 2, 2, 83, 84, 7, 61,
-	2, 2, 84, 86, 5, 16, 9, 2, 85, 83, 3, 2, 2, 2, 85, 86, 3, 2, 2, 2, 86,
-	17, 3, 2, 2, 2, 87, 88, 8, 10, 1, 2, 88, 95, 7, 78, 2, 2, 89, 95, 7, 79,
-	2, 2, 90, 91, 7, 32, 2, 2, 91, 92, 5, 18, 10, 2, 92, 93, 7, 33, 2, 2, 93,
-	95, 3, 2, 2, 2, 94, 87, 3, 2, 2, 2, 94, 89, 3, 2, 2, 2, 94, 90, 3, 2, 2,
-	2, 95, 112, 3, 2, 2, 2, 96, 97, 12, 5, 2, 2, 97, 98, 5, 20, 11, 2, 98,
-	99, 5, 18, 10, 6, 99, 111, 3, 2, 2, 2, 100, 101, 12, 4, 2, 2, 101, 102,
-	5, 22, 12, 2, 102, 103, 5, 18, 10, 5, 103, 111, 3, 2, 2, 2, 104, 105, 12,
-	3, 2, 2, 105, 107, 7, 32, 2, 2, 106, 108, 5, 24, 13, 2, 107, 106, 3, 2,
-	2, 2, 107, 108, 3, 2, 2, 2, 108, 109, 3, 2, 2, 2, 109, 111, 7, 33, 2, 2,
-	110, 96, 3, 2, 2, 2, 110, 100, 3, 2, 2, 2, 110, 104, 3, 2, 2, 2, 111, 114,
-	3, 2, 2, 2, 112, 110, 3, 2, 2, 2, 112, 113, 3, 2, 2, 2, 113, 19, 3, 2,
-	2, 2, 114, 112, 3, 2, 2, 2, 115, 116, 9, 2, 2, 2, 116, 21, 3, 2, 2, 2,
-	117, 118, 9, 3, 2, 2, 118, 23, 3, 2, 2, 2, 119, 122, 5, 18, 10, 2, 120,
-	121, 7, 61, 2, 2, 121, 123, 5, 24, 13, 2, 122, 120, 3, 2, 2, 2, 122, 123,
-	3, 2, 2, 2, 123, 25, 3, 2, 2, 2, 124, 128, 7, 36, 2, 2, 125, 127, 5, 28,
-	15, 2, 126, 125, 3, 2, 2, 2, 127, 130, 3, 2, 2, 2, 128, 126, 3, 2, 2, 2,
-	128, 129, 3, 2, 2, 2, 129, 131, 3, 2, 2, 2, 130, 128, 3, 2, 2, 2, 131,
-	132, 7, 37, 2, 2, 132, 27, 3, 2, 2, 2, 133, 137, 5, 14, 8, 2, 134, 137,
-	5, 18, 10, 2, 135, 137, 5, 10, 6, 2, 136, 133, 3, 2, 2, 2, 136, 134, 3,
-	2, 2, 2, 136, 135, 3, 2, 2, 2, 137, 138, 3, 2, 2, 2, 138, 139, 7, 60, 2,
-	2, 139, 143, 3, 2, 2, 2, 140, 143, 5, 30, 16, 2, 141, 143, 5, 26, 14, 2,
-	142, 136, 3, 2, 2, 2, 142, 140, 3, 2, 2, 2, 142, 141, 3, 2, 2, 2, 143,
-	29, 3, 2, 2, 2, 144, 145, 7, 17, 2, 2, 145, 146, 7, 32, 2, 2, 146, 147,
-	5, 18, 10, 2, 147, 148, 7, 33, 2, 2, 148, 151, 5, 28, 15, 2, 149, 150,
-	7, 11, 2, 2, 150, 152, 5, 28, 15, 2, 151, 149, 3, 2, 2, 2, 151, 152, 3,
-	2, 2, 2, 152, 31, 3, 2, 2, 2, 18, 35, 44, 53, 66, 72, 81, 85, 94, 107,
-	110, 112, 122, 128, 136, 142, 151,
+	9, 13, 4, 14, 9, 14, 4, 15, 9, 15, 4, 16, 9, 16, 4, 17, 9, 17, 3, 2, 7,
+	2, 36, 10, 2, 12, 2, 14, 2, 39, 11, 2, 3, 3, 3, 3, 3, 4, 3, 4, 3, 4, 3,
+	4, 5, 4, 47, 10, 4, 3, 4, 3, 4, 3, 4, 3, 5, 3, 5, 3, 5, 3, 5, 5, 5, 56,
+	10, 5, 3, 6, 3, 6, 3, 6, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7,
+	5, 7, 69, 10, 7, 3, 7, 3, 7, 7, 7, 73, 10, 7, 12, 7, 14, 7, 76, 11, 7,
+	3, 8, 3, 8, 3, 8, 3, 9, 3, 9, 3, 9, 5, 9, 84, 10, 9, 3, 9, 3, 9, 5, 9,
+	88, 10, 9, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 5, 10, 97,
+	10, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10,
+	3, 10, 3, 10, 5, 10, 110, 10, 10, 3, 10, 7, 10, 113, 10, 10, 12, 10, 14,
+	10, 116, 11, 10, 3, 11, 3, 11, 3, 12, 3, 12, 3, 13, 3, 13, 3, 13, 5, 13,
+	125, 10, 13, 3, 14, 3, 14, 7, 14, 129, 10, 14, 12, 14, 14, 14, 132, 11,
+	14, 3, 14, 3, 14, 3, 15, 3, 15, 3, 15, 5, 15, 139, 10, 15, 3, 15, 3, 15,
+	3, 15, 3, 15, 3, 15, 5, 15, 146, 10, 15, 3, 16, 3, 16, 3, 16, 3, 16, 3,
+	16, 3, 16, 3, 16, 5, 16, 155, 10, 16, 3, 17, 3, 17, 3, 17, 3, 17, 5, 17,
+	161, 10, 17, 3, 17, 3, 17, 5, 17, 165, 10, 17, 3, 17, 3, 17, 5, 17, 169,
+	10, 17, 3, 17, 3, 17, 3, 17, 3, 17, 2, 4, 12, 18, 18, 2, 4, 6, 8, 10, 12,
+	14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 2, 4, 3, 2, 62, 72, 7, 2, 38, 44,
+	46, 46, 48, 52, 55, 55, 73, 74, 2, 187, 2, 37, 3, 2, 2, 2, 4, 40, 3, 2,
+	2, 2, 6, 42, 3, 2, 2, 2, 8, 51, 3, 2, 2, 2, 10, 57, 3, 2, 2, 2, 12, 68,
+	3, 2, 2, 2, 14, 77, 3, 2, 2, 2, 16, 80, 3, 2, 2, 2, 18, 96, 3, 2, 2, 2,
+	20, 117, 3, 2, 2, 2, 22, 119, 3, 2, 2, 2, 24, 121, 3, 2, 2, 2, 26, 126,
+	3, 2, 2, 2, 28, 145, 3, 2, 2, 2, 30, 147, 3, 2, 2, 2, 32, 156, 3, 2, 2,
+	2, 34, 36, 5, 4, 3, 2, 35, 34, 3, 2, 2, 2, 36, 39, 3, 2, 2, 2, 37, 35,
+	3, 2, 2, 2, 37, 38, 3, 2, 2, 2, 38, 3, 3, 2, 2, 2, 39, 37, 3, 2, 2, 2,
+	40, 41, 5, 6, 4, 2, 41, 5, 3, 2, 2, 2, 42, 43, 5, 12, 7, 2, 43, 44, 7,
+	78, 2, 2, 44, 46, 7, 32, 2, 2, 45, 47, 5, 8, 5, 2, 46, 45, 3, 2, 2, 2,
+	46, 47, 3, 2, 2, 2, 47, 48, 3, 2, 2, 2, 48, 49, 7, 33, 2, 2, 49, 50, 5,
+	26, 14, 2, 50, 7, 3, 2, 2, 2, 51, 52, 5, 12, 7, 2, 52, 55, 7, 78, 2, 2,
+	53, 54, 7, 61, 2, 2, 54, 56, 5, 8, 5, 2, 55, 53, 3, 2, 2, 2, 55, 56, 3,
+	2, 2, 2, 56, 9, 3, 2, 2, 2, 57, 58, 7, 20, 2, 2, 58, 59, 5, 18, 10, 2,
+	59, 11, 3, 2, 2, 2, 60, 61, 8, 7, 1, 2, 61, 69, 7, 30, 2, 2, 62, 69, 7,
+	18, 2, 2, 63, 69, 7, 21, 2, 2, 64, 69, 7, 19, 2, 2, 65, 69, 7, 5, 2, 2,
+	66, 69, 7, 14, 2, 2, 67, 69, 7, 10, 2, 2, 68, 60, 3, 2, 2, 2, 68, 62, 3,
+	2, 2, 2, 68, 63, 3, 2, 2, 2, 68, 64, 3, 2, 2, 2, 68, 65, 3, 2, 2, 2, 68,
+	66, 3, 2, 2, 2, 68, 67, 3, 2, 2, 2, 69, 74, 3, 2, 2, 2, 70, 71, 12, 3,
+	2, 2, 71, 73, 7, 48, 2, 2, 72, 70, 3, 2, 2, 2, 73, 76, 3, 2, 2, 2, 74,
+	72, 3, 2, 2, 2, 74, 75, 3, 2, 2, 2, 75, 13, 3, 2, 2, 2, 76, 74, 3, 2, 2,
+	2, 77, 78, 5, 12, 7, 2, 78, 79, 5, 16, 9, 2, 79, 15, 3, 2, 2, 2, 80, 83,
+	7, 78, 2, 2, 81, 82, 7, 62, 2, 2, 82, 84, 5, 18, 10, 2, 83, 81, 3, 2, 2,
+	2, 83, 84, 3, 2, 2, 2, 84, 87, 3, 2, 2, 2, 85, 86, 7, 61, 2, 2, 86, 88,
+	5, 16, 9, 2, 87, 85, 3, 2, 2, 2, 87, 88, 3, 2, 2, 2, 88, 17, 3, 2, 2, 2,
+	89, 90, 8, 10, 1, 2, 90, 97, 7, 78, 2, 2, 91, 97, 7, 79, 2, 2, 92, 93,
+	7, 32, 2, 2, 93, 94, 5, 18, 10, 2, 94, 95, 7, 33, 2, 2, 95, 97, 3, 2, 2,
+	2, 96, 89, 3, 2, 2, 2, 96, 91, 3, 2, 2, 2, 96, 92, 3, 2, 2, 2, 97, 114,
+	3, 2, 2, 2, 98, 99, 12, 5, 2, 2, 99, 100, 5, 20, 11, 2, 100, 101, 5, 18,
+	10, 6, 101, 113, 3, 2, 2, 2, 102, 103, 12, 4, 2, 2, 103, 104, 5, 22, 12,
+	2, 104, 105, 5, 18, 10, 5, 105, 113, 3, 2, 2, 2, 106, 107, 12, 3, 2, 2,
+	107, 109, 7, 32, 2, 2, 108, 110, 5, 24, 13, 2, 109, 108, 3, 2, 2, 2, 109,
+	110, 3, 2, 2, 2, 110, 111, 3, 2, 2, 2, 111, 113, 7, 33, 2, 2, 112, 98,
+	3, 2, 2, 2, 112, 102, 3, 2, 2, 2, 112, 106, 3, 2, 2, 2, 113, 116, 3, 2,
+	2, 2, 114, 112, 3, 2, 2, 2, 114, 115, 3, 2, 2, 2, 115, 19, 3, 2, 2, 2,
+	116, 114, 3, 2, 2, 2, 117, 118, 9, 2, 2, 2, 118, 21, 3, 2, 2, 2, 119, 120,
+	9, 3, 2, 2, 120, 23, 3, 2, 2, 2, 121, 124, 5, 18, 10, 2, 122, 123, 7, 61,
+	2, 2, 123, 125, 5, 24, 13, 2, 124, 122, 3, 2, 2, 2, 124, 125, 3, 2, 2,
+	2, 125, 25, 3, 2, 2, 2, 126, 130, 7, 36, 2, 2, 127, 129, 5, 28, 15, 2,
+	128, 127, 3, 2, 2, 2, 129, 132, 3, 2, 2, 2, 130, 128, 3, 2, 2, 2, 130,
+	131, 3, 2, 2, 2, 131, 133, 3, 2, 2, 2, 132, 130, 3, 2, 2, 2, 133, 134,
+	7, 37, 2, 2, 134, 27, 3, 2, 2, 2, 135, 139, 5, 14, 8, 2, 136, 139, 5, 18,
+	10, 2, 137, 139, 5, 10, 6, 2, 138, 135, 3, 2, 2, 2, 138, 136, 3, 2, 2,
+	2, 138, 137, 3, 2, 2, 2, 139, 140, 3, 2, 2, 2, 140, 141, 7, 60, 2, 2, 141,
+	146, 3, 2, 2, 2, 142, 146, 5, 30, 16, 2, 143, 146, 5, 32, 17, 2, 144, 146,
+	5, 26, 14, 2, 145, 138, 3, 2, 2, 2, 145, 142, 3, 2, 2, 2, 145, 143, 3,
+	2, 2, 2, 145, 144, 3, 2, 2, 2, 146, 29, 3, 2, 2, 2, 147, 148, 7, 17, 2,
+	2, 148, 149, 7, 32, 2, 2, 149, 150, 5, 18, 10, 2, 150, 151, 7, 33, 2, 2,
+	151, 154, 5, 28, 15, 2, 152, 153, 7, 11, 2, 2, 153, 155, 5, 28, 15, 2,
+	154, 152, 3, 2, 2, 2, 154, 155, 3, 2, 2, 2, 155, 31, 3, 2, 2, 2, 156, 157,
+	7, 15, 2, 2, 157, 160, 7, 32, 2, 2, 158, 161, 5, 18, 10, 2, 159, 161, 5,
+	14, 8, 2, 160, 158, 3, 2, 2, 2, 160, 159, 3, 2, 2, 2, 160, 161, 3, 2, 2,
+	2, 161, 162, 3, 2, 2, 2, 162, 164, 7, 60, 2, 2, 163, 165, 5, 18, 10, 2,
+	164, 163, 3, 2, 2, 2, 164, 165, 3, 2, 2, 2, 165, 166, 3, 2, 2, 2, 166,
+	168, 7, 60, 2, 2, 167, 169, 5, 18, 10, 2, 168, 167, 3, 2, 2, 2, 168, 169,
+	3, 2, 2, 2, 169, 170, 3, 2, 2, 2, 170, 171, 7, 33, 2, 2, 171, 172, 5, 28,
+	15, 2, 172, 33, 3, 2, 2, 2, 21, 37, 46, 55, 68, 74, 83, 87, 96, 109, 112,
+	114, 124, 130, 138, 145, 154, 160, 164, 168,
 }
 var literalNames = []string{
 	"", "'break'", "'case'", "'char'", "'const'", "'continue'", "'default'",
@@ -117,7 +127,7 @@ var ruleNames = []string{
 	"translation", "declaration", "functionDeclaration", "functionArguments",
 	"functionReturn", "typeSpecifier", "variableDeclaration", "variableDeclarationList",
 	"expression", "assignementOperator", "binaryOperator", "functionCallArguments",
-	"block", "statement", "ifStatement",
+	"block", "statement", "ifStatement", "forStatement",
 }
 
 type CParser struct {
@@ -260,6 +270,7 @@ const (
 	CParserRULE_block                   = 12
 	CParserRULE_statement               = 13
 	CParserRULE_ifStatement             = 14
+	CParserRULE_forStatement            = 15
 )
 
 // ITranslationContext is an interface to support dynamic dispatch.
@@ -363,17 +374,17 @@ func (p *CParser) Translation() (localctx ITranslationContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(33)
+	p.SetState(35)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	for ((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<CParserChar)|(1<<CParserDouble)|(1<<CParserFloat)|(1<<CParserInt)|(1<<CParserLong)|(1<<CParserShort)|(1<<CParserVoid))) != 0 {
 		{
-			p.SetState(30)
+			p.SetState(32)
 			p.Declaration()
 		}
 
-		p.SetState(35)
+		p.SetState(37)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
@@ -469,7 +480,7 @@ func (p *CParser) Declaration() (localctx IDeclarationContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(36)
+		p.SetState(38)
 		p.FunctionDeclaration()
 	}
 
@@ -597,34 +608,34 @@ func (p *CParser) FunctionDeclaration() (localctx IFunctionDeclarationContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(38)
+		p.SetState(40)
 		p.typeSpecifier(0)
 	}
 	{
-		p.SetState(39)
+		p.SetState(41)
 		p.Match(CParserIdentifier)
 	}
 	{
-		p.SetState(40)
+		p.SetState(42)
 		p.Match(CParserLeftParen)
 	}
-	p.SetState(42)
+	p.SetState(44)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if ((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<CParserChar)|(1<<CParserDouble)|(1<<CParserFloat)|(1<<CParserInt)|(1<<CParserLong)|(1<<CParserShort)|(1<<CParserVoid))) != 0 {
 		{
-			p.SetState(41)
+			p.SetState(43)
 			p.FunctionArguments()
 		}
 
 	}
 	{
-		p.SetState(44)
+		p.SetState(46)
 		p.Match(CParserRightParen)
 	}
 	{
-		p.SetState(45)
+		p.SetState(47)
 		p.Block()
 	}
 
@@ -738,24 +749,24 @@ func (p *CParser) FunctionArguments() (localctx IFunctionArgumentsContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(47)
+		p.SetState(49)
 		p.typeSpecifier(0)
 	}
 	{
-		p.SetState(48)
+		p.SetState(50)
 		p.Match(CParserIdentifier)
 	}
-	p.SetState(51)
+	p.SetState(53)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == CParserComma {
 		{
-			p.SetState(49)
+			p.SetState(51)
 			p.Match(CParserComma)
 		}
 		{
-			p.SetState(50)
+			p.SetState(52)
 			p.FunctionArguments()
 		}
 
@@ -856,11 +867,11 @@ func (p *CParser) FunctionReturn() (localctx IFunctionReturnContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(53)
+		p.SetState(55)
 		p.Match(CParserReturn)
 	}
 	{
-		p.SetState(54)
+		p.SetState(56)
 		p.expression(0)
 	}
 
@@ -997,49 +1008,49 @@ func (p *CParser) typeSpecifier(_p int) (localctx ITypeSpecifierContext) {
 	var _alt int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(64)
+	p.SetState(66)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
 	case CParserVoid:
 		{
-			p.SetState(57)
+			p.SetState(59)
 			p.Match(CParserVoid)
 		}
 
 	case CParserInt:
 		{
-			p.SetState(58)
+			p.SetState(60)
 			p.Match(CParserInt)
 		}
 
 	case CParserShort:
 		{
-			p.SetState(59)
+			p.SetState(61)
 			p.Match(CParserShort)
 		}
 
 	case CParserLong:
 		{
-			p.SetState(60)
+			p.SetState(62)
 			p.Match(CParserLong)
 		}
 
 	case CParserChar:
 		{
-			p.SetState(61)
+			p.SetState(63)
 			p.Match(CParserChar)
 		}
 
 	case CParserFloat:
 		{
-			p.SetState(62)
+			p.SetState(64)
 			p.Match(CParserFloat)
 		}
 
 	case CParserDouble:
 		{
-			p.SetState(63)
+			p.SetState(65)
 			p.Match(CParserDouble)
 		}
 
@@ -1047,7 +1058,7 @@ func (p *CParser) typeSpecifier(_p int) (localctx ITypeSpecifierContext) {
 		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 	}
 	p.GetParserRuleContext().SetStop(p.GetTokenStream().LT(-1))
-	p.SetState(70)
+	p.SetState(72)
 	p.GetErrorHandler().Sync(p)
 	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 4, p.GetParserRuleContext())
 
@@ -1059,18 +1070,18 @@ func (p *CParser) typeSpecifier(_p int) (localctx ITypeSpecifierContext) {
 			_prevctx = localctx
 			localctx = NewTypeSpecifierContext(p, _parentctx, _parentState)
 			p.PushNewRecursionContext(localctx, _startState, CParserRULE_typeSpecifier)
-			p.SetState(66)
+			p.SetState(68)
 
 			if !(p.Precpred(p.GetParserRuleContext(), 1)) {
 				panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 1)", ""))
 			}
 			{
-				p.SetState(67)
+				p.SetState(69)
 				p.Match(CParserStar)
 			}
 
 		}
-		p.SetState(72)
+		p.SetState(74)
 		p.GetErrorHandler().Sync(p)
 		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 4, p.GetParserRuleContext())
 	}
@@ -1176,11 +1187,11 @@ func (p *CParser) VariableDeclaration() (localctx IVariableDeclarationContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(73)
+		p.SetState(75)
 		p.typeSpecifier(0)
 	}
 	{
-		p.SetState(74)
+		p.SetState(76)
 		p.VariableDeclarationList()
 	}
 
@@ -1298,35 +1309,35 @@ func (p *CParser) VariableDeclarationList() (localctx IVariableDeclarationListCo
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(76)
+		p.SetState(78)
 		p.Match(CParserIdentifier)
 	}
-	p.SetState(79)
+	p.SetState(81)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == CParserAssign {
 		{
-			p.SetState(77)
+			p.SetState(79)
 			p.Match(CParserAssign)
 		}
 		{
-			p.SetState(78)
+			p.SetState(80)
 			p.expression(0)
 		}
 
 	}
-	p.SetState(83)
+	p.SetState(85)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == CParserComma {
 		{
-			p.SetState(81)
+			p.SetState(83)
 			p.Match(CParserComma)
 		}
 		{
-			p.SetState(82)
+			p.SetState(84)
 			p.VariableDeclarationList()
 		}
 
@@ -1706,7 +1717,7 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 	var _alt int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(92)
+	p.SetState(94)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
@@ -1716,7 +1727,7 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 		_prevctx = localctx
 
 		{
-			p.SetState(86)
+			p.SetState(88)
 			p.Match(CParserIdentifier)
 		}
 
@@ -1725,7 +1736,7 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 		p.SetParserRuleContext(localctx)
 		_prevctx = localctx
 		{
-			p.SetState(87)
+			p.SetState(89)
 			p.Match(CParserConstant)
 		}
 
@@ -1734,15 +1745,15 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 		p.SetParserRuleContext(localctx)
 		_prevctx = localctx
 		{
-			p.SetState(88)
+			p.SetState(90)
 			p.Match(CParserLeftParen)
 		}
 		{
-			p.SetState(89)
+			p.SetState(91)
 			p.expression(0)
 		}
 		{
-			p.SetState(90)
+			p.SetState(92)
 			p.Match(CParserRightParen)
 		}
 
@@ -1750,7 +1761,7 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 	}
 	p.GetParserRuleContext().SetStop(p.GetTokenStream().LT(-1))
-	p.SetState(110)
+	p.SetState(112)
 	p.GetErrorHandler().Sync(p)
 	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 10, p.GetParserRuleContext())
 
@@ -1760,75 +1771,75 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 				p.TriggerExitRuleEvent()
 			}
 			_prevctx = localctx
-			p.SetState(108)
+			p.SetState(110)
 			p.GetErrorHandler().Sync(p)
 			switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 9, p.GetParserRuleContext()) {
 			case 1:
 				localctx = NewAssignmentExpressionContext(p, NewExpressionContext(p, _parentctx, _parentState))
 				p.PushNewRecursionContext(localctx, _startState, CParserRULE_expression)
-				p.SetState(94)
+				p.SetState(96)
 
 				if !(p.Precpred(p.GetParserRuleContext(), 3)) {
 					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 3)", ""))
 				}
 				{
-					p.SetState(95)
+					p.SetState(97)
 					p.AssignementOperator()
 				}
 				{
-					p.SetState(96)
+					p.SetState(98)
 					p.expression(4)
 				}
 
 			case 2:
 				localctx = NewBinaryExpressionContext(p, NewExpressionContext(p, _parentctx, _parentState))
 				p.PushNewRecursionContext(localctx, _startState, CParserRULE_expression)
-				p.SetState(98)
+				p.SetState(100)
 
 				if !(p.Precpred(p.GetParserRuleContext(), 2)) {
 					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 2)", ""))
 				}
 				{
-					p.SetState(99)
+					p.SetState(101)
 					p.BinaryOperator()
 				}
 				{
-					p.SetState(100)
+					p.SetState(102)
 					p.expression(3)
 				}
 
 			case 3:
 				localctx = NewFunctionCallExpressionContext(p, NewExpressionContext(p, _parentctx, _parentState))
 				p.PushNewRecursionContext(localctx, _startState, CParserRULE_expression)
-				p.SetState(102)
+				p.SetState(104)
 
 				if !(p.Precpred(p.GetParserRuleContext(), 1)) {
 					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 1)", ""))
 				}
 				{
-					p.SetState(103)
+					p.SetState(105)
 					p.Match(CParserLeftParen)
 				}
-				p.SetState(105)
+				p.SetState(107)
 				p.GetErrorHandler().Sync(p)
 				_la = p.GetTokenStream().LA(1)
 
 				if _la == CParserLeftParen || _la == CParserIdentifier || _la == CParserConstant {
 					{
-						p.SetState(104)
+						p.SetState(106)
 						p.FunctionCallArguments()
 					}
 
 				}
 				{
-					p.SetState(107)
+					p.SetState(109)
 					p.Match(CParserRightParen)
 				}
 
 			}
 
 		}
-		p.SetState(112)
+		p.SetState(114)
 		p.GetErrorHandler().Sync(p)
 		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 10, p.GetParserRuleContext())
 	}
@@ -1959,7 +1970,7 @@ func (p *CParser) AssignementOperator() (localctx IAssignementOperatorContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(113)
+		p.SetState(115)
 		_la = p.GetTokenStream().LA(1)
 
 		if !(((_la-60)&-(0x1f+1)) == 0 && ((1<<uint((_la-60)))&((1<<(CParserAssign-60))|(1<<(CParserStarAssign-60))|(1<<(CParserDivAssign-60))|(1<<(CParserModAssign-60))|(1<<(CParserPlusAssign-60))|(1<<(CParserMinusAssign-60))|(1<<(CParserLeftShiftAssign-60))|(1<<(CParserRightShiftAssign-60))|(1<<(CParserAndAssign-60))|(1<<(CParserXorAssign-60))|(1<<(CParserOrAssign-60)))) != 0) {
@@ -2116,7 +2127,7 @@ func (p *CParser) BinaryOperator() (localctx IBinaryOperatorContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(115)
+		p.SetState(117)
 		_la = p.GetTokenStream().LA(1)
 
 		if !((((_la-36)&-(0x1f+1)) == 0 && ((1<<uint((_la-36)))&((1<<(CParserLess-36))|(1<<(CParserLessEqual-36))|(1<<(CParserGreater-36))|(1<<(CParserGreaterEqual-36))|(1<<(CParserLeftShift-36))|(1<<(CParserRightShift-36))|(1<<(CParserPlus-36))|(1<<(CParserMinus-36))|(1<<(CParserStar-36))|(1<<(CParserDiv-36))|(1<<(CParserMod-36))|(1<<(CParserAnd-36))|(1<<(CParserOr-36))|(1<<(CParserCaret-36)))) != 0) || _la == CParserEqual || _la == CParserNotEqual) {
@@ -2233,20 +2244,20 @@ func (p *CParser) FunctionCallArguments() (localctx IFunctionCallArgumentsContex
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(117)
+		p.SetState(119)
 		p.expression(0)
 	}
-	p.SetState(120)
+	p.SetState(122)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == CParserComma {
 		{
-			p.SetState(118)
+			p.SetState(120)
 			p.Match(CParserComma)
 		}
 		{
-			p.SetState(119)
+			p.SetState(121)
 			p.FunctionCallArguments()
 		}
 
@@ -2365,25 +2376,25 @@ func (p *CParser) Block() (localctx IBlockContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(122)
+		p.SetState(124)
 		p.Match(CParserLeftBrace)
 	}
-	p.SetState(126)
+	p.SetState(128)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for (((_la-3)&-(0x1f+1)) == 0 && ((1<<uint((_la-3)))&((1<<(CParserChar-3))|(1<<(CParserDouble-3))|(1<<(CParserFloat-3))|(1<<(CParserIf-3))|(1<<(CParserInt-3))|(1<<(CParserLong-3))|(1<<(CParserReturn-3))|(1<<(CParserShort-3))|(1<<(CParserVoid-3))|(1<<(CParserLeftParen-3))|(1<<(CParserLeftBrace-3)))) != 0) || _la == CParserIdentifier || _la == CParserConstant {
+	for (((_la-3)&-(0x1f+1)) == 0 && ((1<<uint((_la-3)))&((1<<(CParserChar-3))|(1<<(CParserDouble-3))|(1<<(CParserFloat-3))|(1<<(CParserFor-3))|(1<<(CParserIf-3))|(1<<(CParserInt-3))|(1<<(CParserLong-3))|(1<<(CParserReturn-3))|(1<<(CParserShort-3))|(1<<(CParserVoid-3))|(1<<(CParserLeftParen-3))|(1<<(CParserLeftBrace-3)))) != 0) || _la == CParserIdentifier || _la == CParserConstant {
 		{
-			p.SetState(123)
+			p.SetState(125)
 			p.Statement()
 		}
 
-		p.SetState(128)
+		p.SetState(130)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(129)
+		p.SetState(131)
 		p.Match(CParserRightBrace)
 	}
 
@@ -2472,6 +2483,16 @@ func (s *StatementContext) IfStatement() IIfStatementContext {
 	return t.(IIfStatementContext)
 }
 
+func (s *StatementContext) ForStatement() IForStatementContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*IForStatementContext)(nil)).Elem(), 0)
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IForStatementContext)
+}
+
 func (s *StatementContext) Block() IBlockContext {
 	var t = s.GetTypedRuleContext(reflect.TypeOf((*IBlockContext)(nil)).Elem(), 0)
 
@@ -2520,31 +2541,31 @@ func (p *CParser) Statement() (localctx IStatementContext) {
 		}
 	}()
 
-	p.SetState(140)
+	p.SetState(143)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
 	case CParserChar, CParserDouble, CParserFloat, CParserInt, CParserLong, CParserReturn, CParserShort, CParserVoid, CParserLeftParen, CParserIdentifier, CParserConstant:
 		p.EnterOuterAlt(localctx, 1)
-		p.SetState(134)
+		p.SetState(136)
 		p.GetErrorHandler().Sync(p)
 
 		switch p.GetTokenStream().LA(1) {
 		case CParserChar, CParserDouble, CParserFloat, CParserInt, CParserLong, CParserShort, CParserVoid:
 			{
-				p.SetState(131)
+				p.SetState(133)
 				p.VariableDeclaration()
 			}
 
 		case CParserLeftParen, CParserIdentifier, CParserConstant:
 			{
-				p.SetState(132)
+				p.SetState(134)
 				p.expression(0)
 			}
 
 		case CParserReturn:
 			{
-				p.SetState(133)
+				p.SetState(135)
 				p.FunctionReturn()
 			}
 
@@ -2552,21 +2573,28 @@ func (p *CParser) Statement() (localctx IStatementContext) {
 			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 		}
 		{
-			p.SetState(136)
+			p.SetState(138)
 			p.Match(CParserSemi)
 		}
 
 	case CParserIf:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(138)
+			p.SetState(140)
 			p.IfStatement()
 		}
 
-	case CParserLeftBrace:
+	case CParserFor:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(139)
+			p.SetState(141)
+			p.ForStatement()
+		}
+
+	case CParserLeftBrace:
+		p.EnterOuterAlt(localctx, 4)
+		{
+			p.SetState(142)
 			p.Block()
 		}
 
@@ -2704,38 +2732,291 @@ func (p *CParser) IfStatement() (localctx IIfStatementContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(142)
+		p.SetState(145)
 		p.Match(CParserIf)
 	}
 	{
-		p.SetState(143)
+		p.SetState(146)
 		p.Match(CParserLeftParen)
 	}
 	{
-		p.SetState(144)
+		p.SetState(147)
 		p.expression(0)
 	}
 	{
-		p.SetState(145)
+		p.SetState(148)
 		p.Match(CParserRightParen)
 	}
 	{
-		p.SetState(146)
+		p.SetState(149)
 		p.Statement()
 	}
-	p.SetState(149)
+	p.SetState(152)
 	p.GetErrorHandler().Sync(p)
 
 	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 15, p.GetParserRuleContext()) == 1 {
 		{
-			p.SetState(147)
+			p.SetState(150)
 			p.Match(CParserElse)
 		}
 		{
-			p.SetState(148)
+			p.SetState(151)
 			p.Statement()
 		}
 
+	}
+
+	return localctx
+}
+
+// IForStatementContext is an interface to support dynamic dispatch.
+type IForStatementContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// GetInit returns the init rule contexts.
+	GetInit() IExpressionContext
+
+	// GetCondition returns the condition rule contexts.
+	GetCondition() IExpressionContext
+
+	// GetPost returns the post rule contexts.
+	GetPost() IExpressionContext
+
+	// SetInit sets the init rule contexts.
+	SetInit(IExpressionContext)
+
+	// SetCondition sets the condition rule contexts.
+	SetCondition(IExpressionContext)
+
+	// SetPost sets the post rule contexts.
+	SetPost(IExpressionContext)
+
+	// IsForStatementContext differentiates from other interfaces.
+	IsForStatementContext()
+}
+
+type ForStatementContext struct {
+	*antlr.BaseParserRuleContext
+	parser    antlr.Parser
+	init      IExpressionContext
+	condition IExpressionContext
+	post      IExpressionContext
+}
+
+func NewEmptyForStatementContext() *ForStatementContext {
+	var p = new(ForStatementContext)
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	p.RuleIndex = CParserRULE_forStatement
+	return p
+}
+
+func (*ForStatementContext) IsForStatementContext() {}
+
+func NewForStatementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ForStatementContext {
+	var p = new(ForStatementContext)
+
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = CParserRULE_forStatement
+
+	return p
+}
+
+func (s *ForStatementContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *ForStatementContext) GetInit() IExpressionContext { return s.init }
+
+func (s *ForStatementContext) GetCondition() IExpressionContext { return s.condition }
+
+func (s *ForStatementContext) GetPost() IExpressionContext { return s.post }
+
+func (s *ForStatementContext) SetInit(v IExpressionContext) { s.init = v }
+
+func (s *ForStatementContext) SetCondition(v IExpressionContext) { s.condition = v }
+
+func (s *ForStatementContext) SetPost(v IExpressionContext) { s.post = v }
+
+func (s *ForStatementContext) For() antlr.TerminalNode {
+	return s.GetToken(CParserFor, 0)
+}
+
+func (s *ForStatementContext) LeftParen() antlr.TerminalNode {
+	return s.GetToken(CParserLeftParen, 0)
+}
+
+func (s *ForStatementContext) AllSemi() []antlr.TerminalNode {
+	return s.GetTokens(CParserSemi)
+}
+
+func (s *ForStatementContext) Semi(i int) antlr.TerminalNode {
+	return s.GetToken(CParserSemi, i)
+}
+
+func (s *ForStatementContext) RightParen() antlr.TerminalNode {
+	return s.GetToken(CParserRightParen, 0)
+}
+
+func (s *ForStatementContext) Statement() IStatementContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*IStatementContext)(nil)).Elem(), 0)
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IStatementContext)
+}
+
+func (s *ForStatementContext) VariableDeclaration() IVariableDeclarationContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*IVariableDeclarationContext)(nil)).Elem(), 0)
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IVariableDeclarationContext)
+}
+
+func (s *ForStatementContext) AllExpression() []IExpressionContext {
+	var ts = s.GetTypedRuleContexts(reflect.TypeOf((*IExpressionContext)(nil)).Elem())
+	var tst = make([]IExpressionContext, len(ts))
+
+	for i, t := range ts {
+		if t != nil {
+			tst[i] = t.(IExpressionContext)
+		}
+	}
+
+	return tst
+}
+
+func (s *ForStatementContext) Expression(i int) IExpressionContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*IExpressionContext)(nil)).Elem(), i)
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IExpressionContext)
+}
+
+func (s *ForStatementContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *ForStatementContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *ForStatementContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case CVisitor:
+		return t.VisitForStatement(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
+func (p *CParser) ForStatement() (localctx IForStatementContext) {
+	localctx = NewForStatementContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 30, CParserRULE_forStatement)
+	var _la int
+
+	defer func() {
+		p.ExitRule()
+	}()
+
+	defer func() {
+		if err := recover(); err != nil {
+			if v, ok := err.(antlr.RecognitionException); ok {
+				localctx.SetException(v)
+				p.GetErrorHandler().ReportError(p, v)
+				p.GetErrorHandler().Recover(p, v)
+			} else {
+				panic(err)
+			}
+		}
+	}()
+
+	p.EnterOuterAlt(localctx, 1)
+	{
+		p.SetState(154)
+		p.Match(CParserFor)
+	}
+	{
+		p.SetState(155)
+		p.Match(CParserLeftParen)
+	}
+	p.SetState(158)
+	p.GetErrorHandler().Sync(p)
+
+	switch p.GetTokenStream().LA(1) {
+	case CParserLeftParen, CParserIdentifier, CParserConstant:
+		{
+			p.SetState(156)
+
+			var _x = p.expression(0)
+
+			localctx.(*ForStatementContext).init = _x
+		}
+
+	case CParserChar, CParserDouble, CParserFloat, CParserInt, CParserLong, CParserShort, CParserVoid:
+		{
+			p.SetState(157)
+			p.VariableDeclaration()
+		}
+
+	case CParserSemi:
+
+	default:
+	}
+	{
+		p.SetState(160)
+		p.Match(CParserSemi)
+	}
+	p.SetState(162)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == CParserLeftParen || _la == CParserIdentifier || _la == CParserConstant {
+		{
+			p.SetState(161)
+
+			var _x = p.expression(0)
+
+			localctx.(*ForStatementContext).condition = _x
+		}
+
+	}
+	{
+		p.SetState(164)
+		p.Match(CParserSemi)
+	}
+	p.SetState(166)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == CParserLeftParen || _la == CParserIdentifier || _la == CParserConstant {
+		{
+			p.SetState(165)
+
+			var _x = p.expression(0)
+
+			localctx.(*ForStatementContext).post = _x
+		}
+
+	}
+	{
+		p.SetState(168)
+		p.Match(CParserRightParen)
+	}
+	{
+		p.SetState(169)
+		p.Statement()
 	}
 
 	return localctx

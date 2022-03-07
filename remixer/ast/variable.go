@@ -1,24 +1,53 @@
 package ast
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type ASTVariableDeclaration struct {
+	Type  *ASTType
+	Items []*ASTVariableDeclarationItem
+}
+
+type ASTVariableDeclarationItem struct {
 	Name       string
-	Type       *ASTType
 	Expression IASTExpression
 }
 
-func NewASTVariableDeclaration(name string, typ *ASTType) *ASTVariableDeclaration {
+func NewASTVariableDeclaration(typ *ASTType) *ASTVariableDeclaration {
 	return &ASTVariableDeclaration{
-		Name: name,
 		Type: typ,
 	}
 }
 
 func (v *ASTVariableDeclaration) String() string {
-	if v.Expression != nil {
-		return fmt.Sprintf("%s := %s", v.Name, v.Expression.String())
-	} else {
-		return fmt.Sprintf("var %s %s", v.Name, v.Type.String())
+	names := make([]string, 0)
+	expressions := make([]string, 0)
+
+	for _, item := range v.Items {
+		names = append(names, item.Name)
+
+		if item.Expression != nil {
+			expressions = append(expressions, item.Expression.String())
+		} else {
+			switch v.Type.Kind {
+			case ASTTypeKindArray, ASTTypeKindPointer:
+				expressions = append(expressions, "nil")
+			// case ASTTypeKindString:
+			// 	expressions = append(expressions, "nil")
+			default:
+				expressions = append(expressions, "0")
+			}
+		}
+	}
+
+	return fmt.Sprintf("%s := %s", strings.Join(names, ", "), strings.Join(expressions, ", "))
+}
+
+func NewASTVariableDeclarationItem(name string, expression IASTExpression) *ASTVariableDeclarationItem {
+	return &ASTVariableDeclarationItem{
+		Name:       name,
+		Expression: expression,
 	}
 }
