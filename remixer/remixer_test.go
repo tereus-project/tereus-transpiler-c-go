@@ -12,14 +12,14 @@ func testRemix(t *testing.T, source string, target string) {
 
 	dir := t.TempDir()
 	sourceFile := dir + "/test.go"
-	e := os.WriteFile(sourceFile, []byte(source), 0644)
-	if e != nil {
-		t.Error(e)
+	err := os.WriteFile(sourceFile, []byte(source), 0644)
+	if err != nil {
+		t.Error(err)
 	}
 
-	output, e := Remix(sourceFile)
-	if e != nil {
-		t.Error(e)
+	output, err := Remix(sourceFile)
+	if err != nil {
+		t.Error(err)
 	}
 
 	output = strings.TrimSpace(output)

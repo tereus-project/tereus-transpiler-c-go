@@ -6,9 +6,9 @@ import (
 )
 
 func Remix(entrypoint string) (string, error) {
-	visitor, e := NewVisitor(entrypoint)
-	if e != nil {
-		return "", e
+	visitor, err := NewVisitor(entrypoint)
+	if err != nil {
+		return "", err
 	}
 
 	input := antlr.NewInputStream(visitor.Code)
@@ -19,9 +19,9 @@ func Remix(entrypoint string) (string, error) {
 
 	tree := p.Translation()
 
-	output, e := visitor.VisitTranslation(tree.(*parser.TranslationContext))
-	if e != nil {
-		return "", e
+	output, err := visitor.VisitTranslation(tree.(*parser.TranslationContext))
+	if err != nil {
+		return "", err
 	}
 
 	return output, nil

@@ -23,9 +23,9 @@ type Visitor struct {
 }
 
 func NewVisitor(path string) (*Visitor, error) {
-	code, e := os.ReadFile(path)
-	if e != nil {
-		return nil, e
+	code, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
 	}
 
 	visitor := &Visitor{
@@ -60,9 +60,9 @@ func (v *Visitor) VisitTranslation(ctx *parser.TranslationContext) (string, erro
 	code := ""
 
 	for _, declaration := range ctx.AllDeclaration() {
-		declaration, e := v.VisitDeclaration(declaration.(*parser.DeclarationContext))
-		if e != nil {
-			return "", e
+		declaration, err := v.VisitDeclaration(declaration.(*parser.DeclarationContext))
+		if err != nil {
+			return "", err
 		}
 
 		code += declaration.String()
@@ -92,24 +92,24 @@ func (v *Visitor) VisitDeclaration(ctx *parser.DeclarationContext) (ast.IASTItem
 }
 
 func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContext) (*ast.ASTFunction, error) {
-	var e error
+	var err error
 
 	name := ctx.Identifier().GetText()
 	function := ast.NewASTFunction(name)
 
 	if name != "main" {
-		function.ReturnType, e = v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
-		if e != nil {
-			return nil, e
+		function.ReturnType, err = v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+		if err != nil {
+			return nil, err
 		}
 	} else {
 		function.ReturnType = ast.NewASTType(ast.ASTTypeKindVoid, "void")
 	}
 
 	if child := ctx.FunctionArguments(); child != nil {
-		function.Args, e = v.VisitFunctionArguments(child.(*parser.FunctionArgumentsContext))
-		if e != nil {
-			return nil, e
+		function.Args, err = v.VisitFunctionArguments(child.(*parser.FunctionArgumentsContext))
+		if err != nil {
+			return nil, err
 		}
 	}
 
@@ -150,9 +150,9 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 		function.Args = nil
 	}
 
-	function.Body, e = v.VisitBlock(ctx.Block().(*parser.BlockContext))
-	if e != nil {
-		return nil, e
+	function.Body, err = v.VisitBlock(ctx.Block().(*parser.BlockContext))
+	if err != nil {
+		return nil, err
 	}
 
 	function.Body.Statements = append(argumentsInitialization, function.Body.Statements...)
@@ -165,17 +165,17 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 func (v *Visitor) VisitFunctionArguments(ctx *parser.FunctionArgumentsContext) ([]*ast.ASTFunctionArgument, error) {
 	name := ctx.Identifier().GetText()
 
-	typ, e := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
-	if e != nil {
-		return nil, e
+	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	if err != nil {
+		return nil, err
 	}
 
 	args := []*ast.ASTFunctionArgument{ast.NewASTFunctionArgument(name, typ)}
 
 	if child := ctx.FunctionArguments(); child != nil {
-		others, e := v.VisitFunctionArguments(child.(*parser.FunctionArgumentsContext))
-		if e != nil {
-			return nil, e
+		others, err := v.VisitFunctionArguments(child.(*parser.FunctionArgumentsContext))
+		if err != nil {
+			return nil, err
 		}
 
 		args = append(args, others...)
@@ -185,9 +185,9 @@ func (v *Visitor) VisitFunctionArguments(ctx *parser.FunctionArgumentsContext) (
 }
 
 func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (ast.IASTItem, error) {
-	expression, e := v.VisitExpression(ctx.Expression())
-	if e != nil {
-		return nil, e
+	expression, err := v.VisitExpression(ctx.Expression())
+	if err != nil {
+		return nil, err
 	}
 
 	if v.CurrentFunction.Top() == "main" {
@@ -214,9 +214,9 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 	} else if child := ctx.Double(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindFloat64, "float64"), nil
 	} else if child := ctx.Star(); child != nil {
-		pointerType, e := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
-		if e != nil {
-			return nil, e
+		pointerType, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+		if err != nil {
+			return nil, err
 		}
 
 		typ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
@@ -229,16 +229,16 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 }
 
 func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext) (*ast.ASTVariableDeclaration, error) {
-	typ, e := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
-	if e != nil {
-		return nil, e
+	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	if err != nil {
+		return nil, err
 	}
 
 	variable := ast.NewASTVariableDeclaration(typ)
 
-	items, e := v.VisitVariableDeclarationList(ctx.VariableDeclarationList().(*parser.VariableDeclarationListContext))
-	if e != nil {
-		return nil, e
+	items, err := v.VisitVariableDeclarationList(ctx.VariableDeclarationList().(*parser.VariableDeclarationListContext))
+	if err != nil {
+		return nil, err
 	}
 
 	variable.Items = items
@@ -252,9 +252,9 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 	item := ast.NewASTVariableDeclarationItem(name, nil)
 
 	if child := ctx.Expression(); child != nil {
-		expression, e := v.VisitExpression(child)
-		if e != nil {
-			return nil, e
+		expression, err := v.VisitExpression(child)
+		if err != nil {
+			return nil, err
 		}
 
 		item.Expression = expression
@@ -263,9 +263,9 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 	items := []*ast.ASTVariableDeclarationItem{item}
 
 	if child := ctx.VariableDeclarationList(); child != nil {
-		others, e := v.VisitVariableDeclarationList(child.(*parser.VariableDeclarationListContext))
-		if e != nil {
-			return nil, e
+		others, err := v.VisitVariableDeclarationList(child.(*parser.VariableDeclarationListContext))
+		if err != nil {
+			return nil, err
 		}
 
 		items = append(items, others...)
@@ -281,62 +281,62 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 	case *parser.ConstantExpressionContext:
 		return ast.NewASTExpressionLiteral(child.GetText()), nil
 	case *parser.ParenthesizedExpressionContext:
-		expression, e := v.VisitExpression(child.Expression())
-		if e != nil {
-			return nil, e
+		expression, err := v.VisitExpression(child.Expression())
+		if err != nil {
+			return nil, err
 		}
 
 		return ast.NewAstParenthesizedExpression(expression), nil
 	case *parser.UnaryExpressionPostContext:
-		left, e := v.VisitExpression(child.Expression())
-		if e != nil {
-			return nil, e
+		left, err := v.VisitExpression(child.Expression())
+		if err != nil {
+			return nil, err
 		}
 
 		return ast.NewASTExpressionUnaryPost(left, child.UnaryOperatorPost().GetText()), nil
 	case *parser.UnaryExpressionPreContext:
-		right, e := v.VisitExpression(child.Expression())
-		if e != nil {
-			return nil, e
+		right, err := v.VisitExpression(child.Expression())
+		if err != nil {
+			return nil, err
 		}
 
 		return ast.NewASTExpressionUnaryPre(child.UnaryOperatorPre().GetText(), right), nil
 	case *parser.AssignmentExpressionContext:
-		left, e := v.VisitExpression(child.Expression(0))
-		if e != nil {
-			return nil, e
+		left, err := v.VisitExpression(child.Expression(0))
+		if err != nil {
+			return nil, err
 		}
 
-		right, e := v.VisitExpression(child.Expression(1))
-		if e != nil {
-			return nil, e
+		right, err := v.VisitExpression(child.Expression(1))
+		if err != nil {
+			return nil, err
 		}
 
 		return ast.NewASTExpressionBinary(left, child.AssignementOperator().GetText(), right), nil
 	case *parser.BinaryExpressionContext:
-		left, e := v.VisitExpression(child.Expression(0))
-		if e != nil {
-			return nil, e
+		left, err := v.VisitExpression(child.Expression(0))
+		if err != nil {
+			return nil, err
 		}
 
-		right, e := v.VisitExpression(child.Expression(1))
-		if e != nil {
-			return nil, e
+		right, err := v.VisitExpression(child.Expression(1))
+		if err != nil {
+			return nil, err
 		}
 
 		return ast.NewASTExpressionBinary(left, child.BinaryOperator().GetText(), right), nil
 	case *parser.FunctionCallExpressionContext:
-		expression, e := v.VisitExpression(child.Expression())
-		if e != nil {
-			return nil, e
+		expression, err := v.VisitExpression(child.Expression())
+		if err != nil {
+			return nil, err
 		}
 
 		var args []ast.IASTExpression
 
 		if child := child.FunctionCallArguments(); child != nil {
-			args, e = v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext))
-			if e != nil {
-				return nil, e
+			args, err = v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext))
+			if err != nil {
+				return nil, err
 			}
 		}
 
@@ -347,17 +347,17 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 }
 
 func (v *Visitor) VisitFunctionCallArguments(ctx *parser.FunctionCallArgumentsContext) ([]ast.IASTExpression, error) {
-	expression, e := v.VisitExpression(ctx.Expression())
-	if e != nil {
-		return nil, e
+	expression, err := v.VisitExpression(ctx.Expression())
+	if err != nil {
+		return nil, err
 	}
 
 	args := []ast.IASTExpression{expression}
 
 	if child := ctx.FunctionCallArguments(); child != nil {
-		others, e := v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext))
-		if e != nil {
-			return nil, e
+		others, err := v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext))
+		if err != nil {
+			return nil, err
 		}
 
 		args = append(args, others...)
@@ -370,9 +370,9 @@ func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (*ast.ASTBlock, error) {
 	statements := make([]ast.IASTItem, 0)
 
 	for _, statement := range ctx.AllStatement() {
-		statement, e := v.VisitStatement(statement.(*parser.StatementContext))
-		if e != nil {
-			return nil, e
+		statement, err := v.VisitStatement(statement.(*parser.StatementContext))
+		if err != nil {
+			return nil, err
 		}
 
 		statements = append(statements, statement)
@@ -383,9 +383,9 @@ func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (*ast.ASTBlock, error) {
 
 func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, error) {
 	if child := ctx.VariableDeclaration(); child != nil {
-		variableDeclaration, e := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
-		if e != nil {
-			return nil, e
+		variableDeclaration, err := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
+		if err != nil {
+			return nil, err
 		}
 
 		return variableDeclaration, nil
@@ -407,22 +407,22 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 }
 
 func (v *Visitor) VisitIfStatement(ctx *parser.IfStatementContext) (*ast.ASTIf, error) {
-	condition, e := v.VisitExpression(ctx.Expression())
-	if e != nil {
-		return nil, e
+	condition, err := v.VisitExpression(ctx.Expression())
+	if err != nil {
+		return nil, err
 	}
 
-	then, e := v.VisitStatement(ctx.Statement(0).(*parser.StatementContext))
-	if e != nil {
-		return nil, e
+	then, err := v.VisitStatement(ctx.Statement(0).(*parser.StatementContext))
+	if err != nil {
+		return nil, err
 	}
 
 	if_ := ast.NewASTIf(condition, then)
 
 	if ctx.Else() != nil {
-		if_.Else, e = v.VisitStatement(ctx.Statement(1).(*parser.StatementContext))
-		if e != nil {
-			return nil, e
+		if_.Else, err = v.VisitStatement(ctx.Statement(1).(*parser.StatementContext))
+		if err != nil {
+			return nil, err
 		}
 	}
 
@@ -433,60 +433,60 @@ func (v *Visitor) VisitForStatement(ctx *parser.ForStatementContext) (*ast.ASTFo
 	for_ := ast.NewASTFor()
 
 	if child := ctx.GetInit(); child != nil {
-		expression, e := v.VisitExpression(child)
-		if e != nil {
-			return nil, e
+		expression, err := v.VisitExpression(child)
+		if err != nil {
+			return nil, err
 		}
 
 		for_.Init = expression
 	}
 
 	if child := ctx.VariableDeclaration(); child != nil {
-		variableDeclaration, e := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
-		if e != nil {
-			return nil, e
+		variableDeclaration, err := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
+		if err != nil {
+			return nil, err
 		}
 
 		for_.Init = variableDeclaration
 	}
 
 	if child := ctx.GetCondition(); child != nil {
-		expression, e := v.VisitExpression(child)
-		if e != nil {
-			return nil, e
+		expression, err := v.VisitExpression(child)
+		if err != nil {
+			return nil, err
 		}
 
 		for_.Cond = expression
 	}
 
 	if child := ctx.GetPost(); child != nil {
-		expression, e := v.VisitExpression(child)
-		if e != nil {
-			return nil, e
+		expression, err := v.VisitExpression(child)
+		if err != nil {
+			return nil, err
 		}
 
 		for_.Post = expression
 	}
 
-	body, e := v.VisitStatement(ctx.Statement().(*parser.StatementContext))
-	if e != nil {
-		return nil, e
+	body, err := v.VisitStatement(ctx.Statement().(*parser.StatementContext))
+	if err != nil {
+		return nil, err
 	}
 
 	for_.Statement = body
 
-	return for_, e
+	return for_, err
 }
 
 func (v *Visitor) VisitWhileStatement(ctx *parser.WhileStatementContext) (*ast.ASTWhile, error) {
-	cond, e := v.VisitExpression(ctx.Expression())
-	if e != nil {
-		return nil, e
+	cond, err := v.VisitExpression(ctx.Expression())
+	if err != nil {
+		return nil, err
 	}
 
-	statement, e := v.VisitStatement(ctx.Statement().(*parser.StatementContext))
-	if e != nil {
-		return nil, e
+	statement, err := v.VisitStatement(ctx.Statement().(*parser.StatementContext))
+	if err != nil {
+		return nil, err
 	}
 
 	return ast.NewASTWhile(cond, statement), nil

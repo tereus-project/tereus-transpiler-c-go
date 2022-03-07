@@ -9,9 +9,9 @@ import (
 
 func main() {
 	if len(os.Args) >= 2 {
-		output, e := remixer.Remix(os.Args[1])
-		if e != nil {
-			fmt.Println(e)
+		output, err := remixer.Remix(os.Args[1])
+		if err != nil {
+			fmt.Println(err)
 			os.Exit(1)
 		}
 
