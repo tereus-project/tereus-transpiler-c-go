@@ -64,10 +64,10 @@ var parserATN = []uint16{
 	17, 3, 2, 2, 2, 91, 92, 8, 10, 1, 2, 92, 99, 7, 78, 2, 2, 93, 99, 7, 79,
 	2, 2, 94, 95, 7, 32, 2, 2, 95, 96, 5, 18, 10, 2, 96, 97, 7, 33, 2, 2, 97,
 	99, 3, 2, 2, 2, 98, 91, 3, 2, 2, 2, 98, 93, 3, 2, 2, 2, 98, 94, 3, 2, 2,
-	2, 99, 116, 3, 2, 2, 2, 100, 101, 12, 5, 2, 2, 101, 102, 5, 20, 11, 2,
-	102, 103, 5, 18, 10, 6, 103, 115, 3, 2, 2, 2, 104, 105, 12, 4, 2, 2, 105,
-	106, 5, 22, 12, 2, 106, 107, 5, 18, 10, 5, 107, 115, 3, 2, 2, 2, 108, 109,
-	12, 3, 2, 2, 109, 111, 7, 32, 2, 2, 110, 112, 5, 24, 13, 2, 111, 110, 3,
+	2, 99, 116, 3, 2, 2, 2, 100, 101, 12, 4, 2, 2, 101, 102, 5, 20, 11, 2,
+	102, 103, 5, 18, 10, 5, 103, 115, 3, 2, 2, 2, 104, 105, 12, 3, 2, 2, 105,
+	106, 5, 22, 12, 2, 106, 107, 5, 18, 10, 4, 107, 115, 3, 2, 2, 2, 108, 109,
+	12, 5, 2, 2, 109, 111, 7, 32, 2, 2, 110, 112, 5, 24, 13, 2, 111, 110, 3,
 	2, 2, 2, 111, 112, 3, 2, 2, 2, 112, 113, 3, 2, 2, 2, 113, 115, 7, 33, 2,
 	2, 114, 100, 3, 2, 2, 2, 114, 104, 3, 2, 2, 2, 114, 108, 3, 2, 2, 2, 115,
 	118, 3, 2, 2, 2, 116, 114, 3, 2, 2, 2, 116, 117, 3, 2, 2, 2, 117, 19, 3,
@@ -1784,8 +1784,8 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 				p.PushNewRecursionContext(localctx, _startState, CParserRULE_expression)
 				p.SetState(98)
 
-				if !(p.Precpred(p.GetParserRuleContext(), 3)) {
-					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 3)", ""))
+				if !(p.Precpred(p.GetParserRuleContext(), 2)) {
+					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 2)", ""))
 				}
 				{
 					p.SetState(99)
@@ -1793,7 +1793,7 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 				}
 				{
 					p.SetState(100)
-					p.expression(4)
+					p.expression(3)
 				}
 
 			case 2:
@@ -1801,8 +1801,8 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 				p.PushNewRecursionContext(localctx, _startState, CParserRULE_expression)
 				p.SetState(102)
 
-				if !(p.Precpred(p.GetParserRuleContext(), 2)) {
-					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 2)", ""))
+				if !(p.Precpred(p.GetParserRuleContext(), 1)) {
+					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 1)", ""))
 				}
 				{
 					p.SetState(103)
@@ -1810,7 +1810,7 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 				}
 				{
 					p.SetState(104)
-					p.expression(3)
+					p.expression(2)
 				}
 
 			case 3:
@@ -1818,8 +1818,8 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 				p.PushNewRecursionContext(localctx, _startState, CParserRULE_expression)
 				p.SetState(106)
 
-				if !(p.Precpred(p.GetParserRuleContext(), 1)) {
-					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 1)", ""))
+				if !(p.Precpred(p.GetParserRuleContext(), 3)) {
+					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 3)", ""))
 				}
 				{
 					p.SetState(107)
@@ -3211,13 +3211,13 @@ func (p *CParser) TypeSpecifier_Sempred(localctx antlr.RuleContext, predIndex in
 func (p *CParser) Expression_Sempred(localctx antlr.RuleContext, predIndex int) bool {
 	switch predIndex {
 	case 1:
-		return p.Precpred(p.GetParserRuleContext(), 3)
-
-	case 2:
 		return p.Precpred(p.GetParserRuleContext(), 2)
 
-	case 3:
+	case 2:
 		return p.Precpred(p.GetParserRuleContext(), 1)
+
+	case 3:
+		return p.Precpred(p.GetParserRuleContext(), 3)
 
 	default:
 		panic("No predicate with index: " + fmt.Sprint(predIndex))

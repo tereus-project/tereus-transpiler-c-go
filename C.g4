@@ -31,9 +31,9 @@ expression:
 	Identifier									# IdentifierExpression
 	| Constant									# ConstantExpression
 	| '(' expression ')'						# ParenthesizedExpression
+	| expression '(' functionCallArguments? ')'	# FunctionCallExpression
 	| expression assignementOperator expression	# AssignmentExpression
-	| expression binaryOperator expression		# BinaryExpression
-	| expression '(' functionCallArguments? ')'	# FunctionCallExpression;
+	| expression binaryOperator expression		# BinaryExpression;
 
 assignementOperator:
 	'='
