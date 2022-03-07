@@ -36,6 +36,10 @@ func (v *BaseCVisitor) VisitVariableDeclaration(ctx *VariableDeclarationContext)
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitVariableDeclarationList(ctx *VariableDeclarationListContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitParenthesizedExpression(ctx *ParenthesizedExpressionContext) interface{} {
 	return v.VisitChildren(ctx)
 }

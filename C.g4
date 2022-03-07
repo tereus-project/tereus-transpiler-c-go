@@ -22,7 +22,10 @@ typeSpecifier:
 	| 'double'
 	| typeSpecifier '*';
 
-variableDeclaration: typeSpecifier Identifier ('=' expression)?;
+variableDeclaration: typeSpecifier variableDeclarationList;
+
+variableDeclarationList:
+	Identifier ('=' expression)? (',' variableDeclarationList)?;
 
 expression:
 	Identifier									# IdentifierExpression
