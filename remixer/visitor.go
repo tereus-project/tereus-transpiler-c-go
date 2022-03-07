@@ -8,6 +8,7 @@ import (
 	mapset "github.com/deckarep/golang-set"
 	"github.com/tereus-project/tereus-remixer-c-go/parser"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer/ast"
+	"github.com/tereus-project/tereus-remixer-c-go/remixer/utils"
 )
 
 type Visitor struct {
@@ -17,6 +18,8 @@ type Visitor struct {
 	Package string
 	Imports mapset.Set
 	Output  map[string]string
+
+	CurrentFunction *utils.Stack
 }
 
 func NewVisitor(path string) (*Visitor, error) {
@@ -32,6 +35,8 @@ func NewVisitor(path string) (*Visitor, error) {
 		Package: "main",
 		Imports: mapset.NewSet(),
 		Output:  make(map[string]string),
+
+		CurrentFunction: utils.NewStack(),
 	}
 
 	return visitor, nil
@@ -52,14 +57,28 @@ func (v *Visitor) NotImplementedError(token *antlr.BaseParserRuleContext) error 
 func (v *Visitor) VisitTranslation(ctx *parser.TranslationContext) (string, error) {
 	output := "package " + v.Package + "\n\n"
 
+	code := ""
+
 	for _, declaration := range ctx.AllDeclaration() {
 		declaration, e := v.VisitDeclaration(declaration.(*parser.DeclarationContext))
 		if e != nil {
 			return "", e
 		}
 
-		output += declaration.String()
+		code += declaration.String()
 	}
+
+	if v.Imports.Cardinality() > 0 {
+		output += "import (\n"
+
+		for import_ := range v.Imports.Iter() {
+			output += "\t\"" + import_.(string) + "\"\n"
+		}
+
+		output += ")\n\n"
+	}
+
+	output += code
 
 	return output, nil
 }
@@ -93,6 +112,8 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 			return nil, e
 		}
 	}
+
+	v.CurrentFunction.Push(name)
 
 	argumentsInitialization := make([]ast.IASTItem, 0)
 
@@ -136,6 +157,8 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 
 	function.Body.Statements = append(argumentsInitialization, function.Body.Statements...)
 
+	v.CurrentFunction.Pop()
+
 	return function, nil
 }
 
@@ -161,10 +184,15 @@ func (v *Visitor) VisitFunctionArguments(ctx *parser.FunctionArgumentsContext) (
 	return args, nil
 }
 
-func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (*ast.ASTFunctionReturn, error) {
+func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (ast.IASTItem, error) {
 	expression, e := v.VisitExpression(ctx.Expression())
 	if e != nil {
 		return nil, e
+	}
+
+	if v.CurrentFunction.Top() == "main" {
+		v.Imports.Add("os")
+		return ast.NewASTExpressionFunctionCall(ast.NewASTExpressionLiteral("os.Exit"), []ast.IASTExpression{expression}), nil
 	}
 
 	return ast.NewASTFunctionReturn(expression), nil
