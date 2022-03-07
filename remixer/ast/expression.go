@@ -9,6 +9,10 @@ type IASTExpression interface {
 	IASTItem
 }
 
+type ASTParenthesizedExpression struct {
+	Expression IASTExpression
+}
+
 type ASTExpressionBinary struct {
 	Left     IASTExpression
 	Operator string
@@ -32,6 +36,16 @@ type ASTExpressionLiteral struct {
 type ASTExpressionFunctionCall struct {
 	Left IASTExpression
 	Args []IASTExpression
+}
+
+func NewAstParenthesizedExpression(expression IASTExpression) *ASTParenthesizedExpression {
+	return &ASTParenthesizedExpression{
+		Expression: expression,
+	}
+}
+
+func (e *ASTParenthesizedExpression) String() string {
+	return fmt.Sprintf("(%s)", e.Expression.String())
 }
 
 func NewASTExpressionBinary(left IASTExpression, operator string, right IASTExpression) *ASTExpressionBinary {

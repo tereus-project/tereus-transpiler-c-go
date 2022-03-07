@@ -281,7 +281,12 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 	case *parser.ConstantExpressionContext:
 		return ast.NewASTExpressionLiteral(child.GetText()), nil
 	case *parser.ParenthesizedExpressionContext:
-		return v.VisitExpression(child.Expression())
+		expression, e := v.VisitExpression(child.Expression())
+		if e != nil {
+			return nil, e
+		}
+
+		return ast.NewAstParenthesizedExpression(expression), nil
 	case *parser.UnaryExpressionPostContext:
 		left, e := v.VisitExpression(child.Expression())
 		if e != nil {
