@@ -70,4 +70,7 @@ type CVisitor interface {
 
 	// Visit a parse tree produced by CParser#forStatement.
 	VisitForStatement(ctx *ForStatementContext) interface{}
+
+	// Visit a parse tree produced by CParser#whileStatement.
+	VisitWhileStatement(ctx *WhileStatementContext) interface{}
 }

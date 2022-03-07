@@ -75,6 +75,7 @@ statement: (
 	)
 	| ifStatement
 	| forStatement
+	| whileStatement
 	| block;
 
 ifStatement:
@@ -84,6 +85,8 @@ forStatement:
 	'for' '(' (init = expression | variableDeclaration)? ';' (
 		condition = expression
 	)? ';' (post = expression)? ')' statement;
+
+whileStatement: 'while' '(' expression ')' statement;
 
 Break: 'break';
 Case: 'case';

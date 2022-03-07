@@ -350,6 +350,8 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return v.VisitIfStatement(child.(*parser.IfStatementContext))
 	} else if child := ctx.ForStatement(); child != nil {
 		return v.VisitForStatement(child.(*parser.ForStatementContext))
+	} else if child := ctx.WhileStatement(); child != nil {
+		return v.VisitWhileStatement(child.(*parser.WhileStatementContext))
 	} else if child := ctx.Block(); child != nil {
 		return v.VisitBlock(child.(*parser.BlockContext))
 	}
@@ -427,4 +429,18 @@ func (v *Visitor) VisitForStatement(ctx *parser.ForStatementContext) (*ast.ASTFo
 	for_.Statement = body
 
 	return for_, e
+}
+
+func (v *Visitor) VisitWhileStatement(ctx *parser.WhileStatementContext) (*ast.ASTWhile, error) {
+	cond, e := v.VisitExpression(ctx.Expression())
+	if e != nil {
+		return nil, e
+	}
+
+	statement, e := v.VisitStatement(ctx.Statement().(*parser.StatementContext))
+	if e != nil {
+		return nil, e
+	}
+
+	return ast.NewASTWhile(cond, statement), nil
 }

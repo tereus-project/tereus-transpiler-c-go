@@ -91,3 +91,7 @@ func (v *BaseCVisitor) VisitIfStatement(ctx *IfStatementContext) interface{} {
 func (v *BaseCVisitor) VisitForStatement(ctx *ForStatementContext) interface{} {
 	return v.VisitChildren(ctx)
 }
+
+func (v *BaseCVisitor) VisitWhileStatement(ctx *WhileStatementContext) interface{} {
+	return v.VisitChildren(ctx)
+}
