@@ -44,6 +44,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#ConstantExpression.
 	VisitConstantExpression(ctx *ConstantExpressionContext) interface{}
 
+	// Visit a parse tree produced by CParser#UnaryExpressionPre.
+	VisitUnaryExpressionPre(ctx *UnaryExpressionPreContext) interface{}
+
 	// Visit a parse tree produced by CParser#FunctionCallExpression.
 	VisitFunctionCallExpression(ctx *FunctionCallExpressionContext) interface{}
 
@@ -55,6 +58,9 @@ type CVisitor interface {
 
 	// Visit a parse tree produced by CParser#binaryOperator.
 	VisitBinaryOperator(ctx *BinaryOperatorContext) interface{}
+
+	// Visit a parse tree produced by CParser#unaryOperatorPre.
+	VisitUnaryOperatorPre(ctx *UnaryOperatorPreContext) interface{}
 
 	// Visit a parse tree produced by CParser#functionCallArguments.
 	VisitFunctionCallArguments(ctx *FunctionCallArgumentsContext) interface{}

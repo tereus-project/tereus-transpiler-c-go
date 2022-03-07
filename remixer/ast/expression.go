@@ -49,7 +49,7 @@ func NewASTExpressionUnary(operator string, operand IASTExpression) *ASTExpressi
 }
 
 func (e *ASTExpressionUnary) String() string {
-	return fmt.Sprintf("%s %s", e.Operator, e.Operand.String())
+	return fmt.Sprintf("%s%s", e.Operator, e.Operand.String())
 }
 
 func NewASTExpressionLiteral(value string) *ASTExpressionLiteral {

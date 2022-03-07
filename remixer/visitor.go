@@ -31,7 +31,7 @@ func NewVisitor(path string) (*Visitor, error) {
 
 		Package: "main",
 		Imports: mapset.NewSet(),
-		Output:  make(map[string]string, 0),
+		Output:  make(map[string]string),
 	}
 
 	return visitor, nil
@@ -254,6 +254,13 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 		return ast.NewASTExpressionLiteral(child.GetText()), nil
 	case *parser.ParenthesizedExpressionContext:
 		return v.VisitExpression(child.Expression())
+	case *parser.UnaryExpressionPreContext:
+		right, e := v.VisitExpression(child.Expression())
+		if e != nil {
+			return nil, e
+		}
+
+		return ast.NewASTExpressionUnary(child.UnaryOperatorPre().GetText(), right), nil
 	case *parser.AssignmentExpressionContext:
 		left, e := v.VisitExpression(child.Expression(0))
 		if e != nil {

@@ -31,7 +31,7 @@ func testRemix(t *testing.T, source string, target string) {
 func TestEmptyFunction(t *testing.T) {
 	source := `
 int main() {
-	
+
 }
 `
 
@@ -49,7 +49,7 @@ func main() {
 func TestMainWithArgcAndArgv(t *testing.T) {
 	source := `
 int main(int argc, char **argv) {
-	
+
 }
 `
 
@@ -112,6 +112,26 @@ func main() {
 	if a >= 1 {
 		a = 2
 	}
+	return 0
+}
+`
+
+	testRemix(t, source, target)
+}
+
+func TestUnaryPreExpression(t *testing.T) {
+	source := `
+int main() {
+	int a = -1;
+	return 0;
+}
+`
+
+	target := `
+package main
+
+func main() {
+	a := -1
 	return 0
 }
 `
