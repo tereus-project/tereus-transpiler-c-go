@@ -71,7 +71,9 @@ binaryOperator:
 	| '<='
 	| '>='
 	| '=='
-	| '!=';
+	| '!='
+	| '&&'
+	| '||';
 
 unaryOperatorPost: '++' | '--';
 
