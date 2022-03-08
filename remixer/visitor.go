@@ -277,7 +277,7 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpression, error) {
 	switch child := ctx.(type) {
 	case *parser.IdentifierExpressionContext:
-		return ast.NewASTExpressionLiteral(child.GetText()), nil
+		return v.VisitIdentifierExpression(child)
 	case *parser.ConstantExpressionContext:
 		return ast.NewASTExpressionLiteral(child.GetText()), nil
 	case *parser.ConstantStringExpressionContext:
@@ -328,24 +328,43 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 
 		return ast.NewASTExpressionBinary(left, child.BinaryOperator().GetText(), right), nil
 	case *parser.FunctionCallExpressionContext:
-		expression, err := v.VisitExpression(child.Expression())
-		if err != nil {
-			return nil, err
-		}
-
-		var args []ast.IASTExpression
-
-		if child := child.FunctionCallArguments(); child != nil {
-			args, err = v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext))
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		return ast.NewASTExpressionFunctionCall(expression, args), nil
+		return v.VisitFunctionCallExpression(child)
 	}
 
 	return nil, v.PositionedTranslationError(ctx.GetStart(), "not implemented")
+}
+
+func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionContext) (*ast.ASTExpressionLiteral, error) {
+	identifier := ctx.GetText()
+
+	switch identifier {
+	case "printf":
+		v.Imports.Add("fmt")
+		identifier = "fmt.Printf"
+	case "scanf":
+		v.Imports.Add("fmt")
+		identifier = "fmt.Scanf"
+	}
+
+	return ast.NewASTExpressionLiteral(identifier), nil
+}
+
+func (v *Visitor) VisitFunctionCallExpression(ctx *parser.FunctionCallExpressionContext) (*ast.ASTExpressionFunctionCall, error) {
+	expression, err := v.VisitExpression(ctx.Expression())
+	if err != nil {
+		return nil, err
+	}
+
+	var args []ast.IASTExpression
+
+	if child := ctx.FunctionCallArguments(); child != nil {
+		args, err = v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return ast.NewASTExpressionFunctionCall(expression, args), nil
 }
 
 func (v *Visitor) VisitFunctionCallArguments(ctx *parser.FunctionCallArgumentsContext) ([]ast.IASTExpression, error) {
