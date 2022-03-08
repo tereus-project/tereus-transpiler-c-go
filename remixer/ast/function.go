@@ -36,7 +36,7 @@ func (f *ASTFunction) String() string {
 		body = f.Body.String()
 	}
 
-	return fmt.Sprintf("func %s(%s)%s %s\n\n", f.Name, strings.Join(args, ", "), returnType, body)
+	return fmt.Sprintf("func %s(%s)%s %s", f.Name, strings.Join(args, ", "), returnType, body)
 }
 
 type ASTFunctionArgument struct {

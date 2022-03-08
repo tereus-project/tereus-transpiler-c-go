@@ -65,7 +65,7 @@ func (v *Visitor) VisitTranslation(ctx *parser.TranslationContext) (string, erro
 			return "", err
 		}
 
-		code += declaration.String()
+		code += declaration.String() + "\n\n"
 	}
 
 	if v.Imports.Cardinality() > 0 {
@@ -86,6 +86,8 @@ func (v *Visitor) VisitTranslation(ctx *parser.TranslationContext) (string, erro
 func (v *Visitor) VisitDeclaration(ctx *parser.DeclarationContext) (ast.IASTItem, error) {
 	if child := ctx.FunctionDeclaration(); child != nil {
 		return v.VisitFunctionDeclaration(child.(*parser.FunctionDeclarationContext))
+	} else if child := ctx.StructDeclaration(); child != nil {
+		return v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
 	}
 
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
@@ -226,6 +228,42 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 	}
 
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
+}
+
+func (v *Visitor) VisitStructDeclaration(ctx *parser.StructDeclarationContext) (ast.IASTItem, error) {
+	name := "_"
+
+	if child := ctx.Identifier(); child != nil {
+		name = child.GetText()
+	}
+
+	properties := make([]*ast.ASTStructProperty, 0)
+
+	for _, child := range ctx.AllStructProperty() {
+		member, err := v.VisitStructProperty(child.(*parser.StructPropertyContext))
+		if err != nil {
+			return nil, err
+		}
+
+		properties = append(properties, member)
+	}
+
+	return ast.NewASTStruct(name, properties), nil
+}
+
+func (v *Visitor) VisitStructProperty(ctx *parser.StructPropertyContext) (*ast.ASTStructProperty, error) {
+	name := "_"
+
+	if child := ctx.Identifier(); child != nil {
+		name = child.GetText()
+	}
+
+	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	if err != nil {
+		return nil, err
+	}
+
+	return ast.NewASTStructProperty(name, typ), nil
 }
 
 func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext) (*ast.ASTVariableDeclaration, error) {
@@ -420,6 +458,8 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return v.VisitExpression(child)
 	} else if child := ctx.FunctionReturn(); child != nil {
 		return v.VisitFunctionReturn(child.(*parser.FunctionReturnContext))
+	} else if child := ctx.StructDeclaration(); child != nil {
+		return v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
 	} else if child := ctx.IfStatement(); child != nil {
 		return v.VisitIfStatement(child.(*parser.IfStatementContext))
 	} else if child := ctx.ForStatement(); child != nil {

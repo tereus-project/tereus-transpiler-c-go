@@ -32,6 +32,14 @@ func (v *BaseCVisitor) VisitTypeSpecifier(ctx *TypeSpecifierContext) interface{}
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitStructDeclaration(ctx *StructDeclarationContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitStructProperty(ctx *StructPropertyContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitVariableDeclaration(ctx *VariableDeclarationContext) interface{} {
 	return v.VisitChildren(ctx)
 }

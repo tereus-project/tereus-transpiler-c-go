@@ -2,7 +2,7 @@ grammar C;
 
 translation: declaration*;
 
-declaration: functionDeclaration;
+declaration: functionDeclaration | (structDeclaration ';');
 
 functionDeclaration:
 	typeSpecifier Identifier '(' functionArguments? ')' block;
@@ -21,6 +21,10 @@ typeSpecifier:
 	| 'float'
 	| 'double'
 	| typeSpecifier '*';
+
+structDeclaration: 'struct' Identifier? '{' structProperty* '}';
+
+structProperty: typeSpecifier Identifier? ';';
 
 variableDeclaration: typeSpecifier variableDeclarationList;
 
@@ -78,7 +82,12 @@ functionCallArguments: expression (',' functionCallArguments)?;
 block: '{' statement* '}';
 
 statement: (
-		(variableDeclaration | expression | functionReturn) ';'
+		(
+			variableDeclaration
+			| expression
+			| functionReturn
+			| structDeclaration
+		) ';'
 	)
 	| ifStatement
 	| forStatement
