@@ -83,7 +83,9 @@ statement: (
 	| ifStatement
 	| forStatement
 	| whileStatement
-	| block;
+	| block
+	| BlockComment
+	| LineComment;
 
 ifStatement:
 	'if' '(' expression ')' statement ('else' statement)?;
@@ -334,6 +336,6 @@ Whitespace: [ \t]+ -> skip;
 
 Newline: ( '\r' '\n'? | '\n') -> skip;
 
-BlockComment: '/*' .*? '*/' -> skip;
+BlockComment: '/*' .*? '*/';
 
-LineComment: '//' ~[\r\n]* -> skip;
+LineComment: '//' ~[\r\n]*;

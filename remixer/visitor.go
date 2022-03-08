@@ -428,6 +428,10 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return v.VisitWhileStatement(child.(*parser.WhileStatementContext))
 	} else if child := ctx.Block(); child != nil {
 		return v.VisitBlock(child.(*parser.BlockContext))
+	} else if child := ctx.BlockComment(); child != nil {
+		return ast.NewASTComment(true, child.GetText()), nil
+	} else if child := ctx.LineComment(); child != nil {
+		return ast.NewASTComment(false, child.GetText()), nil
 	}
 
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
