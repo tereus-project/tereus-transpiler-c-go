@@ -88,6 +88,7 @@ statement: (
 			variableDeclaration
 			| expression
 			| functionReturn
+			| 'break'
 			| structDeclaration
 		) ';'
 	)

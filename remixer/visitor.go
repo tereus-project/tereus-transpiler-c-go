@@ -458,6 +458,8 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return v.VisitExpression(child)
 	} else if child := ctx.FunctionReturn(); child != nil {
 		return v.VisitFunctionReturn(child.(*parser.FunctionReturnContext))
+	} else if child := ctx.Break(); child != nil {
+		return ast.NewASTBreak(), nil
 	} else if child := ctx.StructDeclaration(); child != nil {
 		return v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
 	} else if child := ctx.IfStatement(); child != nil {

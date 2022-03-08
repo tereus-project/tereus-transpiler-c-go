@@ -35,14 +35,14 @@ var parserATN = []uint16{
 	155, 11, 12, 3, 13, 3, 13, 3, 14, 3, 14, 3, 15, 3, 15, 3, 16, 3, 16, 3,
 	17, 3, 17, 3, 17, 5, 17, 168, 10, 17, 3, 18, 3, 18, 7, 18, 172, 10, 18,
 	12, 18, 14, 18, 175, 11, 18, 3, 18, 3, 18, 3, 19, 3, 19, 3, 19, 3, 19,
-	5, 19, 183, 10, 19, 3, 19, 3, 19, 3, 19, 3, 19, 3, 19, 3, 19, 3, 19, 3,
+	3, 19, 5, 19, 184, 10, 19, 3, 19, 3, 19, 3, 19, 3, 19, 3, 19, 3, 19, 3,
 	19, 5, 19, 193, 10, 19, 3, 20, 3, 20, 3, 20, 3, 20, 3, 20, 3, 20, 3, 20,
 	5, 20, 202, 10, 20, 3, 21, 3, 21, 3, 21, 3, 21, 5, 21, 208, 10, 21, 3,
 	21, 3, 21, 5, 21, 212, 10, 21, 3, 21, 3, 21, 5, 21, 216, 10, 21, 3, 21,
 	3, 21, 3, 21, 3, 22, 3, 22, 3, 22, 3, 22, 3, 22, 3, 22, 3, 22, 2, 4, 12,
 	22, 23, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34,
 	36, 38, 40, 42, 2, 6, 3, 2, 62, 72, 6, 2, 38, 44, 46, 46, 48, 55, 73, 74,
-	4, 2, 45, 45, 47, 47, 5, 2, 44, 47, 51, 51, 56, 57, 2, 246, 2, 47, 3, 2,
+	4, 2, 45, 45, 47, 47, 5, 2, 44, 47, 51, 51, 56, 57, 2, 247, 2, 47, 3, 2,
 	2, 2, 4, 54, 3, 2, 2, 2, 6, 56, 3, 2, 2, 2, 8, 65, 3, 2, 2, 2, 10, 71,
 	3, 2, 2, 2, 12, 82, 3, 2, 2, 2, 14, 91, 3, 2, 2, 2, 16, 104, 3, 2, 2, 2,
 	18, 110, 3, 2, 2, 2, 20, 113, 3, 2, 2, 2, 22, 133, 3, 2, 2, 2, 24, 156,
@@ -96,28 +96,28 @@ var parserATN = []uint16{
 	2, 167, 168, 3, 2, 2, 2, 168, 33, 3, 2, 2, 2, 169, 173, 7, 36, 2, 2, 170,
 	172, 5, 36, 19, 2, 171, 170, 3, 2, 2, 2, 172, 175, 3, 2, 2, 2, 173, 171,
 	3, 2, 2, 2, 173, 174, 3, 2, 2, 2, 174, 176, 3, 2, 2, 2, 175, 173, 3, 2,
-	2, 2, 176, 177, 7, 37, 2, 2, 177, 35, 3, 2, 2, 2, 178, 183, 5, 18, 10,
-	2, 179, 183, 5, 22, 12, 2, 180, 183, 5, 10, 6, 2, 181, 183, 5, 14, 8, 2,
-	182, 178, 3, 2, 2, 2, 182, 179, 3, 2, 2, 2, 182, 180, 3, 2, 2, 2, 182,
-	181, 3, 2, 2, 2, 183, 184, 3, 2, 2, 2, 184, 185, 7, 60, 2, 2, 185, 193,
-	3, 2, 2, 2, 186, 193, 5, 38, 20, 2, 187, 193, 5, 40, 21, 2, 188, 193, 5,
-	42, 22, 2, 189, 193, 5, 34, 18, 2, 190, 193, 7, 90, 2, 2, 191, 193, 7,
-	91, 2, 2, 192, 182, 3, 2, 2, 2, 192, 186, 3, 2, 2, 2, 192, 187, 3, 2, 2,
-	2, 192, 188, 3, 2, 2, 2, 192, 189, 3, 2, 2, 2, 192, 190, 3, 2, 2, 2, 192,
-	191, 3, 2, 2, 2, 193, 37, 3, 2, 2, 2, 194, 195, 7, 17, 2, 2, 195, 196,
-	7, 32, 2, 2, 196, 197, 5, 22, 12, 2, 197, 198, 7, 33, 2, 2, 198, 201, 5,
-	36, 19, 2, 199, 200, 7, 11, 2, 2, 200, 202, 5, 36, 19, 2, 201, 199, 3,
-	2, 2, 2, 201, 202, 3, 2, 2, 2, 202, 39, 3, 2, 2, 2, 203, 204, 7, 15, 2,
-	2, 204, 207, 7, 32, 2, 2, 205, 208, 5, 22, 12, 2, 206, 208, 5, 18, 10,
-	2, 207, 205, 3, 2, 2, 2, 207, 206, 3, 2, 2, 2, 207, 208, 3, 2, 2, 2, 208,
-	209, 3, 2, 2, 2, 209, 211, 7, 60, 2, 2, 210, 212, 5, 22, 12, 2, 211, 210,
-	3, 2, 2, 2, 211, 212, 3, 2, 2, 2, 212, 213, 3, 2, 2, 2, 213, 215, 7, 60,
-	2, 2, 214, 216, 5, 22, 12, 2, 215, 214, 3, 2, 2, 2, 215, 216, 3, 2, 2,
-	2, 216, 217, 3, 2, 2, 2, 217, 218, 7, 33, 2, 2, 218, 219, 5, 36, 19, 2,
-	219, 41, 3, 2, 2, 2, 220, 221, 7, 31, 2, 2, 221, 222, 7, 32, 2, 2, 222,
-	223, 5, 22, 12, 2, 223, 224, 7, 33, 2, 2, 224, 225, 5, 36, 19, 2, 225,
-	43, 3, 2, 2, 2, 25, 47, 54, 60, 69, 82, 88, 93, 99, 106, 116, 120, 133,
-	146, 151, 153, 167, 173, 182, 192, 201, 207, 211, 215,
+	2, 2, 176, 177, 7, 37, 2, 2, 177, 35, 3, 2, 2, 2, 178, 184, 5, 18, 10,
+	2, 179, 184, 5, 22, 12, 2, 180, 184, 5, 10, 6, 2, 181, 184, 7, 3, 2, 2,
+	182, 184, 5, 14, 8, 2, 183, 178, 3, 2, 2, 2, 183, 179, 3, 2, 2, 2, 183,
+	180, 3, 2, 2, 2, 183, 181, 3, 2, 2, 2, 183, 182, 3, 2, 2, 2, 184, 185,
+	3, 2, 2, 2, 185, 193, 7, 60, 2, 2, 186, 193, 5, 38, 20, 2, 187, 193, 5,
+	40, 21, 2, 188, 193, 5, 42, 22, 2, 189, 193, 5, 34, 18, 2, 190, 193, 7,
+	90, 2, 2, 191, 193, 7, 91, 2, 2, 192, 183, 3, 2, 2, 2, 192, 186, 3, 2,
+	2, 2, 192, 187, 3, 2, 2, 2, 192, 188, 3, 2, 2, 2, 192, 189, 3, 2, 2, 2,
+	192, 190, 3, 2, 2, 2, 192, 191, 3, 2, 2, 2, 193, 37, 3, 2, 2, 2, 194, 195,
+	7, 17, 2, 2, 195, 196, 7, 32, 2, 2, 196, 197, 5, 22, 12, 2, 197, 198, 7,
+	33, 2, 2, 198, 201, 5, 36, 19, 2, 199, 200, 7, 11, 2, 2, 200, 202, 5, 36,
+	19, 2, 201, 199, 3, 2, 2, 2, 201, 202, 3, 2, 2, 2, 202, 39, 3, 2, 2, 2,
+	203, 204, 7, 15, 2, 2, 204, 207, 7, 32, 2, 2, 205, 208, 5, 22, 12, 2, 206,
+	208, 5, 18, 10, 2, 207, 205, 3, 2, 2, 2, 207, 206, 3, 2, 2, 2, 207, 208,
+	3, 2, 2, 2, 208, 209, 3, 2, 2, 2, 209, 211, 7, 60, 2, 2, 210, 212, 5, 22,
+	12, 2, 211, 210, 3, 2, 2, 2, 211, 212, 3, 2, 2, 2, 212, 213, 3, 2, 2, 2,
+	213, 215, 7, 60, 2, 2, 214, 216, 5, 22, 12, 2, 215, 214, 3, 2, 2, 2, 215,
+	216, 3, 2, 2, 2, 216, 217, 3, 2, 2, 2, 217, 218, 7, 33, 2, 2, 218, 219,
+	5, 36, 19, 2, 219, 41, 3, 2, 2, 2, 220, 221, 7, 31, 2, 2, 221, 222, 7,
+	32, 2, 2, 222, 223, 5, 22, 12, 2, 223, 224, 7, 33, 2, 2, 224, 225, 5, 36,
+	19, 2, 225, 43, 3, 2, 2, 2, 25, 47, 54, 60, 69, 82, 88, 93, 99, 106, 116,
+	120, 133, 146, 151, 153, 167, 173, 183, 192, 201, 207, 211, 215,
 }
 var literalNames = []string{
 	"", "'break'", "'case'", "'char'", "'const'", "'continue'", "'default'",
@@ -3118,7 +3118,7 @@ func (p *CParser) Block() (localctx IBlockContext) {
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for (((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<CParserChar)|(1<<CParserDouble)|(1<<CParserFloat)|(1<<CParserFor)|(1<<CParserIf)|(1<<CParserInt)|(1<<CParserLong)|(1<<CParserReturn)|(1<<CParserShort)|(1<<CParserStruct)|(1<<CParserVoid)|(1<<CParserWhile)|(1<<CParserLeftParen))) != 0) || (((_la-34)&-(0x1f+1)) == 0 && ((1<<uint((_la-34)))&((1<<(CParserLeftBrace-34))|(1<<(CParserPlus-34))|(1<<(CParserPlusPlus-34))|(1<<(CParserMinus-34))|(1<<(CParserMinusMinus-34))|(1<<(CParserAnd-34))|(1<<(CParserNot-34))|(1<<(CParserTilde-34)))) != 0) || (((_la-76)&-(0x1f+1)) == 0 && ((1<<uint((_la-76)))&((1<<(CParserIdentifier-76))|(1<<(CParserConstant-76))|(1<<(CParserStringLiteral-76))|(1<<(CParserBlockComment-76))|(1<<(CParserLineComment-76)))) != 0) {
+	for (((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<CParserBreak)|(1<<CParserChar)|(1<<CParserDouble)|(1<<CParserFloat)|(1<<CParserFor)|(1<<CParserIf)|(1<<CParserInt)|(1<<CParserLong)|(1<<CParserReturn)|(1<<CParserShort)|(1<<CParserStruct)|(1<<CParserVoid)|(1<<CParserWhile)|(1<<CParserLeftParen))) != 0) || (((_la-34)&-(0x1f+1)) == 0 && ((1<<uint((_la-34)))&((1<<(CParserLeftBrace-34))|(1<<(CParserPlus-34))|(1<<(CParserPlusPlus-34))|(1<<(CParserMinus-34))|(1<<(CParserMinusMinus-34))|(1<<(CParserAnd-34))|(1<<(CParserNot-34))|(1<<(CParserTilde-34)))) != 0) || (((_la-76)&-(0x1f+1)) == 0 && ((1<<uint((_la-76)))&((1<<(CParserIdentifier-76))|(1<<(CParserConstant-76))|(1<<(CParserStringLiteral-76))|(1<<(CParserBlockComment-76))|(1<<(CParserLineComment-76)))) != 0) {
 		{
 			p.SetState(168)
 			p.Statement()
@@ -3206,6 +3206,10 @@ func (s *StatementContext) FunctionReturn() IFunctionReturnContext {
 	}
 
 	return t.(IFunctionReturnContext)
+}
+
+func (s *StatementContext) Break() antlr.TerminalNode {
+	return s.GetToken(CParserBreak, 0)
 }
 
 func (s *StatementContext) StructDeclaration() IStructDeclarationContext {
@@ -3308,9 +3312,9 @@ func (p *CParser) Statement() (localctx IStatementContext) {
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
-	case CParserChar, CParserDouble, CParserFloat, CParserInt, CParserLong, CParserReturn, CParserShort, CParserStruct, CParserVoid, CParserLeftParen, CParserPlus, CParserPlusPlus, CParserMinus, CParserMinusMinus, CParserAnd, CParserNot, CParserTilde, CParserIdentifier, CParserConstant, CParserStringLiteral:
+	case CParserBreak, CParserChar, CParserDouble, CParserFloat, CParserInt, CParserLong, CParserReturn, CParserShort, CParserStruct, CParserVoid, CParserLeftParen, CParserPlus, CParserPlusPlus, CParserMinus, CParserMinusMinus, CParserAnd, CParserNot, CParserTilde, CParserIdentifier, CParserConstant, CParserStringLiteral:
 		p.EnterOuterAlt(localctx, 1)
-		p.SetState(180)
+		p.SetState(181)
 		p.GetErrorHandler().Sync(p)
 
 		switch p.GetTokenStream().LA(1) {
@@ -3332,9 +3336,15 @@ func (p *CParser) Statement() (localctx IStatementContext) {
 				p.FunctionReturn()
 			}
 
-		case CParserStruct:
+		case CParserBreak:
 			{
 				p.SetState(179)
+				p.Match(CParserBreak)
+			}
+
+		case CParserStruct:
+			{
+				p.SetState(180)
 				p.StructDeclaration()
 			}
 
@@ -3342,7 +3352,7 @@ func (p *CParser) Statement() (localctx IStatementContext) {
 			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 		}
 		{
-			p.SetState(182)
+			p.SetState(183)
 			p.Match(CParserSemi)
 		}
 
