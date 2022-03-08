@@ -302,7 +302,13 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 			return nil, err
 		}
 
-		return ast.NewASTExpressionUnaryPre(child.UnaryOperatorPre().GetText(), right), nil
+		operator := child.UnaryOperatorPre().GetText()
+
+		if operator == "++" || operator == "--" {
+			return nil, v.TranslationError(child.BaseParserRuleContext, fmt.Sprintf("unary operator '%s' not supported by Go", operator))
+		}
+
+		return ast.NewASTExpressionUnaryPre(operator, right), nil
 	case *parser.AssignmentExpressionContext:
 		left, err := v.VisitExpression(child.Expression(0))
 		if err != nil {
