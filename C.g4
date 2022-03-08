@@ -30,6 +30,7 @@ variableDeclarationList:
 expression:
 	Identifier									# IdentifierExpression
 	| Constant									# ConstantExpression
+	| StringLiteral								# ConstantStringExpression
 	| '(' expression ')'						# ParenthesizedExpression
 	| expression '(' functionCallArguments? ')'	# FunctionCallExpression
 	| expression unaryOperatorPost				# UnaryExpressionPost

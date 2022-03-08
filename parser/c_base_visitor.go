@@ -64,6 +64,10 @@ func (v *BaseCVisitor) VisitUnaryExpressionPre(ctx *UnaryExpressionPreContext) i
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitConstantStringExpression(ctx *ConstantStringExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitFunctionCallExpression(ctx *FunctionCallExpressionContext) interface{} {
 	return v.VisitChildren(ctx)
 }

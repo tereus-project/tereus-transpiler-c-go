@@ -280,6 +280,8 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 		return ast.NewASTExpressionLiteral(child.GetText()), nil
 	case *parser.ConstantExpressionContext:
 		return ast.NewASTExpressionLiteral(child.GetText()), nil
+	case *parser.ConstantStringExpressionContext:
+		return ast.NewASTExpressionLiteral(child.GetText()), nil
 	case *parser.ParenthesizedExpressionContext:
 		expression, err := v.VisitExpression(child.Expression())
 		if err != nil {
