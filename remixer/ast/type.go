@@ -36,8 +36,10 @@ func NewASTType(kind ASTTypeKind, name string) *ASTType {
 
 func (t *ASTType) String() string {
 	switch t.Kind {
-	case ASTTypeKindArray, ASTTypeKindPointer:
+	case ASTTypeKindArray:
 		return fmt.Sprintf("[]%s", t.ArrayType.String())
+	case ASTTypeKindPointer:
+		return fmt.Sprintf("*%s", t.PointerType.String())
 	default:
 		return t.Name
 	}
