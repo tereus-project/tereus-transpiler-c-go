@@ -19,24 +19,31 @@ func NewASTFunction(name string) *ASTFunction {
 }
 
 func (f *ASTFunction) String() string {
-	args := make([]string, len(f.Args))
+	body := ""
+	if f.Body != nil {
+		body = f.Body.String()
+	}
 
+	return fmt.Sprintf("%s %s", f.TypeString(true), body)
+}
+
+func (f *ASTFunction) TypeString(withName bool) string {
+	name := ""
+	if withName {
+		name = f.Name
+	}
+
+	args := make([]string, len(f.Args))
 	for i, arg := range f.Args {
 		args[i] = arg.String()
 	}
 
 	returnType := ""
-	body := ""
-
 	if f.ReturnType != nil && !f.ReturnType.IsVoid() {
 		returnType = " " + f.ReturnType.String()
 	}
 
-	if f.Body != nil {
-		body = f.Body.String()
-	}
-
-	return fmt.Sprintf("func %s(%s)%s %s", f.Name, strings.Join(args, ", "), returnType, body)
+	return fmt.Sprintf("func %s(%s)%s", name, strings.Join(args, ", "), returnType)
 }
 
 type ASTFunctionArgument struct {

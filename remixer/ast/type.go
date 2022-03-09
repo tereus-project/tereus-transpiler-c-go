@@ -17,14 +17,17 @@ const (
 	ASTTypeKindPointer
 
 	ASTTypeKindStruct
+
+	ASTTypeKindFunction
 )
 
 type ASTType struct {
 	Kind ASTTypeKind
 	Name string
 
-	ArrayType   *ASTType
-	PointerType *ASTType
+	ArrayType    *ASTType
+	PointerType  *ASTType
+	FunctionType *ASTFunction
 }
 
 func NewASTType(kind ASTTypeKind, name string) *ASTType {
@@ -40,6 +43,8 @@ func (t *ASTType) String() string {
 		return fmt.Sprintf("[]%s", t.ArrayType.String())
 	case ASTTypeKindPointer:
 		return fmt.Sprintf("*%s", t.PointerType.String())
+	case ASTTypeKindFunction:
+		return t.FunctionType.TypeString(false)
 	default:
 		return t.Name
 	}
@@ -47,4 +52,8 @@ func (t *ASTType) String() string {
 
 func (t *ASTType) IsVoid() bool {
 	return t.Kind == ASTTypeKindVoid
+}
+
+func (t *ASTType) IsFunction() bool {
+	return t.Kind == ASTTypeKindFunction
 }

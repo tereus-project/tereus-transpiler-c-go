@@ -22,6 +22,7 @@ type Visitor struct {
 	Imports mapset.Set
 	Output  map[string]string
 
+	Scope           *Scope
 	CurrentFunction *utils.Stack
 }
 
@@ -39,6 +40,7 @@ func NewVisitor(path string) (*Visitor, error) {
 		Imports: mapset.NewSet(),
 		Output:  make(map[string]string),
 
+		Scope:           NewScope(),
 		CurrentFunction: utils.NewStack(),
 	}
 
@@ -123,6 +125,11 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 	}
 
 	v.CurrentFunction.Push(name)
+	v.Scope.Push()
+
+	for _, arg := range function.Args {
+		v.Scope.Add(NewScopeVariable(arg.Name, "", arg.Type))
+	}
 
 	argumentsInitialization := make([]ast.IASTItem, 0)
 
@@ -159,6 +166,10 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 		function.Args = nil
 	}
 
+	variableType := ast.NewASTType(ast.ASTTypeKindFunction, function.Name)
+	variableType.FunctionType = function
+	v.Scope.Parent.Add(NewScopeVariable(function.Name, "", variableType))
+
 	function.Body, err = v.VisitBlock(ctx.Block().(*parser.BlockContext))
 	if err != nil {
 		return nil, err
@@ -167,6 +178,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 	function.Body.Statements = append(argumentsInitialization, function.Body.Statements...)
 
 	v.CurrentFunction.Pop()
+	v.Scope.Pop()
 
 	return function, nil
 }
@@ -281,7 +293,7 @@ func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContex
 
 	variable := ast.NewASTVariableDeclaration(typ)
 
-	items, err := v.VisitVariableDeclarationList(ctx.VariableDeclarationList().(*parser.VariableDeclarationListContext))
+	items, err := v.VisitVariableDeclarationList(ctx.VariableDeclarationList().(*parser.VariableDeclarationListContext), typ)
 	if err != nil {
 		return nil, err
 	}
@@ -291,7 +303,7 @@ func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContex
 	return variable, nil
 }
 
-func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationListContext) ([]*ast.ASTVariableDeclarationItem, error) {
+func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationListContext, typ *ast.ASTType) ([]*ast.ASTVariableDeclarationItem, error) {
 	name := ctx.Identifier().GetText()
 
 	item := ast.NewASTVariableDeclarationItem(name, nil)
@@ -305,10 +317,12 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 		item.Expression = expression
 	}
 
+	v.Scope.Add(NewScopeVariable(name, "", typ))
+
 	items := []*ast.ASTVariableDeclarationItem{item}
 
 	if child := ctx.VariableDeclarationList(); child != nil {
-		others, err := v.VisitVariableDeclarationList(child.(*parser.VariableDeclarationListContext))
+		others, err := v.VisitVariableDeclarationList(child.(*parser.VariableDeclarationListContext), typ)
 		if err != nil {
 			return nil, err
 		}
@@ -386,9 +400,13 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 }
 
 func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionContext) (*ast.ASTExpressionLiteral, error) {
-	identifier := ctx.GetText()
+	if items := v.Scope.Get(ctx.GetText()); len(items) > 0 {
+		return ast.NewASTExpressionLiteral(items[0].GetTranslatedName()), nil
+	}
 
-	switch identifier {
+	identifier := ""
+
+	switch ctx.GetText() {
 	case "printf":
 		v.Imports.Add("fmt")
 		identifier = "fmt.Printf"
@@ -401,7 +419,11 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 		identifier = "libc.Free"
 	}
 
-	return ast.NewASTExpressionLiteral(identifier), nil
+	if identifier != "" {
+		return ast.NewASTExpressionLiteral(identifier), nil
+	}
+
+	return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("identifier '%s' not found", ctx.GetText()))
 }
 
 func (v *Visitor) VisitFunctionCallExpression(ctx *parser.FunctionCallExpressionContext) (*ast.ASTExpressionFunctionCall, error) {
@@ -445,6 +467,8 @@ func (v *Visitor) VisitFunctionCallArguments(ctx *parser.FunctionCallArgumentsCo
 func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (*ast.ASTBlock, error) {
 	statements := make([]ast.IASTItem, 0)
 
+	v.Scope.Push()
+
 	for _, statement := range ctx.AllStatement() {
 		statement, err := v.VisitStatement(statement.(*parser.StatementContext))
 		if err != nil {
@@ -453,6 +477,8 @@ func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (*ast.ASTBlock, error) {
 
 		statements = append(statements, statement)
 	}
+
+	v.Scope.Pop()
 
 	return ast.NewASTBlock(statements), nil
 }
@@ -491,6 +517,8 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 }
 
 func (v *Visitor) VisitIfStatement(ctx *parser.IfStatementContext) (*ast.ASTIf, error) {
+	v.Scope.Push()
+
 	condition, err := v.VisitExpression(ctx.Expression())
 	if err != nil {
 		return nil, err
@@ -501,19 +529,27 @@ func (v *Visitor) VisitIfStatement(ctx *parser.IfStatementContext) (*ast.ASTIf, 
 		return nil, err
 	}
 
+	v.Scope.Pop()
+
 	if_ := ast.NewASTIf(condition, then)
 
 	if ctx.Else() != nil {
+		v.Scope.Push()
+
 		if_.Else, err = v.VisitStatement(ctx.Statement(1).(*parser.StatementContext))
 		if err != nil {
 			return nil, err
 		}
+
+		v.Scope.Pop()
 	}
 
 	return if_, nil
 }
 
 func (v *Visitor) VisitForStatement(ctx *parser.ForStatementContext) (*ast.ASTFor, error) {
+	v.Scope.Push()
+
 	for_ := ast.NewASTFor()
 
 	if child := ctx.GetInit(); child != nil {
@@ -559,10 +595,14 @@ func (v *Visitor) VisitForStatement(ctx *parser.ForStatementContext) (*ast.ASTFo
 
 	for_.Statement = body
 
-	return for_, err
+	v.Scope.Pop()
+
+	return for_, nil
 }
 
 func (v *Visitor) VisitWhileStatement(ctx *parser.WhileStatementContext) (*ast.ASTWhile, error) {
+	v.Scope.Push()
+
 	cond, err := v.VisitExpression(ctx.Expression())
 	if err != nil {
 		return nil, err
@@ -572,6 +612,8 @@ func (v *Visitor) VisitWhileStatement(ctx *parser.WhileStatementContext) (*ast.A
 	if err != nil {
 		return nil, err
 	}
+
+	v.Scope.Pop()
 
 	return ast.NewASTWhile(cond, statement), nil
 }
