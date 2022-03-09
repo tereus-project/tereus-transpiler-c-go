@@ -94,4 +94,7 @@ type CVisitor interface {
 
 	// Visit a parse tree produced by CParser#whileStatement.
 	VisitWhileStatement(ctx *WhileStatementContext) interface{}
+
+	// Visit a parse tree produced by CParser#includePreprocessor.
+	VisitIncludePreprocessor(ctx *IncludePreprocessorContext) interface{}
 }

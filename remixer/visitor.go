@@ -3,9 +3,12 @@ package remixer
 import (
 	"fmt"
 	"os"
+	"regexp"
+	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	mapset "github.com/deckarep/golang-set"
+	"github.com/tereus-project/tereus-remixer-c-go/libc"
 	"github.com/tereus-project/tereus-remixer-c-go/parser"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer/ast"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer/utils"
@@ -65,7 +68,9 @@ func (v *Visitor) VisitTranslation(ctx *parser.TranslationContext) (string, erro
 			return "", err
 		}
 
-		code += declaration.String() + "\n\n"
+		if declaration != nil {
+			code += declaration.String() + "\n\n"
+		}
 	}
 
 	if v.Imports.Cardinality() > 0 {
@@ -88,6 +93,8 @@ func (v *Visitor) VisitDeclaration(ctx *parser.DeclarationContext) (ast.IASTItem
 		return v.VisitFunctionDeclaration(child.(*parser.FunctionDeclarationContext))
 	} else if child := ctx.StructDeclaration(); child != nil {
 		return v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
+	} else if child := ctx.IncludePreprocessor(); child != nil {
+		return v.VisitIncludePreprocessor(child.(*parser.IncludePreprocessorContext))
 	}
 
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
@@ -388,6 +395,10 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 	case "scanf":
 		v.Imports.Add("fmt")
 		identifier = "fmt.Scanf"
+	case "malloc":
+		identifier = "libc.Malloc"
+	case "free":
+		identifier = "libc.Free"
 	}
 
 	return ast.NewASTExpressionLiteral(identifier), nil
@@ -563,4 +574,27 @@ func (v *Visitor) VisitWhileStatement(ctx *parser.WhileStatementContext) (*ast.A
 	}
 
 	return ast.NewASTWhile(cond, statement), nil
+}
+
+var (
+	systemIncludePreprocessorRegex = regexp.MustCompile(`^#[ \t]*include[ \t]*<(.+)>$`)
+	localIncludePreprocessorRegex  = regexp.MustCompile(`^#[ \t]*include[ \t]*"(.+)"$`)
+)
+
+func (v *Visitor) VisitIncludePreprocessor(ctx *parser.IncludePreprocessorContext) (ast.IASTItem, error) {
+	directive := strings.TrimSpace(ctx.IncludeDirective().GetText())
+
+	if matches := systemIncludePreprocessorRegex.FindStringSubmatch(directive); len(matches) > 0 {
+		header := matches[1]
+
+		if libc.IsSupported(header) {
+			v.Imports.Add("github.com/tereus-project/tereus-remixer-c-go/libc")
+		}
+	} else if matches := localIncludePreprocessorRegex.FindStringSubmatch(directive); len(matches) > 0 {
+		return nil, v.TranslationError(ctx.BaseParserRuleContext, "unsupported include type")
+	} else {
+		return nil, v.TranslationError(ctx.BaseParserRuleContext, "unsupported include type")
+	}
+
+	return nil, nil
 }

@@ -123,3 +123,7 @@ func (v *BaseCVisitor) VisitForStatement(ctx *ForStatementContext) interface{} {
 func (v *BaseCVisitor) VisitWhileStatement(ctx *WhileStatementContext) interface{} {
 	return v.VisitChildren(ctx)
 }
+
+func (v *BaseCVisitor) VisitIncludePreprocessor(ctx *IncludePreprocessorContext) interface{} {
+	return v.VisitChildren(ctx)
+}

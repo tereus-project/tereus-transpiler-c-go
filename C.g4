@@ -2,7 +2,10 @@ grammar C;
 
 translation: declaration*;
 
-declaration: functionDeclaration | (structDeclaration ';');
+declaration:
+	functionDeclaration
+	| (structDeclaration ';')
+	| includePreprocessor;
 
 functionDeclaration:
 	typeSpecifier Identifier '(' functionArguments? ')' block;
@@ -108,6 +111,8 @@ forStatement:
 	)? ';' (post = expression)? ')' statement;
 
 whileStatement: 'while' '(' expression ')' statement;
+
+includePreprocessor: IncludeDirective;
 
 Break: 'break';
 Case: 'case';
@@ -321,13 +326,13 @@ fragment SChar:
 	| '\\\n' // Added line
 	| '\\\r\n'; // Added line
 
-ComplexDefine: '#' Whitespace? 'define' ~[#\r\n]* -> skip;
+ComplexDefine: '#' Whitespace? 'define' ~[#\r\n]*;
 
 IncludeDirective:
 	'#' Whitespace? 'include' Whitespace? (
 		('"' ~[\r\n]* '"')
 		| ('<' ~[\r\n]* '>')
-	) Whitespace? Newline -> skip;
+	) Whitespace? Newline;
 
 // ignore the following asm blocks:
 /*
