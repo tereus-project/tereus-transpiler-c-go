@@ -629,9 +629,11 @@ func (v *Visitor) VisitIncludePreprocessor(ctx *parser.IncludePreprocessorContex
 	if matches := systemIncludePreprocessorRegex.FindStringSubmatch(directive); len(matches) > 0 {
 		header := matches[1]
 
-		if libc.IsSupported(header) {
-			v.Imports.Add("github.com/tereus-project/tereus-remixer-c-go/libc")
+		if !libc.IsSupported(header) {
+			return nil, v.PositionedTranslationError(ctx.IncludeDirective().GetSymbol(), "unsupported system header: "+header)
 		}
+
+		v.Imports.Add("github.com/tereus-project/tereus-remixer-c-go/libc")
 	} else if matches := localIncludePreprocessorRegex.FindStringSubmatch(directive); len(matches) > 0 {
 		return nil, v.TranslationError(ctx.BaseParserRuleContext, "unsupported include type")
 	} else {
