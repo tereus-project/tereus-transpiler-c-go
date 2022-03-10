@@ -2,9 +2,12 @@ package remixer
 
 import (
 	"fmt"
+	"go/format"
 	"os"
 	"regexp"
 	"strings"
+
+	"golang.org/x/tools/imports"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	mapset "github.com/deckarep/golang-set"
@@ -86,8 +89,17 @@ func (v *Visitor) VisitTranslation(ctx *parser.TranslationContext) (string, erro
 	}
 
 	output += code
+	formatted, err := format.Source([]byte(output))
+	if err != nil {
+		return "", err
+	}
 
-	return output, nil
+	formatted, err = imports.Process(v.Path, formatted, nil)
+	if err != nil {
+		return "", err
+	}
+
+	return string(formatted), nil
 }
 
 func (v *Visitor) VisitDeclaration(ctx *parser.DeclarationContext) (ast.IASTItem, error) {
