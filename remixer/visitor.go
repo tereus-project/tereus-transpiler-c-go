@@ -152,7 +152,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 
 		if len(function.Args) >= 2 {
 			typ := ast.NewASTType(ast.ASTTypeKindArray, "array")
-			typ.ArrayType = ast.NewASTType(ast.ASTTypeKindRune, "string")
+			typ.ArrayType = ast.NewASTType(ast.ASTTypeKindChar, "string")
 
 			variable := ast.NewASTVariableDeclaration(typ)
 			variable.Items = []*ast.ASTVariableDeclarationItem{
@@ -229,7 +229,7 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 	} else if child := ctx.Long(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindInt, "int64"), nil
 	} else if child := ctx.Char(); child != nil {
-		return ast.NewASTType(ast.ASTTypeKindRune, "rune"), nil
+		return ast.NewASTType(ast.ASTTypeKindChar, "int8"), nil
 	} else if child := ctx.Float(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindFloat32, "float32"), nil
 	} else if child := ctx.Double(); child != nil {

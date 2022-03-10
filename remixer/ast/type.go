@@ -9,7 +9,7 @@ const (
 	ASTTypeKindInt
 	ASTTypeKindInt16
 	ASTTypeKindInt64
-	ASTTypeKindRune
+	ASTTypeKindChar
 	ASTTypeKindFloat32
 	ASTTypeKindFloat64
 
