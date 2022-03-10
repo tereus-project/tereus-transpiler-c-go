@@ -1,7 +1,7 @@
 package libc
 
 var supportedLibraries = map[string]struct{}{
-	"stdlib": {},
+	"stdlib.h": {},
 }
 
 func IsSupported(library string) bool {
