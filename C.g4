@@ -35,16 +35,17 @@ variableDeclarationList:
 	Identifier ('=' expression)? (',' variableDeclarationList)?;
 
 expression:
-	Identifier									# IdentifierExpression
-	| Constant									# ConstantExpression
-	| StringLiteral								# ConstantStringExpression
-	| expression '(' functionCallArguments? ')'	# FunctionCallExpression
-	| '(' typeSpecifier ')' expression			# CastExpression
-	| '(' expression ')'						# ParenthesizedExpression
-	| expression unaryOperatorPost				# UnaryExpressionPost
-	| unaryOperatorPre expression				# UnaryExpressionPre
-	| expression assignementOperator expression	# AssignmentExpression
-	| expression binaryOperator expression		# BinaryExpression;
+	Identifier														# IdentifierExpression
+	| Constant														# ConstantExpression
+	| StringLiteral													# ConstantStringExpression
+	| expression '(' functionCallArguments? ')'						# FunctionCallExpression
+	| '(' typeSpecifier ')' expression								# CastExpression
+	| '(' expression ')'											# ParenthesizedExpression
+	| expression unaryOperatorPost									# UnaryExpressionPost
+	| unaryOperatorPre expression									# UnaryExpressionPre
+	| Sizeof (expression | typeSpecifier | '(' typeSpecifier ')')	# SizeofExpression
+	| expression assignementOperator expression						# AssignmentExpression
+	| expression binaryOperator expression							# BinaryExpression;
 
 assignementOperator:
 	'='

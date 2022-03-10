@@ -382,6 +382,8 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 		}
 
 		return ast.NewASTExpressionUnaryPre(operator, right), nil
+	case *parser.SizeofExpressionContext:
+		return v.VisitSizeofExpression(child)
 	case *parser.AssignmentExpressionContext:
 		left, err := v.VisitExpression(child.Expression(0))
 		if err != nil {
@@ -452,6 +454,55 @@ func (v *Visitor) VisitCastExpression(ctx *parser.CastExpressionContext) (*ast.A
 	}
 
 	return ast.NewASTExpressionCast(expression, typ), nil
+}
+
+func (v *Visitor) VisitSizeofExpression(ctx *parser.SizeofExpressionContext) (ast.IASTExpression, error) {
+	if child := ctx.Expression(); child != nil {
+		expression, err := v.VisitExpression(child)
+		if err != nil {
+			return nil, err
+		}
+
+		return ast.NewASTExpressionFunctionCall(
+			ast.NewASTExpressionLiteral("int"),
+			[]ast.IASTExpression{
+				ast.NewASTExpressionFunctionCall(
+					ast.NewASTExpressionLiteral("unsafe.Sizeof"),
+					[]ast.IASTExpression{expression},
+				),
+			},
+		), nil
+	}
+
+	if child := ctx.TypeSpecifier(); child != nil {
+		typ, err := v.VisitTypeSpecifier(child.(*parser.TypeSpecifierContext))
+		if err != nil {
+			return nil, err
+		}
+
+		var emptyExpression ast.IASTExpression
+
+		switch typ.Kind {
+		case ast.ASTTypeKindPointer:
+			emptyExpression = ast.NewASTExpressionCast(ast.NewASTExpressionLiteral("nil"), typ)
+		// case ast.ASTTypeKindStruct:
+		// 	emptyExpression =
+		default:
+			emptyExpression = ast.NewASTExpressionCast(ast.NewASTExpressionLiteral("0"), typ)
+		}
+
+		return ast.NewASTExpressionFunctionCall(
+			ast.NewASTExpressionLiteral("int"),
+			[]ast.IASTExpression{
+				ast.NewASTExpressionFunctionCall(
+					ast.NewASTExpressionLiteral("unsafe.Sizeof"),
+					[]ast.IASTExpression{emptyExpression},
+				),
+			},
+		), nil
+	}
+
+	return nil, v.PositionedTranslationError(ctx.GetStart(), "sizeof unsupported on this type")
 }
 
 func (v *Visitor) VisitFunctionCallExpression(ctx *parser.FunctionCallExpressionContext) (*ast.ASTExpressionFunctionCall, error) {

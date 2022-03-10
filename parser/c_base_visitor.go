@@ -52,6 +52,10 @@ func (v *BaseCVisitor) VisitParenthesizedExpression(ctx *ParenthesizedExpression
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitSizeofExpression(ctx *SizeofExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitUnaryExpressionPost(ctx *UnaryExpressionPostContext) interface{} {
 	return v.VisitChildren(ctx)
 }

@@ -41,6 +41,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#ParenthesizedExpression.
 	VisitParenthesizedExpression(ctx *ParenthesizedExpressionContext) interface{}
 
+	// Visit a parse tree produced by CParser#SizeofExpression.
+	VisitSizeofExpression(ctx *SizeofExpressionContext) interface{}
+
 	// Visit a parse tree produced by CParser#UnaryExpressionPost.
 	VisitUnaryExpressionPost(ctx *UnaryExpressionPostContext) interface{}
 
