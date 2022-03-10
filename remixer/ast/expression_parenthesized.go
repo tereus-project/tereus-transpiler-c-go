@@ -2,16 +2,16 @@ package ast
 
 import "fmt"
 
-type ASTParenthesizedExpression struct {
+type ASTExpressionParenthesized struct {
 	Expression IASTExpression
 }
 
-func NewAstParenthesizedExpression(expression IASTExpression) *ASTParenthesizedExpression {
-	return &ASTParenthesizedExpression{
+func NewAstExpressionParenthesized(expression IASTExpression) *ASTExpressionParenthesized {
+	return &ASTExpressionParenthesized{
 		Expression: expression,
 	}
 }
 
-func (e *ASTParenthesizedExpression) String() string {
+func (e *ASTExpressionParenthesized) String() string {
 	return fmt.Sprintf("(%s)", e.Expression.String())
 }

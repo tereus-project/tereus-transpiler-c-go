@@ -359,7 +359,7 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 			return nil, err
 		}
 
-		return ast.NewAstParenthesizedExpression(expression), nil
+		return ast.NewAstExpressionParenthesized(expression), nil
 	case *parser.CastExpressionContext:
 		return v.VisitCastExpression(child)
 	case *parser.UnaryExpressionPostContext:
