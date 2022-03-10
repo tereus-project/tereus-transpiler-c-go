@@ -38,8 +38,9 @@ expression:
 	Identifier									# IdentifierExpression
 	| Constant									# ConstantExpression
 	| StringLiteral								# ConstantStringExpression
-	| '(' expression ')'						# ParenthesizedExpression
 	| expression '(' functionCallArguments? ')'	# FunctionCallExpression
+	| '(' typeSpecifier ')' expression			# CastExpression
+	| '(' expression ')'						# ParenthesizedExpression
 	| expression unaryOperatorPost				# UnaryExpressionPost
 	| unaryOperatorPre expression				# UnaryExpressionPre
 	| expression assignementOperator expression	# AssignmentExpression

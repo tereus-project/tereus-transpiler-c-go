@@ -360,6 +360,8 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 		}
 
 		return ast.NewAstParenthesizedExpression(expression), nil
+	case *parser.CastExpressionContext:
+		return v.VisitCastExpression(child)
 	case *parser.UnaryExpressionPostContext:
 		left, err := v.VisitExpression(child.Expression())
 		if err != nil {
@@ -436,6 +438,20 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 	}
 
 	return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("identifier '%s' not found", ctx.GetText()))
+}
+
+func (v *Visitor) VisitCastExpression(ctx *parser.CastExpressionContext) (*ast.ASTExpressionCast, error) {
+	expression, err := v.VisitExpression(ctx.Expression())
+	if err != nil {
+		return nil, err
+	}
+
+	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	if err != nil {
+		return nil, err
+	}
+
+	return ast.NewASTExpressionCast(expression, typ), nil
 }
 
 func (v *Visitor) VisitFunctionCallExpression(ctx *parser.FunctionCallExpressionContext) (*ast.ASTExpressionFunctionCall, error) {

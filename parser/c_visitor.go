@@ -56,6 +56,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#UnaryExpressionPre.
 	VisitUnaryExpressionPre(ctx *UnaryExpressionPreContext) interface{}
 
+	// Visit a parse tree produced by CParser#CastExpression.
+	VisitCastExpression(ctx *CastExpressionContext) interface{}
+
 	// Visit a parse tree produced by CParser#ConstantStringExpression.
 	VisitConstantStringExpression(ctx *ConstantStringExpressionContext) interface{}
 
