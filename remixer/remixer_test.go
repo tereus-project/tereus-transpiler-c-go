@@ -28,6 +28,22 @@ func testRemix(t *testing.T, source string, target string) {
 	}
 }
 
+func testRemixError(t *testing.T, source string) {
+	source = strings.TrimSpace(source)
+
+	dir := t.TempDir()
+	sourceFile := dir + "/test.go"
+	err := os.WriteFile(sourceFile, []byte(source), 0644)
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = Remix(sourceFile)
+	if err == nil {
+		t.Error("Expected error, got nil")
+	}
+}
+
 func TestEmptyFunction(t *testing.T) {
 	source := `
 int main() {
@@ -170,6 +186,112 @@ import (
 func main() {
 	a := 1
 	a++
+	os.Exit(0)
+}
+`
+
+	testRemix(t, source, target)
+}
+
+func TestInvalidPrefixUnaryExpression(t *testing.T) {
+	source := `
+int main() {
+	int a = 1;
+	++a;
+	return 0;
+}
+`
+
+	testRemixError(t, source)
+}
+
+func TestFmtPrintf(t *testing.T) {
+	source := `
+int main() {
+	int a = 1;
+	printf("a: %d", a);
+	return 0;
+}
+`
+
+	target := `
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	a := 1
+	fmt.Printf("a: %d", a)
+	os.Exit(0)
+}
+`
+
+	testRemix(t, source, target)
+}
+
+func TestBreak(t *testing.T) {
+	source := `
+int main() {
+	int a = 1;
+	while (a < 10) {
+		a++;
+		if (a == 5) {
+			break;
+		}
+	}
+	return 0;
+}
+`
+
+	target := `
+package main
+
+import (
+	"os"
+)
+
+func main() {
+	a := 1
+	for a < 10 {
+		a++
+		if a == 5 {
+			break
+		}
+	}
+	os.Exit(0)
+}
+`
+
+	testRemix(t, source, target)
+}
+
+func TestStdMalloc(t *testing.T) {
+	source := `
+#include <stdlib.h>
+
+int main()
+{
+	int *a = (int *)malloc(sizeof(int) * 5);
+
+	return 0;
+}
+`
+
+	target := `
+package main
+
+import (
+	"os"
+	"unsafe"
+
+	"github.com/tereus-project/tereus-remixer-c-go/libc"
+)
+
+func main() {
+	a := (*int)(libc.Malloc(int(unsafe.Sizeof((int)(0))) * 5))
 	os.Exit(0)
 }
 `
