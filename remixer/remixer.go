@@ -15,6 +15,7 @@ func Remix(entrypoint string) (string, error) {
 	lexer := parser.NewCLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
 	p := parser.NewCParser(stream)
+	p.Interpreter.SetPredictionMode(antlr.PredictionModeSLL)
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 
 	tree := p.Translation()
