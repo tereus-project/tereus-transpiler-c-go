@@ -5,7 +5,9 @@ import "fmt"
 type ASTTypeKind int64
 
 const (
-	ASTTypeKindVoid ASTTypeKind = iota
+	ASTTypeKindAny ASTTypeKind = iota
+
+	ASTTypeKindVoid
 	ASTTypeKindInt
 	ASTTypeKindInt16
 	ASTTypeKindInt64
@@ -35,6 +37,21 @@ func NewASTType(kind ASTTypeKind, name string) *ASTType {
 		Kind: kind,
 		Name: name,
 	}
+}
+
+func (t *ASTType) SetPointerType(pointerType *ASTType) *ASTType {
+	t.PointerType = pointerType
+	return t
+}
+
+func (t *ASTType) SetArrayType(arrayType *ASTType) *ASTType {
+	t.ArrayType = arrayType
+	return t
+}
+
+func (t *ASTType) SetFunctionType(functionType *ASTFunction) *ASTType {
+	t.FunctionType = functionType
+	return t
 }
 
 func (t *ASTType) String() string {

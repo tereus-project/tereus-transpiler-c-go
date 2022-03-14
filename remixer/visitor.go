@@ -154,7 +154,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 			variable := ast.NewASTVariableDeclaration(ast.NewASTType(ast.ASTTypeKindInt, "int"))
 			variable.Items = []*ast.ASTVariableDeclarationItem{
 				// TODO: change this to a proper structure when it gets implemented
-				ast.NewASTVariableDeclarationItem(function.Args[0].Name, ast.NewASTExpressionLiteral("len(os.Args)")),
+				ast.NewASTVariableDeclarationItem(function.Args[0].Name, ast.NewASTExpressionLiteral("len(os.Args)", ast.NewASTType(ast.ASTTypeKindInt, "int"))),
 			}
 
 			v.Imports.Add("os")
@@ -167,9 +167,14 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 			typ.ArrayType = ast.NewASTType(ast.ASTTypeKindChar, "string")
 
 			variable := ast.NewASTVariableDeclaration(typ)
+
+			typ_ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
+			typ_.PointerType = ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
+			typ_.PointerType = ast.NewASTType(ast.ASTTypeKindChar, "char")
+
 			variable.Items = []*ast.ASTVariableDeclarationItem{
 				// TODO: change this to a proper structure when it gets implemented
-				ast.NewASTVariableDeclarationItem(function.Args[1].Name, ast.NewASTExpressionLiteral("os.Args")),
+				ast.NewASTVariableDeclarationItem(function.Args[1].Name, ast.NewASTExpressionLiteral("os.Args", typ_)),
 			}
 
 			argumentsInitialization = append(argumentsInitialization, variable)
@@ -225,7 +230,15 @@ func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (ast.IA
 
 	if v.CurrentFunction.Top() == "main" {
 		v.Imports.Add("os")
-		return ast.NewASTExpressionFunctionCall(ast.NewASTExpressionLiteral("os.Exit"), []ast.IASTExpression{expression}), nil
+
+		typ_ := ast.NewASTType(ast.ASTTypeKindFunction, "function")
+		functionType := ast.NewASTFunction("os.Exit")
+		functionType.Args = []*ast.ASTFunctionArgument{
+			ast.NewASTFunctionArgument("code", ast.NewASTType(ast.ASTTypeKindInt, "int")),
+		}
+		functionType.ReturnType = ast.NewASTType(ast.ASTTypeKindVoid, "void")
+
+		return ast.NewASTExpressionFunctionCall(ast.NewASTExpressionLiteral("os.Exit", typ_), []ast.IASTExpression{expression}), nil
 	}
 
 	return ast.NewASTFunctionReturn(expression), nil
@@ -350,9 +363,12 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 	case *parser.IdentifierExpressionContext:
 		return v.VisitIdentifierExpression(child)
 	case *parser.ConstantExpressionContext:
-		return ast.NewASTExpressionLiteral(child.GetText()), nil
+		typ_ := ast.NewASTType(ast.ASTTypeKindInt, "int")
+		return ast.NewASTExpressionLiteral(child.GetText(), typ_), nil
 	case *parser.ConstantStringExpressionContext:
-		return ast.NewASTExpressionLiteral(child.GetText()), nil
+		typ_ := ast.NewASTType(ast.ASTTypeKindArray, "array")
+		typ_.ArrayType = ast.NewASTType(ast.ASTTypeKindChar, "char")
+		return ast.NewASTExpressionLiteral(child.GetText(), typ_), nil
 	case *parser.ParenthesizedExpressionContext:
 		expression, err := v.VisitExpression(child.Expression())
 		if err != nil {
@@ -360,6 +376,18 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 		}
 
 		return ast.NewAstExpressionParenthesized(expression), nil
+	case *parser.ArrayIndexExpressionContext:
+		expression, err := v.VisitExpression(child.Expression(0))
+		if err != nil {
+			return nil, err
+		}
+
+		index, err := v.VisitExpression(child.Expression(1))
+		if err != nil {
+			return nil, err
+		}
+
+		return ast.NewASTExpressionIndex(expression, index), nil
 	case *parser.CastExpressionContext:
 		return v.VisitCastExpression(child)
 	case *parser.UnaryExpressionPostContext:
@@ -417,26 +445,81 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 
 func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionContext) (*ast.ASTExpressionLiteral, error) {
 	if items := v.Scope.Get(ctx.GetText()); len(items) > 0 {
-		return ast.NewASTExpressionLiteral(items[0].GetTranslatedName()), nil
+		return ast.NewASTExpressionLiteral(items[0].GetTranslatedName(), items[0].GetType()), nil
 	}
 
 	identifier := ""
+	var typ *ast.ASTType = nil
 
 	switch ctx.GetText() {
 	case "printf":
 		v.Imports.Add("fmt")
 		identifier = "fmt.Printf"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("printf").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"format",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+				}).
+				SetIsVaridic(true).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
+				),
+			)
 	case "scanf":
 		v.Imports.Add("fmt")
 		identifier = "fmt.Scanf"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("scanf").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"format",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+				}).
+				SetIsVaridic(true).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
+				),
+			)
 	case "malloc":
 		identifier = "libc.Malloc"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("malloc").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"size",
+						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+				),
+			)
 	case "free":
 		identifier = "libc.Free"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("free").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
+				),
+			)
 	}
 
-	if identifier != "" {
-		return ast.NewASTExpressionLiteral(identifier), nil
+	if identifier != "" && typ != nil {
+		return ast.NewASTExpressionLiteral(identifier, typ), nil
 	}
 
 	return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("identifier '%s' not found", ctx.GetText()))
@@ -463,15 +546,12 @@ func (v *Visitor) VisitSizeofExpression(ctx *parser.SizeofExpressionContext) (as
 			return nil, err
 		}
 
-		return ast.NewASTExpressionFunctionCall(
-			ast.NewASTExpressionLiteral("int"),
-			[]ast.IASTExpression{
-				ast.NewASTExpressionFunctionCall(
-					ast.NewASTExpressionLiteral("unsafe.Sizeof"),
-					[]ast.IASTExpression{expression},
-				),
-			},
-		), nil
+		return ast.NewASTExpressionCast(
+			ast.NewASTExpressionFunctionCall(
+				ast.NewASTExpressionLiteral("unsafe.Sizeof", ast.NewASTType(ast.ASTTypeKindAny, "any")),
+				[]ast.IASTExpression{expression},
+			),
+			ast.NewASTType(ast.ASTTypeKindInt, "int")), nil
 	}
 
 	if child := ctx.TypeSpecifier(); child != nil {
@@ -484,22 +564,21 @@ func (v *Visitor) VisitSizeofExpression(ctx *parser.SizeofExpressionContext) (as
 
 		switch typ.Kind {
 		case ast.ASTTypeKindPointer:
-			emptyExpression = ast.NewASTExpressionCast(ast.NewASTExpressionLiteral("nil"), typ)
+			typ_ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
+			typ_.PointerType = ast.NewASTType(ast.ASTTypeKindVoid, "void")
+			emptyExpression = ast.NewASTExpressionCast(ast.NewASTExpressionLiteral("nil", typ_), typ)
 		// case ast.ASTTypeKindStruct:
 		// 	emptyExpression =
 		default:
-			emptyExpression = ast.NewASTExpressionCast(ast.NewASTExpressionLiteral("0"), typ)
+			emptyExpression = ast.NewASTExpressionCast(ast.NewASTExpressionLiteral("0", ast.NewASTType(ast.ASTTypeKindInt, "int")), typ)
 		}
 
-		return ast.NewASTExpressionFunctionCall(
-			ast.NewASTExpressionLiteral("int"),
-			[]ast.IASTExpression{
-				ast.NewASTExpressionFunctionCall(
-					ast.NewASTExpressionLiteral("unsafe.Sizeof"),
-					[]ast.IASTExpression{emptyExpression},
-				),
-			},
-		), nil
+		return ast.NewASTExpressionCast(
+			ast.NewASTExpressionFunctionCall(
+				ast.NewASTExpressionLiteral("unsafe.Sizeof", ast.NewASTType(ast.ASTTypeKindAny, "any")),
+				[]ast.IASTExpression{emptyExpression},
+			),
+			ast.NewASTType(ast.ASTTypeKindInt, "int")), nil
 	}
 
 	return nil, v.PositionedTranslationError(ctx.GetStart(), "sizeof unsupported on this type")

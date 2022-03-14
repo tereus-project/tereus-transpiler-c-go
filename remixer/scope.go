@@ -5,6 +5,8 @@ import "github.com/tereus-project/tereus-remixer-c-go/remixer/ast"
 type IScopeItem interface {
 	GetName() string
 	GetTranslatedName() string
+
+	GetType() *ast.ASTType
 }
 
 type ScopeItem struct {
@@ -41,6 +43,10 @@ func NewScopeVariable(name string, translatedName string, typ *ast.ASTType) *Sco
 		ScopeItem: NewScopeItem(name, translatedName),
 		Type:      typ,
 	}
+}
+
+func (s *ScopeVariable) GetType() *ast.ASTType {
+	return s.Type
 }
 
 type Scope struct {

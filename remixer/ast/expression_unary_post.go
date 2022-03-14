@@ -17,3 +17,7 @@ func NewASTExpressionUnaryPost(operand IASTExpression, operator string) *ASTExpr
 func (e *ASTExpressionUnaryPost) String() string {
 	return fmt.Sprintf("%s%s", e.Operand.String(), e.Operator)
 }
+
+func (e *ASTExpressionUnaryPost) GetType() *ASTType {
+	return e.Operand.GetType()
+}

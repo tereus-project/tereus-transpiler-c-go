@@ -38,6 +38,7 @@ expression:
 	Identifier														# IdentifierExpression
 	| Constant														# ConstantExpression
 	| StringLiteral													# ConstantStringExpression
+	| expression '[' expression ']'									# ArrayIndexExpression
 	| expression '(' functionCallArguments? ')'						# FunctionCallExpression
 	| '(' typeSpecifier ')' expression								# CastExpression
 	| '(' expression ')'											# ParenthesizedExpression

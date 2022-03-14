@@ -15,3 +15,7 @@ func NewAstExpressionParenthesized(expression IASTExpression) *ASTExpressionPare
 func (e *ASTExpressionParenthesized) String() string {
 	return fmt.Sprintf("(%s)", e.Expression.String())
 }
+
+func (e *ASTExpressionParenthesized) GetType() *ASTType {
+	return e.Expression.GetType()
+}

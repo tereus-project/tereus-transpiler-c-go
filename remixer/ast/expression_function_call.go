@@ -26,3 +26,7 @@ func (e *ASTExpressionFunctionCall) String() string {
 
 	return fmt.Sprintf("%s(%s)", e.Left.String(), strings.Join(args, ", "))
 }
+
+func (e *ASTExpressionFunctionCall) GetType() *ASTType {
+	return e.Left.GetType()
+}

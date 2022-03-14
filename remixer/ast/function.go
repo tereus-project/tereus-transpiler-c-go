@@ -8,6 +8,7 @@ import (
 type ASTFunction struct {
 	Name       string
 	Args       []*ASTFunctionArgument
+	IsVariadic bool
 	ReturnType *ASTType
 	Body       *ASTBlock
 }
@@ -16,6 +17,21 @@ func NewASTFunction(name string) *ASTFunction {
 	return &ASTFunction{
 		Name: name,
 	}
+}
+
+func (f *ASTFunction) SetArgs(args []*ASTFunctionArgument) *ASTFunction {
+	f.Args = args
+	return f
+}
+
+func (f *ASTFunction) SetIsVaridic(isVariadic bool) *ASTFunction {
+	f.IsVariadic = isVariadic
+	return f
+}
+
+func (f *ASTFunction) SetReturnType(returnType *ASTType) *ASTFunction {
+	f.ReturnType = returnType
+	return f
 }
 
 func (f *ASTFunction) String() string {

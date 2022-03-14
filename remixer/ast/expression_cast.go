@@ -15,5 +15,14 @@ func NewASTExpressionCast(expression IASTExpression, typ *ASTType) *ASTExpressio
 }
 
 func (e *ASTExpressionCast) String() string {
-	return fmt.Sprintf("(%s)(%s)", e.Type.String(), e.Expression.String())
+	switch e.Type.Kind {
+	case ASTTypeKindInt16, ASTTypeKindInt, ASTTypeKindInt64:
+		return fmt.Sprintf("%s(%s)", e.Type.String(), e.Expression.String())
+	default:
+		return fmt.Sprintf("(%s)(%s)", e.Type.String(), e.Expression.String())
+	}
+}
+
+func (e *ASTExpressionCast) GetType() *ASTType {
+	return e.Type
 }
