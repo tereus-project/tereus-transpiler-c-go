@@ -291,7 +291,7 @@ import (
 )
 
 func main() {
-	a := (*int)(libc.Malloc(int(unsafe.Sizeof((int)(0))) * 5))
+	a := (*int)(libc.Malloc(int(unsafe.Sizeof(int(0))) * 5))
 	os.Exit(0)
 }
 `
