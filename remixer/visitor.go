@@ -359,6 +359,10 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 }
 
 func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpression, error) {
+	return v.VisitExpressionWithConfigurableIsStatement(ctx, false)
+}
+
+func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpressionContext, isStatement bool) (ast.IASTExpression, error) {
 	switch child := ctx.(type) {
 	case *parser.IdentifierExpressionContext:
 		return v.VisitIdentifierExpression(child)
@@ -396,14 +400,14 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 			return nil, err
 		}
 
-		return ast.NewASTExpressionUnaryPost(left, child.UnaryOperatorPost().GetText()), nil
+		return ast.NewASTExpressionUnaryPost(left, child.UnaryOperatorPost().GetText(), isStatement), nil
 	case *parser.UnaryExpressionPreContext:
 		right, err := v.VisitExpression(child.Expression())
 		if err != nil {
 			return nil, err
 		}
 
-		return ast.NewASTExpressionUnaryPre(child.UnaryOperatorPre().GetText(), right), nil
+		return ast.NewASTExpressionUnaryPre(child.UnaryOperatorPre().GetText(), right, isStatement), nil
 	case *parser.SizeofExpressionContext:
 		return v.VisitSizeofExpression(child)
 	case *parser.AssignmentExpressionContext:
@@ -644,7 +648,7 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 
 		return variableDeclaration, nil
 	} else if child := ctx.Expression(); child != nil {
-		return v.VisitExpression(child)
+		return v.VisitExpressionWithConfigurableIsStatement(child, true)
 	} else if child := ctx.FunctionReturn(); child != nil {
 		return v.VisitFunctionReturn(child.(*parser.FunctionReturnContext))
 	} else if child := ctx.Break(); child != nil {
@@ -732,7 +736,7 @@ func (v *Visitor) VisitForStatement(ctx *parser.ForStatementContext) (*ast.ASTFo
 	}
 
 	if child := ctx.GetPost(); child != nil {
-		expression, err := v.VisitExpression(child)
+		expression, err := v.VisitExpressionWithConfigurableIsStatement(child, true)
 		if err != nil {
 			return nil, err
 		}
