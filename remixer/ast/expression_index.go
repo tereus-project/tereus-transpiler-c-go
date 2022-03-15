@@ -24,5 +24,14 @@ func (e *ASTExpressionIndex) String() string {
 }
 
 func (e *ASTExpressionIndex) GetType() *ASTType {
-	return e.Left.GetType()
+	typ := e.Left.GetType()
+
+	switch typ.Kind {
+	case ASTTypeKindArray:
+		return typ.ArrayType
+	case ASTTypeKindPointer:
+		return typ.PointerType
+	}
+
+	return nil
 }
