@@ -26,7 +26,7 @@ type Visitor struct {
 	Output  map[string]string
 
 	Scope           *Scope
-	CurrentFunction *utils.Stack
+	CurrentFunction *utils.Stack[string]
 }
 
 func NewVisitor(path string) (*Visitor, error) {
@@ -44,7 +44,7 @@ func NewVisitor(path string) (*Visitor, error) {
 		Output:  make(map[string]string),
 
 		Scope:           NewScope(),
-		CurrentFunction: utils.NewStack(),
+		CurrentFunction: utils.NewStack[string](),
 	}
 
 	return visitor, nil
@@ -403,13 +403,7 @@ func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpres
 			return nil, err
 		}
 
-		operator := child.UnaryOperatorPre().GetText()
-
-		if operator == "++" || operator == "--" {
-			return nil, v.TranslationError(child.BaseParserRuleContext, fmt.Sprintf("unary operator '%s' not supported by Go", operator))
-		}
-
-		return ast.NewASTExpressionUnaryPre(operator, right), nil
+		return ast.NewASTExpressionUnaryPre(child.UnaryOperatorPre().GetText(), right), nil
 	case *parser.SizeofExpressionContext:
 		return v.VisitSizeofExpression(child)
 	case *parser.AssignmentExpressionContext:

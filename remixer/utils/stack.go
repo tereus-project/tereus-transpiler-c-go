@@ -1,24 +1,24 @@
 package utils
 
-type Stack struct {
-	stack []string
+type Stack[T any] struct {
+	stack []T
 }
 
-func NewStack() *Stack {
-	return &Stack{}
+func NewStack[T any]() *Stack[T] {
+	return &Stack[T]{}
 }
 
-func (s *Stack) Push(v string) {
+func (s *Stack[T]) Push(v T) {
 	s.stack = append(s.stack, v)
 }
 
-func (s *Stack) Pop() string {
+func (s *Stack[T]) Pop() T {
 	last := s.stack[len(s.stack)-1]
 	s.stack = s.stack[:len(s.stack)-1]
 
 	return last
 }
 
-func (s *Stack) Top() string {
+func (s *Stack[T]) Top() T {
 	return s.stack[len(s.stack)-1]
 }
