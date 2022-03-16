@@ -8,6 +8,8 @@ require (
 	golang.org/x/tools v0.1.9
 )
 
+require github.com/dlclark/regexp2 v1.4.0
+
 require (
 	golang.org/x/exp v0.0.0-20220314205449-43aec2f8a4e7
 	golang.org/x/mod v0.6.0-dev.0.20211013180041-c96bc1413d57 // indirect

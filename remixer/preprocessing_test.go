@@ -50,3 +50,21 @@ void main() {
 
 	testPreprocessor(t, source, target)
 }
+
+func TestPreprocessingSimpleMacro(t *testing.T) {
+	source := `
+#define ADD(a, b) a + b
+
+void main() {
+	int a = ADD(1, 2);
+}
+`
+
+	target := `
+void main() {
+	int a = 1 + 2;
+}
+`
+
+	testPreprocessor(t, source, target)
+}

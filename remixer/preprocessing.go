@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/dlclark/regexp2"
 )
 
 type Define struct {
@@ -65,7 +67,7 @@ func (v *Preprocessor) Preprocess() (string, error) {
 		value := v.Code[matches[valueIndexStart]:matches[valueIndexEnd]]
 
 		if _, ok := defines[name]; ok {
-			return "", fmt.Errorf("'%s' already defined", name)
+			return "", fmt.Errorf("macro '%s' already defined", name)
 		}
 
 		if argsStart := matches[argsIndexStart]; argsStart != -1 {
@@ -113,21 +115,88 @@ func (v *Preprocessor) Preprocess() (string, error) {
 	for _, define := range sortedDefines {
 		index := definesStartIndex[define.Name]
 
-		defineRegex := regexp.MustCompile(`(?:^|[^\w])` + define.Name + `(?:[^\w]|$)`)
-		v.Code = v.Code[:index] + defineRegex.ReplaceAllStringFunc(v.Code[index:], func(s string) string {
-			prefix := ""
-			suffix := ""
+		if define.IsFunction {
+			defineRegex := regexp.MustCompile(`(?:^|[^\w])` + define.Name + `\s*\(`)
 
-			if s[0] != define.Name[0] {
-				prefix = string(s[0])
+			for matches := defineRegex.FindAllStringSubmatchIndex(v.Code, -1); matches != nil; matches = defineRegex.FindAllStringSubmatchIndex(v.Code, -1) {
+				match := matches[len(matches)-1]
+
+				args := []string{""}
+
+				start := match[0]
+				end := match[1]
+
+				for parenStack, isInString := 1, false; end < len(v.Code); end++ {
+					c := v.Code[end]
+
+					if !isInString {
+						if c == '(' {
+							parenStack++
+						} else if c == ')' {
+							parenStack--
+
+							if parenStack == 0 {
+								break
+							}
+						} else if c == '\'' || c == '"' {
+							isInString = true
+						} else if c == ',' && parenStack == 1 {
+							args = append(args, "")
+							continue
+						}
+					} else if c == '\\' && len(v.Code) > end+1 {
+						args[len(args)-1] += string(c) + string(v.Code[end+1])
+						end++
+						continue
+					} else if c == '"' || c == '\'' {
+						isInString = false
+					}
+
+					args[len(args)-1] += string(c)
+				}
+
+				if len(args) == 1 && args[0] == "" {
+					args = args[1:]
+				}
+
+				if len(args) != len(define.Args) {
+					return "", fmt.Errorf("invalid number of arguments for macro '%s': %d of %d expected", define.Name, len(args), len(define.Args))
+				}
+
+				argsPosition := make(map[string]int)
+
+				for i, arg := range define.Args {
+					argsPosition[arg] = i
+				}
+
+				defineArgumentRegex := regexp2.MustCompile(`(?<=^|[^\w])(`+strings.Join(define.Args, "|")+`)(?=[^\w]|$)`, 0)
+
+				content, err := defineArgumentRegex.ReplaceFunc(define.Content, func(match regexp2.Match) string {
+					return strings.TrimSpace(args[argsPosition[match.String()]])
+				}, -1, -1)
+
+				if err != nil {
+					return "", err
+				}
+
+				prefix := ""
+
+				if v.Code[start] != define.Name[0] {
+					prefix = string(v.Code[start])
+				}
+
+				v.Code = prefix + v.Code[:start+1] + content + v.Code[end+1:]
+			}
+		} else {
+			defineRegex := regexp2.MustCompile(`(?<=^|[^\w])`+define.Name+`(?=[^\w]|$)`, 0)
+
+			content, err := defineRegex.Replace(v.Code[index:], define.Content, -1, -1)
+			if err != nil {
+				return "", err
 			}
 
-			if s[len(s)-1] != define.Name[len(define.Name)-1] {
-				suffix = string(s[len(s)-1])
-			}
-
-			return prefix + define.Content + suffix
-		})
+			v.Code = v.Code[:index] + content
+		}
 	}
 
 	return v.Code, nil

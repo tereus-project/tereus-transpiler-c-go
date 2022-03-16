@@ -16,6 +16,8 @@ func Remix(entrypoint string) (string, error) {
 		return "", err
 	}
 
+	// return preprocessed, nil
+
 	visitor := NewVisitor(entrypoint, preprocessed)
 
 	input := antlr.NewInputStream(visitor.Code)
