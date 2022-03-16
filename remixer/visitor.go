@@ -3,7 +3,6 @@ package remixer
 import (
 	"fmt"
 	"go/format"
-	"os"
 	"regexp"
 	"strings"
 
@@ -29,15 +28,10 @@ type Visitor struct {
 	CurrentFunction *utils.Stack[string]
 }
 
-func NewVisitor(path string) (*Visitor, error) {
-	code, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-
-	visitor := &Visitor{
+func NewVisitor(path string, code string) *Visitor {
+	return &Visitor{
 		Path: path,
-		Code: string(code),
+		Code: code,
 
 		Package: "main",
 		Imports: mapset.NewSet(),
@@ -46,8 +40,6 @@ func NewVisitor(path string) (*Visitor, error) {
 		Scope:           NewScope(),
 		CurrentFunction: utils.NewStack[string](),
 	}
-
-	return visitor, nil
 }
 
 func (v *Visitor) PositionedTranslationError(start antlr.Token, message string) error {

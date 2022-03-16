@@ -6,10 +6,17 @@ import (
 )
 
 func Remix(entrypoint string) (string, error) {
-	visitor, err := NewVisitor(entrypoint)
+	preprocessor, err := NewPreprocessor(entrypoint)
 	if err != nil {
 		return "", err
 	}
+
+	preprocessed, err := preprocessor.Preprocess()
+	if err != nil {
+		return "", err
+	}
+
+	visitor := NewVisitor(entrypoint, preprocessed)
 
 	input := antlr.NewInputStream(visitor.Code)
 	lexer := parser.NewCLexer(input)

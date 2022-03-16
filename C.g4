@@ -329,7 +329,7 @@ fragment SChar:
 	| '\\\n' // Added line
 	| '\\\r\n'; // Added line
 
-ComplexDefine: '#' Whitespace? 'define' ~[#\r\n]*;
+ComplexDefine: '#' Whitespace? 'define' ~[#\r\n]* -> skip;
 
 IncludeDirective:
 	'#' Whitespace? 'include' Whitespace? (
