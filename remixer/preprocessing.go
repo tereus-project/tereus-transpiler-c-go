@@ -45,33 +45,28 @@ func NewPreprocessor(path string) (*Preprocessor, error) {
 }
 
 var (
-	preprocessorRegex         = regexp.MustCompile(`(?m)^[ \t]*#\s*define\s+(?P<Name>\w+)(?P<Args>\(\s*\w+(?:\s*,\s*\w+)*\s*\))?\s+(?P<Value>(?:(?:[\\][\r\n])|.)+)$`)
+	preprocessorRegex         = regexp2.MustCompile(`(?<String>\"(?:(?:\\.)|[^\"])*\")|(^[ \t]*#\s*define\s+(?<Name>\w+)(?<Args>\(\s*\w+(?:\s*,\s*\w+)*\s*\))?\s+(?<Value>(?:(?:[\\][\r\n])|.)+)$)`, regexp2.Multiline)
 	preprocessorArgumentRegex = regexp.MustCompile(`^[a-zA-Z_]\w*$`)
 )
 
 func (v *Preprocessor) Preprocess() (string, error) {
-	nameIndexStart := preprocessorRegex.SubexpIndex("Name") * 2
-	nameIndexEnd := nameIndexStart + 1
-
-	valueIndexStart := preprocessorRegex.SubexpIndex("Value") * 2
-	valueIndexEnd := valueIndexStart + 1
-
-	argsIndexStart := preprocessorRegex.SubexpIndex("Args") * 2
-	argsIndexEnd := argsIndexStart + 1
-
 	defines := make(map[string]*Define)
 	definesStartIndex := make(map[string]int)
 
-	for matches := preprocessorRegex.FindStringSubmatchIndex(v.Code); matches != nil; matches = preprocessorRegex.FindStringSubmatchIndex(v.Code) {
-		name := v.Code[matches[nameIndexStart]:matches[nameIndexEnd]]
-		value := v.Code[matches[valueIndexStart]:matches[valueIndexEnd]]
+	for match, _ := preprocessorRegex.FindStringMatch(v.Code); match != nil; match, _ = preprocessorRegex.FindNextMatch(match) {
+		if str := match.GroupByName("String"); str != nil && str.Length > 0 {
+			continue
+		}
+
+		name := match.GroupByName("Name").String()
+		value := match.GroupByName("Value").String()
+		argsString := match.GroupByName("Args").String()
 
 		if _, ok := defines[name]; ok {
 			return "", fmt.Errorf("macro '%s' already defined", name)
 		}
 
-		if argsStart := matches[argsIndexStart]; argsStart != -1 {
-			argsString := v.Code[argsStart:matches[argsIndexEnd]]
+		if len(argsString) > 0 {
 			argsString = argsString[1 : len(argsString)-1]
 			args := strings.Split(argsString, ",")
 
@@ -97,9 +92,9 @@ func (v *Preprocessor) Preprocess() (string, error) {
 			}
 		}
 
-		definesStartIndex[name] = matches[0]
+		definesStartIndex[name] = match.Index
 
-		v.Code = v.Code[:matches[0]] + v.Code[matches[len(matches)-1]:]
+		v.Code = v.Code[:match.Index] + v.Code[match.Index+match.Length:]
 	}
 
 	sortedDefines := make([]*Define, 0, len(defines))
@@ -116,18 +111,24 @@ func (v *Preprocessor) Preprocess() (string, error) {
 		index := definesStartIndex[define.Name]
 
 		if define.IsFunction {
-			defineRegex := regexp.MustCompile(`(?:^|[^\w])` + define.Name + `\s*\(`)
+			defineRegex := regexp2.MustCompile(`(?:\"(?:(?:\\.)|[^\"])*\")|(?<Target>(?<=^|[^\w])`+define.Name+`\s*\()`, 0)
+			defineRegex.RightToLeft()
 
-			for matches := defineRegex.FindAllStringSubmatchIndex(v.Code, -1); matches != nil; matches = defineRegex.FindAllStringSubmatchIndex(v.Code, -1) {
-				match := matches[len(matches)-1]
+			selectedPart := v.Code[index:]
+
+			for match, _ := defineRegex.FindStringMatch(selectedPart); match != nil; match, _ = defineRegex.FindNextMatch(match) {
+				group := match.GroupByName("Target")
+				if group == nil || group.Length == 0 {
+					continue
+				}
+
+				start := group.Capture.Index
+				end := start + group.Length
 
 				args := []string{""}
 
-				start := match[0]
-				end := match[1]
-
-				for parenStack, isInString := 1, false; end < len(v.Code); end++ {
-					c := v.Code[end]
+				for parenStack, isInString := 1, false; end < len(selectedPart); end++ {
+					c := selectedPart[end]
 
 					if !isInString {
 						if c == '(' {
@@ -144,8 +145,8 @@ func (v *Preprocessor) Preprocess() (string, error) {
 							args = append(args, "")
 							continue
 						}
-					} else if c == '\\' && len(v.Code) > end+1 {
-						args[len(args)-1] += string(c) + string(v.Code[end+1])
+					} else if c == '\\' && len(selectedPart) > end+1 {
+						args[len(args)-1] += string(c) + string(selectedPart[end+1])
 						end++
 						continue
 					} else if c == '"' || c == '\'' {
@@ -169,28 +170,36 @@ func (v *Preprocessor) Preprocess() (string, error) {
 					argsPosition[arg] = i
 				}
 
-				defineArgumentRegex := regexp2.MustCompile(`(?<=^|[^\w])(`+strings.Join(define.Args, "|")+`)(?=[^\w]|$)`, 0)
+				defineArgumentRegex := regexp2.MustCompile(`(?:\"(?:(?:\\.)|[^\"])*\")|(?:(?<=^|[^\w])(?<Target>(?:`+strings.Join(define.Args, ")|(")+`))(?=[^\w]|$))`, 0)
 
 				content, err := defineArgumentRegex.ReplaceFunc(define.Content, func(match regexp2.Match) string {
-					return strings.TrimSpace(args[argsPosition[match.String()]])
+					if group := match.GroupByName("Target"); group != nil && group.Length > 0 {
+						if index, ok := argsPosition[group.String()]; ok {
+							return strings.TrimSpace(args[index])
+						}
+					}
+
+					return match.String()
 				}, -1, -1)
 
 				if err != nil {
 					return "", err
 				}
 
-				prefix := ""
+				selectedPart = selectedPart[:start] + content + selectedPart[end+1:]
+			}
 
-				if v.Code[start] != define.Name[0] {
-					prefix = string(v.Code[start])
+			v.Code = v.Code[:index] + selectedPart
+		} else {
+			defineRegex := regexp2.MustCompile(`(?:\"(?:(?:\\.)|[^\"])*\")|(?<Target>(?<=^|[^\w])`+define.Name+`(?=[^\w]|$))`, 0)
+
+			content, err := defineRegex.ReplaceFunc(v.Code[index:], func(match regexp2.Match) string {
+				if group := match.GroupByName("Target"); group != nil && group.Length > 0 {
+					return define.Content
 				}
 
-				v.Code = prefix + v.Code[:start+1] + content + v.Code[end+1:]
-			}
-		} else {
-			defineRegex := regexp2.MustCompile(`(?<=^|[^\w])`+define.Name+`(?=[^\w]|$)`, 0)
-
-			content, err := defineRegex.Replace(v.Code[index:], define.Content, -1, -1)
+				return match.String()
+			}, -1, -1)
 			if err != nil {
 				return "", err
 			}
