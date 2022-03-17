@@ -111,8 +111,7 @@ func (v *Preprocessor) Preprocess() (string, error) {
 		index := definesStartIndex[define.Name]
 
 		if define.IsFunction {
-			defineRegex := regexp2.MustCompile(`(?:\"(?:(?:\\.)|[^\"])*\")|(?<Target>(?<=^|[^\w])`+define.Name+`\s*\()`, 0)
-			defineRegex.RightToLeft()
+			defineRegex := regexp2.MustCompile(`(?:\"(?:(?:\\.)|[^\"])*\")|(?<Target>(?<=^|[^\w])`+define.Name+`\s*\()`, regexp2.RightToLeft)
 
 			selectedPart := v.Code[index:]
 
