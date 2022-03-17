@@ -5,6 +5,7 @@ translation: declaration*;
 declaration:
 	functionDeclaration
 	| (structDeclaration ';')
+	| (enumDeclaration ';')
 	| includePreprocessor;
 
 functionDeclaration:
@@ -28,6 +29,11 @@ typeSpecifier:
 structDeclaration: 'struct' Identifier? '{' structProperty* '}';
 
 structProperty: typeSpecifier Identifier? ';';
+
+enumDeclaration: 'enum' Identifier? '{' enumProperties ','? '}';
+
+enumProperties:
+	Identifier ('=' expression)? (',' enumProperties)?;
 
 variableDeclaration: typeSpecifier variableDeclarationList;
 
@@ -96,6 +102,7 @@ statement: (
 			| functionReturn
 			| 'break'
 			| structDeclaration
+			| enumDeclaration
 		) ';'
 	)
 	| ifStatement

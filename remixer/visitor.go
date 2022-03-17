@@ -83,12 +83,12 @@ func (v *Visitor) VisitTranslation(ctx *parser.TranslationContext) (string, erro
 	output += code
 	formatted, err := format.Source([]byte(output))
 	if err != nil {
-		return "", err
+		return output, fmt.Errorf("formatting error: %s", err)
 	}
 
 	formatted, err = imports.Process(v.Path, formatted, nil)
 	if err != nil {
-		return "", err
+		return output, fmt.Errorf("imports formatting error: %s", err)
 	}
 
 	return string(formatted), nil
@@ -99,6 +99,8 @@ func (v *Visitor) VisitDeclaration(ctx *parser.DeclarationContext) (ast.IASTItem
 		return v.VisitFunctionDeclaration(child.(*parser.FunctionDeclarationContext))
 	} else if child := ctx.StructDeclaration(); child != nil {
 		return v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
+	} else if child := ctx.EnumDeclaration(); child != nil {
+		return v.VisitEnumDeclaration(child.(*parser.EnumDeclarationContext))
 	} else if child := ctx.IncludePreprocessor(); child != nil {
 		return v.VisitIncludePreprocessor(child.(*parser.IncludePreprocessorContext))
 	}
@@ -266,7 +268,7 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
 }
 
-func (v *Visitor) VisitStructDeclaration(ctx *parser.StructDeclarationContext) (ast.IASTItem, error) {
+func (v *Visitor) VisitStructDeclaration(ctx *parser.StructDeclarationContext) (*ast.ASTStruct, error) {
 	name := "_"
 
 	if child := ctx.Identifier(); child != nil {
@@ -300,6 +302,52 @@ func (v *Visitor) VisitStructProperty(ctx *parser.StructPropertyContext) (*ast.A
 	}
 
 	return ast.NewASTStructProperty(name, typ), nil
+}
+
+func (v *Visitor) VisitEnumDeclaration(ctx *parser.EnumDeclarationContext) (*ast.ASTEnum, error) {
+	var name string
+	if child := ctx.Identifier(); child != nil {
+		name = child.GetText()
+	}
+
+	properties, err := v.VisitEnumProperties(ctx.EnumProperties().(*parser.EnumPropertiesContext))
+	if err != nil {
+		return nil, err
+	}
+
+	return ast.NewASTEnum(name, properties), nil
+}
+
+func (v *Visitor) VisitEnumProperties(ctx *parser.EnumPropertiesContext) ([]*ast.ASTEnumProperty, error) {
+	var err error
+
+	var name string
+	if child := ctx.Identifier(); child != nil {
+		name = child.GetText()
+	}
+
+	var expression ast.IASTExpression
+	if child := ctx.Expression(); child != nil {
+		expression, err = v.VisitExpression(child)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	v.Scope.Add(NewScopeVariable(name, "", ast.NewASTType(ast.ASTTypeKindInt64, "int64")))
+
+	properties := []*ast.ASTEnumProperty{ast.NewASTEnumProperty(name, expression)}
+
+	if child := ctx.EnumProperties(); child != nil {
+		others, err := v.VisitEnumProperties(child.(*parser.EnumPropertiesContext))
+		if err != nil {
+			return nil, err
+		}
+
+		properties = append(properties, others...)
+	}
+
+	return properties, nil
 }
 
 func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext) (*ast.ASTVariableDeclaration, error) {
@@ -647,6 +695,8 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return ast.NewASTBreak(), nil
 	} else if child := ctx.StructDeclaration(); child != nil {
 		return v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
+	} else if child := ctx.EnumDeclaration(); child != nil {
+		return v.VisitEnumDeclaration(child.(*parser.EnumDeclarationContext))
 	} else if child := ctx.IfStatement(); child != nil {
 		return v.VisitIfStatement(child.(*parser.IfStatementContext))
 	} else if child := ctx.ForStatement(); child != nil {

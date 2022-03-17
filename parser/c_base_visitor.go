@@ -40,6 +40,14 @@ func (v *BaseCVisitor) VisitStructProperty(ctx *StructPropertyContext) interface
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitEnumDeclaration(ctx *EnumDeclarationContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitEnumProperties(ctx *EnumPropertiesContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitVariableDeclaration(ctx *VariableDeclarationContext) interface{} {
 	return v.VisitChildren(ctx)
 }
