@@ -3,30 +3,6 @@ name: Push workflow
 on: push
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os:
-          - linux
-          - darwin
-          - freebsd
-          - windows
-        arch:
-          - amd64
-          - arm64
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: "1.17"
-      - name: Run build
-        run: go build -o tereus-api-$GOOS-$GOARCH
-        env:
-          GOOS: ${{ matrix.os }}
-          GOARCH: ${{ matrix.arch }}
-
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -43,6 +19,6 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: "1.17"
+          go-version: "1.18"
       - name: Run tests
         run: go test ./... -v
