@@ -37,12 +37,24 @@ func initWorker() {
 		fmt.Println(err)
 	}
 
-	ch, err := rabbitmqService.ConsumeRemixJob()
+	minioService, err := modules.NewMinioService()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	for job := range ch {
-		fmt.Println(job)
+	deliveries, err := rabbitmqService.ConsumeRemixJob()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for job := range deliveries {
+		for filepath := range minioService.GetFiles(job.ID) {
+			path, err := minioService.GetFile(job.ID, filepath)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			fmt.Println(path)
+		}
 	}
 }
