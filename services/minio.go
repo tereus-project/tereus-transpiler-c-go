@@ -45,14 +45,21 @@ func NewMinioService() (*MinioService, error) {
 	return service, nil
 }
 
-var remixPrefix = "remix/"
+var remixPrefix = "remix"
 
 func (s *MinioService) GetFiles(id string) <-chan string {
 	files := make(chan string)
-	prefix := fmt.Sprintf("%s%s/", remixPrefix, id)
+	prefix := fmt.Sprintf("%s/%s/", remixPrefix, id)
 
 	go func() {
-		for object := range s.client.ListObjects(context.Background(), env.S3Bucket, minio.ListObjectsOptions{Prefix: prefix, Recursive: true}) {
+		for object := range s.client.ListObjects(
+			context.Background(),
+			env.S3Bucket,
+			minio.ListObjectsOptions{
+				Prefix:    prefix,
+				Recursive: true,
+			},
+		) {
 			files <- strings.TrimPrefix(object.Key, prefix)
 		}
 
@@ -63,9 +70,14 @@ func (s *MinioService) GetFiles(id string) <-chan string {
 }
 
 func (s *MinioService) GetFile(id string, filepath string) (string, error) {
-	objectPath := fmt.Sprintf("%s%s/%s", remixPrefix, id, filepath)
+	objectPath := fmt.Sprintf("%s/%s/%s", remixPrefix, id, filepath)
 
-	object, err := s.client.GetObject(context.Background(), env.S3Bucket, objectPath, minio.GetObjectOptions{})
+	object, err := s.client.GetObject(
+		context.Background(),
+		env.S3Bucket,
+		objectPath,
+		minio.GetObjectOptions{},
+	)
 	if err != nil {
 		return "", err
 	}
@@ -87,4 +99,22 @@ func (s *MinioService) GetFile(id string, filepath string) (string, error) {
 	}
 
 	return f.Name(), nil
+}
+
+func (s *MinioService) PutFile(id string, filepath string, content string) error {
+	objectPath := fmt.Sprintf("%s-results/%s/%s", remixPrefix, id, filepath)
+
+	_, err := s.client.PutObject(
+		context.Background(),
+		env.S3Bucket,
+		objectPath,
+		strings.NewReader(content),
+		int64(len(content)),
+		minio.PutObjectOptions{},
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
