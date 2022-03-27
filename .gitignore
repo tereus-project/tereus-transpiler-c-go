@@ -16,3 +16,6 @@
 
 # ANTLR4 cache
 .antlr/
+
+.env*
+!.env.example
