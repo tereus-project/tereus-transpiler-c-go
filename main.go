@@ -6,8 +6,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/tereus-project/tereus-remixer-c-go/env"
-	"github.com/tereus-project/tereus-remixer-c-go/modules"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer"
+	"github.com/tereus-project/tereus-remixer-c-go/services"
 )
 
 func main() {
@@ -32,12 +32,12 @@ func main() {
 }
 
 func initWorker() {
-	rabbitmqService, err := modules.NewRabbitMQService()
+	rabbitmqService, err := services.NewRabbitMQService()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	minioService, err := modules.NewMinioService()
+	minioService, err := services.NewMinioService()
 	if err != nil {
 		fmt.Println(err)
 	}
