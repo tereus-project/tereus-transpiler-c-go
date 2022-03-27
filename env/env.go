@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	LogLevel         string
 	S3Bucket         string
 	S3AccessKey      string
 	S3SecretKey      string
@@ -19,6 +20,11 @@ func LoadEnv() error {
 	err := godotenv.Load()
 	if err != nil {
 		return err
+	}
+
+	LogLevel = os.Getenv("LOG_LEVEL")
+	if LogLevel == "" {
+		LogLevel = "info"
 	}
 
 	S3Bucket = os.Getenv("S3_BUCKET")
