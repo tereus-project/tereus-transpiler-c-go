@@ -8,7 +8,13 @@ require (
 	golang.org/x/tools v0.1.9
 )
 
-require github.com/dlclark/regexp2 v1.4.0
+require (
+	github.com/dlclark/regexp2 v1.4.0
+	github.com/google/uuid v1.3.0
+	github.com/joho/godotenv v1.4.0
+	github.com/rabbitmq/amqp091-go v1.3.0
+	github.com/sirupsen/logrus v1.8.1
+)
 
 require (
 	golang.org/x/exp v0.0.0-20220314205449-43aec2f8a4e7
