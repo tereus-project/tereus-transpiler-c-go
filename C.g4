@@ -50,9 +50,9 @@ expression:
 	| '(' expression ')'											# ParenthesizedExpression
 	| expression unaryOperatorPost									# UnaryExpressionPost
 	| unaryOperatorPre expression									# UnaryExpressionPre
-	| Sizeof (expression | typeSpecifier | '(' typeSpecifier ')')	# SizeofExpression
 	| expression assignementOperator expression						# AssignmentExpression
-	| expression binaryOperator expression							# BinaryExpression;
+	| expression binaryOperator expression							# BinaryExpression
+	| Sizeof ('(' typeSpecifier ')' | typeSpecifier | expression)	# SizeofExpression;
 
 assignementOperator:
 	'='

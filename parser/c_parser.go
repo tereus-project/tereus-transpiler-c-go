@@ -97,15 +97,15 @@ var parserATN = []uint16{
 	2, 159, 160, 5, 26, 14, 9, 160, 178, 3, 2, 2, 2, 161, 162, 7, 32, 2, 2,
 	162, 163, 5, 26, 14, 2, 163, 164, 7, 33, 2, 2, 164, 178, 3, 2, 2, 2, 165,
 	166, 5, 34, 18, 2, 166, 167, 5, 26, 14, 6, 167, 178, 3, 2, 2, 2, 168, 175,
-	7, 23, 2, 2, 169, 176, 5, 26, 14, 2, 170, 176, 5, 12, 7, 2, 171, 172, 7,
-	32, 2, 2, 172, 173, 5, 12, 7, 2, 173, 174, 7, 33, 2, 2, 174, 176, 3, 2,
-	2, 2, 175, 169, 3, 2, 2, 2, 175, 170, 3, 2, 2, 2, 175, 171, 3, 2, 2, 2,
+	7, 23, 2, 2, 169, 170, 7, 32, 2, 2, 170, 171, 5, 12, 7, 2, 171, 172, 7,
+	33, 2, 2, 172, 176, 3, 2, 2, 2, 173, 176, 5, 12, 7, 2, 174, 176, 5, 26,
+	14, 2, 175, 169, 3, 2, 2, 2, 175, 173, 3, 2, 2, 2, 175, 174, 3, 2, 2, 2,
 	176, 178, 3, 2, 2, 2, 177, 152, 3, 2, 2, 2, 177, 154, 3, 2, 2, 2, 177,
 	155, 3, 2, 2, 2, 177, 156, 3, 2, 2, 2, 177, 161, 3, 2, 2, 2, 177, 165,
-	3, 2, 2, 2, 177, 168, 3, 2, 2, 2, 178, 202, 3, 2, 2, 2, 179, 180, 12, 4,
-	2, 2, 180, 181, 5, 28, 15, 2, 181, 182, 5, 26, 14, 5, 182, 201, 3, 2, 2,
-	2, 183, 184, 12, 3, 2, 2, 184, 185, 5, 30, 16, 2, 185, 186, 5, 26, 14,
-	4, 186, 201, 3, 2, 2, 2, 187, 188, 12, 11, 2, 2, 188, 189, 7, 34, 2, 2,
+	3, 2, 2, 2, 177, 168, 3, 2, 2, 2, 178, 202, 3, 2, 2, 2, 179, 180, 12, 5,
+	2, 2, 180, 181, 5, 28, 15, 2, 181, 182, 5, 26, 14, 6, 182, 201, 3, 2, 2,
+	2, 183, 184, 12, 4, 2, 2, 184, 185, 5, 30, 16, 2, 185, 186, 5, 26, 14,
+	5, 186, 201, 3, 2, 2, 2, 187, 188, 12, 11, 2, 2, 188, 189, 7, 34, 2, 2,
 	189, 190, 5, 26, 14, 2, 190, 191, 7, 35, 2, 2, 191, 201, 3, 2, 2, 2, 192,
 	193, 12, 10, 2, 2, 193, 195, 7, 32, 2, 2, 194, 196, 5, 36, 19, 2, 195,
 	194, 3, 2, 2, 2, 195, 196, 3, 2, 2, 2, 196, 197, 3, 2, 2, 2, 197, 201,
@@ -2170,14 +2170,8 @@ func (s *SizeofExpressionContext) Sizeof() antlr.TerminalNode {
 	return s.GetToken(CParserSizeof, 0)
 }
 
-func (s *SizeofExpressionContext) Expression() IExpressionContext {
-	var t = s.GetTypedRuleContext(reflect.TypeOf((*IExpressionContext)(nil)).Elem(), 0)
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IExpressionContext)
+func (s *SizeofExpressionContext) LeftParen() antlr.TerminalNode {
+	return s.GetToken(CParserLeftParen, 0)
 }
 
 func (s *SizeofExpressionContext) TypeSpecifier() ITypeSpecifierContext {
@@ -2190,12 +2184,18 @@ func (s *SizeofExpressionContext) TypeSpecifier() ITypeSpecifierContext {
 	return t.(ITypeSpecifierContext)
 }
 
-func (s *SizeofExpressionContext) LeftParen() antlr.TerminalNode {
-	return s.GetToken(CParserLeftParen, 0)
-}
-
 func (s *SizeofExpressionContext) RightParen() antlr.TerminalNode {
 	return s.GetToken(CParserRightParen, 0)
+}
+
+func (s *SizeofExpressionContext) Expression() IExpressionContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*IExpressionContext)(nil)).Elem(), 0)
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IExpressionContext)
 }
 
 func (s *SizeofExpressionContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
@@ -2822,27 +2822,27 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 		case 1:
 			{
 				p.SetState(167)
-				p.expression(0)
+				p.Match(CParserLeftParen)
+			}
+			{
+				p.SetState(168)
+				p.typeSpecifier(0)
+			}
+			{
+				p.SetState(169)
+				p.Match(CParserRightParen)
 			}
 
 		case 2:
 			{
-				p.SetState(168)
+				p.SetState(171)
 				p.typeSpecifier(0)
 			}
 
 		case 3:
 			{
-				p.SetState(169)
-				p.Match(CParserLeftParen)
-			}
-			{
-				p.SetState(170)
-				p.typeSpecifier(0)
-			}
-			{
-				p.SetState(171)
-				p.Match(CParserRightParen)
+				p.SetState(172)
+				p.expression(0)
 			}
 
 		}
@@ -2867,8 +2867,8 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 				p.PushNewRecursionContext(localctx, _startState, CParserRULE_expression)
 				p.SetState(177)
 
-				if !(p.Precpred(p.GetParserRuleContext(), 2)) {
-					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 2)", ""))
+				if !(p.Precpred(p.GetParserRuleContext(), 3)) {
+					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 3)", ""))
 				}
 				{
 					p.SetState(178)
@@ -2876,7 +2876,7 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 				}
 				{
 					p.SetState(179)
-					p.expression(3)
+					p.expression(4)
 				}
 
 			case 2:
@@ -2884,8 +2884,8 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 				p.PushNewRecursionContext(localctx, _startState, CParserRULE_expression)
 				p.SetState(181)
 
-				if !(p.Precpred(p.GetParserRuleContext(), 1)) {
-					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 1)", ""))
+				if !(p.Precpred(p.GetParserRuleContext(), 2)) {
+					panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 2)", ""))
 				}
 				{
 					p.SetState(182)
@@ -2893,7 +2893,7 @@ func (p *CParser) expression(_p int) (localctx IExpressionContext) {
 				}
 				{
 					p.SetState(183)
-					p.expression(2)
+					p.expression(3)
 				}
 
 			case 3:
@@ -4715,10 +4715,10 @@ func (p *CParser) TypeSpecifier_Sempred(localctx antlr.RuleContext, predIndex in
 func (p *CParser) Expression_Sempred(localctx antlr.RuleContext, predIndex int) bool {
 	switch predIndex {
 	case 1:
-		return p.Precpred(p.GetParserRuleContext(), 2)
+		return p.Precpred(p.GetParserRuleContext(), 3)
 
 	case 2:
-		return p.Precpred(p.GetParserRuleContext(), 1)
+		return p.Precpred(p.GetParserRuleContext(), 2)
 
 	case 3:
 		return p.Precpred(p.GetParserRuleContext(), 9)
