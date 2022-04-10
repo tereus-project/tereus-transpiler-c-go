@@ -87,6 +87,9 @@ func initWorker() {
 		for _, file := range files {
 			if !strings.HasSuffix(file.objectPath, ".c") {
 				data, err := os.ReadFile(file.localPath)
+				if err != nil {
+					log.WithError(err).Fatal()
+				}
 
 				err = minioService.PutFile(job.ID, file.objectPath, string(data))
 				if err != nil {
