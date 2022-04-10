@@ -28,22 +28,6 @@ func testRemix(t *testing.T, source string, target string) {
 	}
 }
 
-func testRemixError(t *testing.T, source string) {
-	source = strings.TrimSpace(source)
-
-	dir := t.TempDir()
-	sourceFile := dir + "/test.go"
-	err := os.WriteFile(sourceFile, []byte(source), 0644)
-	if err != nil {
-		t.Error(err)
-	}
-
-	_, err = Remix(sourceFile)
-	if err == nil {
-		t.Error("Expected error, got nil")
-	}
-}
-
 func TestEmptyFunction(t *testing.T) {
 	source := `
 int main() {
