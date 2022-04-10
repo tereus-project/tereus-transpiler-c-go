@@ -193,18 +193,6 @@ func main() {
 	testRemix(t, source, target)
 }
 
-func TestInvalidPrefixUnaryExpression(t *testing.T) {
-	source := `
-int main() {
-	int a = 1;
-	++a;
-	return 0;
-}
-`
-
-	testRemixError(t, source)
-}
-
 func TestFmtPrintf(t *testing.T) {
 	source := `
 int main() {
