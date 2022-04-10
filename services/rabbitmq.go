@@ -121,16 +121,26 @@ func (s *RabbitMQService) ConsumeRemixJob() (<-chan remixJob, error) {
 
 			if err := json.Unmarshal(d.Body, &job); err != nil {
 				fmt.Fprintf(os.Stderr, "Error unmarshalling job %s: %s\n", tag, err)
-				d.Nack(false, false)
+
+				if err := d.Nack(false, false); err != nil {
+					fmt.Fprintf(os.Stderr, "Error nacking job %s: %s\n", tag, err)
+				}
+
 				continue
 			}
 
 			if job.SourceLanguage != "c" && job.TargetLanguage != "go" {
-				d.Reject(true)
+				if err := d.Reject(true); err != nil {
+					fmt.Fprintf(os.Stderr, "Error rejecting job %s: %s\n", tag, err)
+				}
+
 				continue
 			}
 
-			d.Ack(false)
+			if err := d.Ack(false); err != nil {
+				fmt.Fprintf(os.Stderr, "Error acking job %s: %s\n", tag, err)
+			}
+
 			ch <- job
 		}
 
