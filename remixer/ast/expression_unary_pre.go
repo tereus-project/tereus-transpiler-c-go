@@ -20,15 +20,24 @@ func NewASTExpressionUnaryPre(operator string, operand IASTExpression, isStateme
 
 func (e *ASTExpressionUnaryPre) String() string {
 	if e.Operator == "++" || e.Operator == "--" {
-		if e.IsStatement {
-			return fmt.Sprintf("%s%s", e.Operator, e.Operand.String())
+		if !e.IsStatement {
+			return fmt.Sprintf("%s%s", e.Operand.String(), e.Operator)
 		}
 
-		switch e.Operand.GetType().Kind {
-		case ASTTypeKindPointer:
-			return fmt.Sprintf("libc.PreIncPtr(&%s)", e.Operand.String())
-		default:
-			return fmt.Sprintf("libc.PreInc(&%s)", e.Operand.String())
+		if e.Operator == "++" {
+			switch e.Operand.GetType().Kind {
+			case ASTTypeKindPointer:
+				return fmt.Sprintf("libc.PreIncPtr(&%s)", e.Operand.String())
+			default:
+				return fmt.Sprintf("libc.PreInc(&%s)", e.Operand.String())
+			}
+		} else if e.Operator == "--" {
+			switch e.Operand.GetType().Kind {
+			case ASTTypeKindPointer:
+				return fmt.Sprintf("libc.PreDecPtr(&%s)", e.Operand.String())
+			default:
+				return fmt.Sprintf("libc.PreDec(&%s)", e.Operand.String())
+			}
 		}
 	}
 
