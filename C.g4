@@ -89,7 +89,15 @@ binaryOperator:
 
 unaryOperatorPost: '++' | '--';
 
-unaryOperatorPre: '+' | '++' | '-' | '--' | '~' | '!' | '&';
+unaryOperatorPre:
+	'+'
+	| '++'
+	| '-'
+	| '--'
+	| '~'
+	| '!'
+	| '&'
+	| '*';
 
 functionCallArguments: expression (',' functionCallArguments)?;
 

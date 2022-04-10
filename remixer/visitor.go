@@ -447,7 +447,15 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 			return nil, err
 		}
 
-		return ast.NewASTExpressionUnaryPre(child.UnaryOperatorPre().GetText(), right, isStatement), nil
+		operator := child.UnaryOperatorPre().GetText()
+
+		if operator == "*" {
+			if right.GetType().Kind != ast.ASTTypeKindPointer {
+				return nil, fmt.Errorf("invalid unary operator: %s", operator)
+			}
+		}
+
+		return ast.NewASTExpressionUnaryPre(operator, right, isStatement), nil
 	case *parser.SizeofExpressionContext:
 		return v.VisitSizeofExpression(child)
 	case *parser.AssignmentExpressionContext:
