@@ -62,7 +62,14 @@ type remixJob struct {
 
 func startRemixJobListener(rabbitmqService *services.RabbitMQService, minioService *services.MinioService) {
 	jobsQueue, err := rabbitmqService.NewQueue("remix_jobs_q", "remix_jobs_ex", "remix_jobs_c_to_go_rk")
+	if err != nil {
+		log.WithError(err).Fatal()
+	}
+
 	completionQueue, err := rabbitmqService.NewQueue("submission_completion_q", "submission_completion_ex", "submission_completion_c_to_go_rk")
+	if err != nil {
+		log.WithError(err).Fatal()
+	}
 
 	log.Info("Initialization done. Waiting for jobs...")
 
@@ -75,10 +82,10 @@ func startRemixJobListener(rabbitmqService *services.RabbitMQService, minioServi
 		var job remixJob
 
 		if err := json.Unmarshal(d.Body, &job); err != nil {
-			fmt.Fprintf(os.Stderr, "Error unmarshalling job %s: %s\n", d.ConsumerTag, err)
+			log.WithError(err).Errorf("Error unmarshalling job %s: %s\n", d.ConsumerTag, err)
 
 			if err := d.Nack(false, false); err != nil {
-				fmt.Fprintf(os.Stderr, "Error nack job %s: %s\n", d.ConsumerTag, err)
+				log.WithError(err).Errorf("Error nack job %s: %s\n", d.ConsumerTag, err)
 			}
 
 			continue
@@ -89,21 +96,24 @@ func startRemixJobListener(rabbitmqService *services.RabbitMQService, minioServi
 		err := remix(job.ID, minioService)
 		if err != nil {
 			if err := d.Nack(false, true); err != nil {
-				fmt.Fprintf(os.Stderr, "Error nack job %s: %s\n", d.ConsumerTag, err)
+				log.WithError(err).Errorf("Error nack job %s: %s\n", d.ConsumerTag, err)
 			}
 
-			log.WithError(err).Fatal("Failed to remix and upload job '%s'", job.ID)
+			log.WithError(err).Errorf("Failed to remix and upload job '%s'", job.ID)
+		}
+
+		err = completionQueue.Publish(map[string]string{
+			"id": job.ID,
+		})
+		if err != nil {
+			log.WithError(err).Errorf("Error publishing completion message for job '%s'", job.ID)
 		}
 
 		if err := d.Ack(false); err != nil {
-			fmt.Fprintf(os.Stderr, "Error ack job %s: %s\n", d.ConsumerTag, err)
+			log.WithError(err).Errorf("Error ack job %s: %s\n", d.ConsumerTag, err)
 		}
 
 		log.Debugf("Job '%s' completed", job.ID)
-
-		completionQueue.Publish(map[string]string{
-			"id": job.ID,
-		})
 	}
 }
 
