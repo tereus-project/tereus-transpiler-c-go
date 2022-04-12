@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -41,7 +42,7 @@ func main() {
 
 func initWorker() {
 	log.Info("Connecting to RabbitMQ")
-	rabbitmqService, err := services.NewRabbitMQService()
+	rabbitmqService, err := services.NewRabbitMQService(env.RabbitMQEndpoint)
 	if err != nil {
 		log.WithError(err).Fatal()
 	}
@@ -52,69 +53,122 @@ func initWorker() {
 		log.WithError(err).Fatal()
 	}
 
+	startRemixJobListener(rabbitmqService, minioService)
+}
+
+type remixJob struct {
+	ID string `json:"id"`
+}
+
+func startRemixJobListener(rabbitmqService *services.RabbitMQService, minioService *services.MinioService) {
+	jobsQueue, err := rabbitmqService.NewQueue("remix_jobs_q", "remix_jobs_ex", "remix_jobs_c_to_go_rk")
+	completionQueue, err := rabbitmqService.NewQueue("submission_completion_q", "submission_completion_ex", "submission_completion_c_to_go_rk")
+
 	log.Info("Initialization done. Waiting for jobs...")
 
-	deliveries, err := rabbitmqService.ConsumeRemixJob()
+	deliveries, err := jobsQueue.Consume()
 	if err != nil {
 		log.WithError(err).Fatal()
 	}
 
-	for job := range deliveries {
+	for d := range deliveries {
+		var job remixJob
+
+		if err := json.Unmarshal(d.Body, &job); err != nil {
+			fmt.Fprintf(os.Stderr, "Error unmarshalling job %s: %s\n", d.ConsumerTag, err)
+
+			if err := d.Nack(false, false); err != nil {
+				fmt.Fprintf(os.Stderr, "Error nack job %s: %s\n", d.ConsumerTag, err)
+			}
+
+			continue
+		}
+
 		log.Debugf("Job '%s' started", job.ID)
 
-		type jobFiles struct {
-			objectPath string
-			localPath  string
+		err := remix(job.ID, minioService)
+		if err != nil {
+			if err := d.Nack(false, true); err != nil {
+				fmt.Fprintf(os.Stderr, "Error nack job %s: %s\n", d.ConsumerTag, err)
+			}
+
+			log.WithError(err).Fatal("Failed to remix and upload job '%s'", job.ID)
 		}
 
-		var files []*jobFiles
-
-		log.Debug("Downloading job files...")
-		for objectPath := range minioService.GetFiles(job.ID) {
-			log.Debugf("Downloading file '%s'", objectPath)
-			localPath, err := minioService.GetFile(job.ID, objectPath)
-			if err != nil {
-				log.WithError(err).Fatal()
-			}
-
-			files = append(files, &jobFiles{
-				objectPath: objectPath,
-				localPath:  localPath,
-			})
-		}
-
-		log.Debug("Remixing job files...")
-		for _, file := range files {
-			if !strings.HasSuffix(file.objectPath, ".c") {
-				data, err := os.ReadFile(file.localPath)
-				if err != nil {
-					log.WithError(err).Fatal()
-				}
-
-				err = minioService.PutFile(job.ID, file.objectPath, string(data))
-				if err != nil {
-					log.WithError(err).Fatal()
-				}
-
-				continue
-			}
-
-			log.Debugf("Remixing file '%s'", file.objectPath)
-
-			output, err := remixer.Remix(file.localPath)
-			if err != nil {
-				log.WithError(err).Fatal()
-			}
-
-			objectPath := fmt.Sprintf("%s.go", strings.TrimSuffix(file.objectPath, ".c"))
-
-			log.Debugf("Uploading file '%s'", objectPath)
-			err = minioService.PutFile(job.ID, objectPath, output)
-			if err != nil {
-				log.WithError(err).Fatal()
-			}
+		if err := d.Ack(false); err != nil {
+			fmt.Fprintf(os.Stderr, "Error ack job %s: %s\n", d.ConsumerTag, err)
 		}
 
 		log.Debugf("Job '%s' completed", job.ID)
+
+		completionQueue.Publish(map[string]string{
+			"id": job.ID,
+		})
 	}
+}
+
+type jobFile struct {
+	objectPath string
+	localPath  string
+}
+
+func remix(jobId string, minioService *services.MinioService) error {
+	files, err := downloadObjectsToTempFiles(minioService, jobId)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		if !strings.HasSuffix(file.objectPath, ".c") {
+			data, err := os.ReadFile(file.localPath)
+			if err != nil {
+				return err
+			}
+
+			err = minioService.PutFile(jobId, file.objectPath, string(data))
+			if err != nil {
+				return err
+			}
+
+			continue
+		}
+
+		log.Debugf("Remixing file '%s'", file.objectPath)
+
+		output, err := remixer.Remix(file.localPath)
+		if err != nil {
+			return err
+		}
+
+		objectPath := fmt.Sprintf("%s.go", strings.TrimSuffix(file.objectPath, ".c"))
+
+		log.Debugf("Uploading file '%s'", objectPath)
+		err = minioService.PutFile(jobId, objectPath, output)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func downloadObjectsToTempFiles(minioService *services.MinioService, jobId string) ([]*jobFile, error) {
+	var files []*jobFile
+	log.Debug("Downloading job files...")
+
+	for objectPath := range minioService.GetFiles(jobId) {
+		log.Debugf("Downloading file '%s'", objectPath)
+
+		localPath, err := minioService.GetFile(jobId, objectPath)
+		if err != nil {
+			return nil, err
+		}
+
+		files = append(files, &jobFile{
+			objectPath: objectPath,
+			localPath:  localPath,
+		})
+	}
+
+	return files, nil
 }

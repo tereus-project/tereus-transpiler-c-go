@@ -2,150 +2,122 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
-	"os"
 
-	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"github.com/tereus-project/tereus-remixer-c-go/env"
 )
 
 type RabbitMQService struct {
-	connection *amqp.Connection
-	channel    *amqp.Channel
+	conn *amqp.Connection
 
-	consumersTags []string
+	queues []*RabbitMQQueue
 }
 
-func NewRabbitMQService() (*RabbitMQService, error) {
-	var err error
-	service := &RabbitMQService{}
+type RabbitMQQueue struct {
+	name       string
+	exchange   string
+	routingKey string
 
-	service.connection, err = amqp.Dial(env.RabbitMQEndpoint)
+	channel *amqp.Channel
+}
+
+func NewRabbitMQService(endpoint string) (*RabbitMQService, error) {
+	conn, err := amqp.Dial(endpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	service.channel, err = service.connection.Channel()
+	return &RabbitMQService{
+		conn: conn,
+	}, nil
+}
+
+func (s *RabbitMQService) Close() error {
+	return s.conn.Close()
+}
+
+func (s *RabbitMQService) NewQueue(name string, exchange string, routingKey string) (*RabbitMQQueue, error) {
+	channel, err := s.conn.Channel()
 	if err != nil {
 		return nil, err
 	}
 
 	// Ensure exchange exists
-	err = service.channel.ExchangeDeclare(
-		"remix_jobs_ex", // name
-		"direct",        // type
-		true,            // durable
-		false,           // auto-deleted
-		false,           // internal
-		false,           // no-wait
-		nil,             // arguments
+	err = channel.ExchangeDeclare(
+		exchange, // name
+		"direct", // type
+		true,     // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
+		nil,      // arguments
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return service, nil
-}
-
-func (s *RabbitMQService) Close() error {
-	for _, tag := range s.consumersTags {
-		if err := s.channel.Cancel(tag, true); err != nil {
-			return fmt.Errorf("Consumer cancel failed: %s", err)
-		}
-	}
-
-	if err := s.channel.Close(); err != nil {
-		return fmt.Errorf("Channel close failed: %s", err)
-	}
-
-	if err := s.connection.Close(); err != nil {
-		return fmt.Errorf("AMQP connection close error: %s", err)
-	}
-
-	return nil
-}
-
-type remixJob struct {
-	ID             string `json:"id"`
-	SourceLanguage string `json:"source_language"`
-	TargetLanguage string `json:"target_language"`
-}
-
-// Publish a job to the exchange
-func (s *RabbitMQService) ConsumeRemixJob() (<-chan remixJob, error) {
 	// Ensure queue exists
-	queue, err := s.channel.QueueDeclare(
-		"remix_jobs_q", // name
-		true,           // durable
-		false,          // delete when unused
-		false,          // exclusive
-		false,          // no-wait
-		nil,            // arguments
+	queue, err := channel.QueueDeclare(
+		name,  // name
+		true,  // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// Bind queue to exchange
-	err = s.channel.QueueBind(
-		queue.Name,      // queue name
-		"remix_jobs_rk", // routing key
-		"remix_jobs_ex", // exchange
-		false,           // noWait
-		nil,             // arguments
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	tag := uuid.New().String()
-
-	deliveries, err := s.channel.Consume(
+	err = channel.QueueBind(
 		queue.Name, // queue name
-		tag,        // consumer
-		false,      // autoAck
-		false,      // exclusive
-		false,      // noLocal
-		false,      // noWait
-		nil,        // arguments
+		routingKey, // routing key
+		exchange,   // exchange
+		false,
+		nil,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	ch := make(chan remixJob)
-	go func() {
-		for d := range deliveries {
-			var job remixJob
+	return &RabbitMQQueue{
+		name:       queue.Name,
+		exchange:   exchange,
+		routingKey: routingKey,
+		channel:    channel,
+	}, nil
+}
 
-			if err := json.Unmarshal(d.Body, &job); err != nil {
-				fmt.Fprintf(os.Stderr, "Error unmarshalling job %s: %s\n", tag, err)
+func (q *RabbitMQQueue) Close() error {
+	return q.channel.Close()
+}
 
-				if err := d.Nack(false, false); err != nil {
-					fmt.Fprintf(os.Stderr, "Error nacking job %s: %s\n", tag, err)
-				}
+func (q *RabbitMQQueue) Publish(data interface{}) error {
+	body, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
 
-				continue
-			}
+	return q.channel.Publish(
+		q.exchange,   // exchange
+		q.routingKey, // routing key
+		false,        // mandatory
+		false,        // immediate
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        body,
+		},
+	)
+}
 
-			if job.SourceLanguage != "c" && job.TargetLanguage != "go" {
-				if err := d.Reject(true); err != nil {
-					fmt.Fprintf(os.Stderr, "Error rejecting job %s: %s\n", tag, err)
-				}
-
-				continue
-			}
-
-			if err := d.Ack(false); err != nil {
-				fmt.Fprintf(os.Stderr, "Error acking job %s: %s\n", tag, err)
-			}
-
-			ch <- job
-		}
-
-		close(ch)
-	}()
-
-	return ch, nil
+func (q *RabbitMQQueue) Consume() (<-chan amqp.Delivery, error) {
+	return q.channel.Consume(
+		q.name, // queue name
+		"",     // consumer
+		false,  // auto-ack
+		false,  // exclusive
+		false,  // no-local
+		false,  // no-wait
+		nil,    // args
+	)
 }
