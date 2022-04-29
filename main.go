@@ -60,13 +60,28 @@ type remixJob struct {
 	ID string `json:"id"`
 }
 
+type SubmissionStatus string
+
+const (
+	StatusPending    SubmissionStatus = "pending"
+	StatusProcessing SubmissionStatus = "processing"
+	StatusDone       SubmissionStatus = "done"
+	StatusFailed     SubmissionStatus = "failed"
+)
+
+type submissionStatusMessage struct {
+	ID     string           `json:"id"`
+	Status SubmissionStatus `json:"status"`
+	Reason string           `json:"reason"`
+}
+
 func startRemixJobListener(rabbitmqService *services.RabbitMQService, minioService *services.MinioService) {
 	jobsQueue, err := rabbitmqService.NewQueue("remix_jobs_q", "remix_jobs_ex", "remix_jobs_c_to_go_rk")
 	if err != nil {
 		log.WithError(err).Fatal()
 	}
 
-	completionQueue, err := rabbitmqService.NewQueue("submission_completion_q", "submission_completion_ex", "submission_completion_c_to_go_rk")
+	statusQueue, err := rabbitmqService.NewQueue("submission_status_q", "submission_status_ex", "submission_status_c_to_go_rk")
 	if err != nil {
 		log.WithError(err).Fatal()
 	}
@@ -95,25 +110,35 @@ func startRemixJobListener(rabbitmqService *services.RabbitMQService, minioServi
 
 		err := remix(job.ID, minioService)
 		if err != nil {
-			if err := d.Nack(false, true); err != nil {
+			if err := d.Nack(false, false); err != nil {
 				log.WithError(err).Errorf("Error nack job %s: %s\n", d.ConsumerTag, err)
 			}
 
 			log.WithError(err).Errorf("Failed to remix and upload job '%s'", job.ID)
-		}
 
-		err = completionQueue.Publish(map[string]string{
-			"id": job.ID,
-		})
-		if err != nil {
-			log.WithError(err).Errorf("Error publishing completion message for job '%s'", job.ID)
-		}
+			err := statusQueue.Publish(submissionStatusMessage{
+				ID:     job.ID,
+				Status: StatusFailed,
+				Reason: err.Error(),
+			})
+			if err != nil {
+				log.WithError(err).Errorf("Error publishing status message for job '%s'", job.ID)
+			}
+		} else {
+			err := statusQueue.Publish(submissionStatusMessage{
+				ID:     job.ID,
+				Status: StatusDone,
+			})
+			if err != nil {
+				log.WithError(err).Errorf("Error publishing status message for job '%s'", job.ID)
+			}
 
-		if err := d.Ack(false); err != nil {
-			log.WithError(err).Errorf("Error ack job %s: %s\n", d.ConsumerTag, err)
-		}
+			if err := d.Ack(false); err != nil {
+				log.WithError(err).Errorf("Error ack job %s: %s\n", d.ConsumerTag, err)
+			}
 
-		log.Debugf("Job '%s' completed", job.ID)
+			log.Debugf("Job '%s' completed", job.ID)
+		}
 	}
 }
 
