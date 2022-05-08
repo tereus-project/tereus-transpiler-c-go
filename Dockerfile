@@ -1,6 +1,8 @@
-FROM golang:1.17-alpine
+FROM golang:1.18-alpine
 
 WORKDIR /app
+
+RUN apk add git
 
 COPY go.mod go.sum ./
 RUN go mod download
