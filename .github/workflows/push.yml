@@ -10,8 +10,6 @@ jobs:
         os:
           - linux
           - darwin
-          - freebsd
-          - windows
         arch:
           - amd64
           - arm64
@@ -49,3 +47,14 @@ jobs:
           go-version: "1.18"
       - name: Run tests
         run: go test ./... -v
+
+  deploy:
+    name: Deploy app to fly
+    needs: [build, lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
