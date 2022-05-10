@@ -106,9 +106,18 @@ func startRemixJobListener(rabbitmqService *services.RabbitMQService, minioServi
 			continue
 		}
 
+		err := statusQueue.Publish(submissionStatusMessage{
+			ID:     job.ID,
+			Status: StatusProcessing,
+			Reason: err.Error(),
+		})
+		if err != nil {
+			log.WithError(err).Errorf("Error publishing status message for job '%s'", job.ID)
+		}
+
 		log.Debugf("Job '%s' started", job.ID)
 
-		err := remix(job.ID, minioService)
+		err = remix(job.ID, minioService)
 		if err != nil {
 			if err := d.Nack(false, false); err != nil {
 				log.WithError(err).Errorf("Error nack job %s: %s\n", d.ConsumerTag, err)
