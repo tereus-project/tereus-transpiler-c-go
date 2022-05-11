@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/tereus-project/tereus-remixer-c-go/env"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer"
@@ -41,8 +42,7 @@ func main() {
 }
 
 func initWorker() {
-	log.Info("Connecting to RabbitMQ")
-	rabbitmqService, err := services.NewRabbitMQService(env.RabbitMQEndpoint)
+	kafkaService, err := services.NewKafkaService(env.KafkaEndpoint)
 	if err != nil {
 		log.WithError(err).Fatal()
 	}
@@ -53,56 +53,24 @@ func initWorker() {
 		log.WithError(err).Fatal()
 	}
 
-	startRemixJobListener(rabbitmqService, minioService)
+	startRemixJobListener(kafkaService, minioService)
 }
 
 type remixJob struct {
 	ID string `json:"id"`
 }
 
-type SubmissionStatus string
-
-const (
-	StatusPending    SubmissionStatus = "pending"
-	StatusProcessing SubmissionStatus = "processing"
-	StatusDone       SubmissionStatus = "done"
-	StatusFailed     SubmissionStatus = "failed"
-)
-
-type submissionStatusMessage struct {
-	ID     string           `json:"id"`
-	Status SubmissionStatus `json:"status"`
-	Reason string           `json:"reason"`
-}
-
-func startRemixJobListener(rabbitmqService *services.RabbitMQService, minioService *services.MinioService) {
-	jobsQueue, err := rabbitmqService.NewQueue("remix_jobs_q", "remix_jobs_ex", "remix_jobs_c_to_go_rk")
-	if err != nil {
-		log.WithError(err).Fatal()
-	}
-
-	statusQueue, err := rabbitmqService.NewQueue("submission_status_q", "submission_status_ex", "submission_status_c_to_go_rk")
-	if err != nil {
-		log.WithError(err).Fatal()
-	}
-
-	log.Info("Initialization done. Waiting for jobs...")
-
-	deliveries, err := jobsQueue.Consume()
-	if err != nil {
-		log.WithError(err).Fatal()
-	}
-
-	for d := range deliveries {
+func startRemixJobListener(k *services.KafkaService, minioService *services.MinioService) {
+	for {
+		msg, err := k.RemixSubmissionsConsumer.ReadMessage(-1)
+		if err != nil {
+			logrus.WithError(err).Error("Failed to read message")
+			continue
+		}
 		var job remixJob
 
-		if err := json.Unmarshal(d.Body, &job); err != nil {
-			log.WithError(err).Errorf("Error unmarshalling job %s: %s\n", d.ConsumerTag, err)
-
-			if err := d.Nack(false, false); err != nil {
-				log.WithError(err).Errorf("Error nack job %s: %s\n", d.ConsumerTag, err)
-			}
-
+		if err := json.Unmarshal(msg.Value, &job); err != nil {
+			log.WithError(err).Errorf("Error unmarshalling job %s: %s\n", err)
 			continue
 		}
 
@@ -119,31 +87,23 @@ func startRemixJobListener(rabbitmqService *services.RabbitMQService, minioServi
 
 		err = remix(job.ID, minioService)
 		if err != nil {
-			if err := d.Nack(false, false); err != nil {
-				log.WithError(err).Errorf("Error nack job %s: %s\n", d.ConsumerTag, err)
-			}
-
 			log.WithError(err).Errorf("Failed to remix and upload job '%s'", job.ID)
 
-			err := statusQueue.Publish(submissionStatusMessage{
+			err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
 				ID:     job.ID,
-				Status: StatusFailed,
+				Status: services.StatusFailed,
 				Reason: err.Error(),
 			})
 			if err != nil {
 				log.WithError(err).Errorf("Error publishing status message for job '%s'", job.ID)
 			}
 		} else {
-			err := statusQueue.Publish(submissionStatusMessage{
+			err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
 				ID:     job.ID,
-				Status: StatusDone,
+				Status: services.StatusDone,
 			})
 			if err != nil {
 				log.WithError(err).Errorf("Error publishing status message for job '%s'", job.ID)
-			}
-
-			if err := d.Ack(false); err != nil {
-				log.WithError(err).Errorf("Error ack job %s: %s\n", d.ConsumerTag, err)
 			}
 
 			log.Debugf("Job '%s' completed", job.ID)

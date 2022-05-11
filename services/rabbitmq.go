@@ -8,8 +8,6 @@ import (
 
 type RabbitMQService struct {
 	conn *amqp.Connection
-
-	queues []*RabbitMQQueue
 }
 
 type RabbitMQQueue struct {
