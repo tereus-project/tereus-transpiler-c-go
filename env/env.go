@@ -14,6 +14,7 @@ var (
 	S3SecretKey      string
 	S3Endpoint       string
 	RabbitMQEndpoint string
+	KafkaEndpoint    string
 )
 
 func LoadEnv() error {
@@ -47,9 +48,14 @@ func LoadEnv() error {
 		return fmt.Errorf("S3_ENDPOINT is not set")
 	}
 
-	RabbitMQEndpoint = os.Getenv("RABBITMQ_ENDPOINT")
-	if RabbitMQEndpoint == "" {
-		return fmt.Errorf("RABBITMQ_ENDPOINT is not set")
+	// RabbitMQEndpoint = os.Getenv("RABBITMQ_ENDPOINT")
+	// if RabbitMQEndpoint == "" {
+	// 	return fmt.Errorf("RABBITMQ_ENDPOINT is not set")
+	// }
+
+	KafkaEndpoint = os.Getenv("KAFKA_ENDPOINT")
+	if KafkaEndpoint == "" {
+		return fmt.Errorf("KAFKA_ENDPOINT is not set")
 	}
 
 	return nil

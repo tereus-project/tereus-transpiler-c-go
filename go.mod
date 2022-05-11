@@ -15,6 +15,7 @@ require (
 )
 
 require (
+	github.com/confluentinc/confluent-kafka-go v1.8.2 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20220410123724-9e86199038b0 // indirect
