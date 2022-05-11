@@ -77,7 +77,6 @@ func startRemixJobListener(k *services.KafkaService, minioService *services.Mini
 		err = k.PublishSubmissionStatus(services.SubmissionStatusMessage{
 			ID:     job.ID,
 			Status: services.StatusProcessing,
-			Reason: err.Error(),
 		})
 		if err != nil {
 			log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
