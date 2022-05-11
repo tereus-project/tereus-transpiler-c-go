@@ -21,7 +21,10 @@ func NewKafkaService(endpoint string) (*KafkaService, error) {
 	if err != nil {
 		return nil, err
 	}
-	remixSubmissionsConsumer.SubscribeTopics([]string{"remix_jobs_c_to_go"}, nil)
+	err = remixSubmissionsConsumer.SubscribeTopics([]string{"remix_jobs_c_to_go"}, nil)
+	if err != nil {
+		return nil, err
+	}
 
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": endpoint,
@@ -72,7 +75,7 @@ func (k *KafkaService) PublishSubmissionStatus(status SubmissionStatusMessage) e
 	}
 
 	topic := "submission_status"
-	k.Producer.Produce(&kafka.Message{
+	err = k.Producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
 		Value:          msgBytes,
 	}, nil)
