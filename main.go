@@ -70,7 +70,7 @@ func startRemixJobListener(k *services.KafkaService, minioService *services.Mini
 		var job remixJob
 
 		if err := json.Unmarshal(msg.Value, &job); err != nil {
-			log.WithError(err).Errorf("Error unmarshalling job %s: %s\n", err)
+			log.WithError(err).Errorf("Error unmarshalling job")
 			continue
 		}
 
@@ -80,14 +80,14 @@ func startRemixJobListener(k *services.KafkaService, minioService *services.Mini
 			Reason: err.Error(),
 		})
 		if err != nil {
-			log.WithError(err).Errorf("Error publishing status message for job '%s'", job.ID)
+			log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
 		}
 
 		log.Debugf("Job '%s' started", job.ID)
 
 		err = remix(job.ID, minioService)
 		if err != nil {
-			log.WithError(err).Errorf("Failed to remix and upload job '%s'", job.ID)
+			log.WithError(err).WithField("job_id", job.ID).Errorf("Failed to remix and upload job")
 
 			err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
 				ID:     job.ID,
@@ -95,7 +95,7 @@ func startRemixJobListener(k *services.KafkaService, minioService *services.Mini
 				Reason: err.Error(),
 			})
 			if err != nil {
-				log.WithError(err).Errorf("Error publishing status message for job '%s'", job.ID)
+				log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
 			}
 		} else {
 			err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
@@ -103,7 +103,7 @@ func startRemixJobListener(k *services.KafkaService, minioService *services.Mini
 				Status: services.StatusDone,
 			})
 			if err != nil {
-				log.WithError(err).Errorf("Error publishing status message for job '%s'", job.ID)
+				log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
 			}
 
 			log.Debugf("Job '%s' completed", job.ID)
