@@ -8,6 +8,6 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build
+RUN go build -tags musl
 
 CMD ./tereus-remixer-c-go
