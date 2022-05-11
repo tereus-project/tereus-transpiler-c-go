@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -20,7 +21,7 @@ var (
 func LoadEnv() error {
 	err := godotenv.Load()
 	if err != nil {
-		return err
+		logrus.WithError(err).Warn("Failed to load env variables from file")
 	}
 
 	LogLevel = os.Getenv("LOG_LEVEL")
