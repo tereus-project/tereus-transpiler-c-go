@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220209173558-ad29539cd2e9
+	github.com/confluentinc/confluent-kafka-go v1.8.2
 	github.com/deckarep/golang-set v1.8.0
 	github.com/dlclark/regexp2 v1.4.0
 	github.com/joho/godotenv v1.4.0
@@ -15,7 +16,6 @@ require (
 )
 
 require (
-	github.com/confluentinc/confluent-kafka-go v1.8.2 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20220410123724-9e86199038b0 // indirect
