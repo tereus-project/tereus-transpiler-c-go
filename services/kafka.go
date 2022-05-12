@@ -2,9 +2,9 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/sirupsen/logrus"
 )
 
 type KafkaService struct {
@@ -39,9 +39,13 @@ func NewKafkaService(endpoint string) (*KafkaService, error) {
 			switch ev := e.(type) {
 			case *kafka.Message:
 				if ev.TopicPartition.Error != nil {
-					fmt.Printf("Delivery failed: %v\n", ev.TopicPartition)
+					logrus.WithError(ev.TopicPartition.Error).Error("Failed to publish message")
 				} else {
-					fmt.Printf("Delivered message to %v\n", ev.TopicPartition)
+					logrus.WithFields(logrus.Fields{
+						"partition": ev.TopicPartition.Partition,
+						"value":     string(ev.Value),
+					}).Info("Published message")
+
 				}
 			}
 		}
