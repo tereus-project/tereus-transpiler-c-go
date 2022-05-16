@@ -1,12 +1,11 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/tereus-project/tereus-remixer-c-go/env"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer"
@@ -42,39 +41,29 @@ func main() {
 }
 
 func initWorker() {
+	log.Info("Connecting to Kafka...")
 	kafkaService, err := services.NewKafkaService(env.KafkaEndpoint)
 	if err != nil {
 		log.WithError(err).Fatal()
 	}
+	defer kafkaService.CloseAllWriters()
 
-	log.Info("Connecting to MinIO")
+	log.Info("Connecting to MinIO...")
 	minioService, err := services.NewMinioService()
 	if err != nil {
 		log.WithError(err).Fatal()
 	}
 
+	log.Info("Starting remix job listener...")
 	startRemixJobListener(kafkaService, minioService)
-}
-
-type remixJob struct {
-	ID string `json:"id"`
+	log.Warn("Listener has stopped")
 }
 
 func startRemixJobListener(k *services.KafkaService, minioService *services.MinioService) {
-	for {
-		msg, err := k.RemixSubmissionsConsumer.ReadMessage(-1)
-		if err != nil {
-			logrus.WithError(err).Error("Failed to read message")
-			continue
-		}
-		var job remixJob
+	submissions := k.ConsumeSubmissions(context.Background())
 
-		if err := json.Unmarshal(msg.Value, &job); err != nil {
-			log.WithError(err).Errorf("Error unmarshalling job")
-			continue
-		}
-
-		err = k.PublishSubmissionStatus(services.SubmissionStatusMessage{
+	for job := range submissions {
+		err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
 			ID:     job.ID,
 			Status: services.StatusProcessing,
 		})

@@ -1,59 +1,25 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
+	"time"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/segmentio/kafka-go"
 	"github.com/sirupsen/logrus"
 )
 
 type KafkaService struct {
-	RemixSubmissionsConsumer *kafka.Consumer
-	Producer                 *kafka.Producer
+	endpoint        string
+	consumerGroupID string
+	writers         map[string]*kafka.Writer
 }
 
 func NewKafkaService(endpoint string) (*KafkaService, error) {
-	remixSubmissionsConsumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": endpoint,
-		"group.id":          "remixer-c-to-go",
-		"auto.offset.reset": "latest",
-	})
-	if err != nil {
-		return nil, err
-	}
-	err = remixSubmissionsConsumer.SubscribeTopics([]string{"remix_jobs_c_to_go"}, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	producer, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": endpoint,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	// Delivery report handler for produced messages
-	go func() {
-		for e := range producer.Events() {
-			switch ev := e.(type) {
-			case *kafka.Message:
-				if ev.TopicPartition.Error != nil {
-					logrus.WithError(ev.TopicPartition.Error).Error("Failed to publish message")
-				} else {
-					logrus.WithFields(logrus.Fields{
-						"partition": ev.TopicPartition.Partition,
-						"value":     string(ev.Value),
-					}).Info("Published message")
-
-				}
-			}
-		}
-	}()
-
 	return &KafkaService{
-		RemixSubmissionsConsumer: remixSubmissionsConsumer,
-		Producer:                 producer,
+		endpoint:        endpoint,
+		consumerGroupID: "remixer-c-to-go",
+		writers:         make(map[string]*kafka.Writer),
 	}, nil
 }
 
@@ -78,14 +44,80 @@ func (k *KafkaService) PublishSubmissionStatus(status SubmissionStatusMessage) e
 		return err
 	}
 
-	topic := "submission_status"
-	err = k.Producer.Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-		Value:          msgBytes,
-	}, nil)
+	writer, err := k.getWriterForTopic("submission_status")
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return writer.WriteMessages(context.Background(),
+		kafka.Message{
+			Key:   []byte(status.ID),
+			Value: msgBytes,
+		},
+	)
+}
+
+type SubmissionMessage struct {
+	ID string `json:"id"`
+}
+
+func (k *KafkaService) ConsumeSubmissions(ctx context.Context) <-chan SubmissionMessage {
+	ch := make(chan SubmissionMessage)
+
+	r := kafka.NewReader(kafka.ReaderConfig{
+		Brokers:     []string{k.endpoint},
+		GroupID:     k.consumerGroupID,
+		Topic:       "remix_jobs_c_to_go",
+		MaxWait:     1 * time.Second,
+		StartOffset: kafka.LastOffset,
+	})
+
+	go func() {
+		defer r.Close()
+		defer close(ch)
+
+		for {
+			msg, err := r.ReadMessage(ctx)
+			if err != nil {
+				logrus.WithError(err).Error("Error reading message")
+			}
+
+			var job SubmissionMessage
+			err = json.Unmarshal(msg.Value, &job)
+			if err != nil {
+				logrus.WithError(err).Error("Failed to unmarshal submission status message")
+				continue
+			}
+
+			ch <- job
+		}
+	}()
+
+	return ch
+}
+
+func (k *KafkaService) CloseAllWriters() {
+	for _, w := range k.writers {
+		err := w.Close()
+		if err != nil {
+			logrus.WithError(err).Error("Failed to close kafka writer")
+		}
+	}
+}
+
+func (k *KafkaService) getWriterForTopic(topicName string) (*kafka.Writer, error) {
+	w, ok := k.writers[topicName]
+	if !ok {
+		w := &kafka.Writer{
+			Addr:                   kafka.TCP(k.endpoint),
+			Topic:                  topicName,
+			Balancer:               &kafka.LeastBytes{},
+			AllowAutoTopicCreation: true,
+		}
+		k.writers[topicName] = w
+
+		return w, nil
+	}
+
+	return w, nil
 }
