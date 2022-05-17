@@ -9,20 +9,18 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/tereus-project/tereus-remixer-c-go/env"
 )
 
 type MinioService struct {
+	bucket string
+
 	client *minio.Client
 }
 
-func NewMinioService() (*MinioService, error) {
-	var err error
-	service := &MinioService{}
-
+func NewMinioService(endpoint string, accessKey string, secretKey string, bucket string) (*MinioService, error) {
 	// Initialize minio client object.
-	service.client, err = minio.New(env.S3Endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(env.S3AccessKey, env.S3SecretKey, ""),
+	client, err := minio.New(endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
 		Secure: false,
 	})
 	if err != nil {
@@ -30,19 +28,22 @@ func NewMinioService() (*MinioService, error) {
 	}
 
 	// Create tereus S3 bucket if it doesn't exist
-	exists, err := service.client.BucketExists(context.Background(), env.S3Bucket)
+	exists, err := client.BucketExists(context.Background(), bucket)
 	if err != nil {
 		return nil, err
 	}
 
 	if !exists {
-		err = service.client.MakeBucket(context.Background(), env.S3Bucket, minio.MakeBucketOptions{})
+		err = client.MakeBucket(context.Background(), bucket, minio.MakeBucketOptions{})
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return service, nil
+	return &MinioService{
+		bucket: bucket,
+		client: client,
+	}, nil
 }
 
 var remixPrefix = "remix"
@@ -54,7 +55,7 @@ func (s *MinioService) GetFiles(id string) <-chan string {
 	go func() {
 		for object := range s.client.ListObjects(
 			context.Background(),
-			env.S3Bucket,
+			s.bucket,
 			minio.ListObjectsOptions{
 				Prefix:    prefix,
 				Recursive: true,
@@ -74,7 +75,7 @@ func (s *MinioService) GetFile(id string, filepath string) (string, error) {
 
 	object, err := s.client.GetObject(
 		context.Background(),
-		env.S3Bucket,
+		s.bucket,
 		objectPath,
 		minio.GetObjectOptions{},
 	)
@@ -106,7 +107,7 @@ func (s *MinioService) PutFile(id string, filepath string, content string) error
 
 	_, err := s.client.PutObject(
 		context.Background(),
-		env.S3Bucket,
+		s.bucket,
 		objectPath,
 		strings.NewReader(content),
 		int64(len(content)),

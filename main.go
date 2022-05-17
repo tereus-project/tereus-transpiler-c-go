@@ -18,9 +18,11 @@ func main() {
 		log.WithError(err).Fatal("Failed to load environment variables")
 	}
 
-	level, err := log.ParseLevel(env.LogLevel)
+	config := env.Get()
+
+	level, err := log.ParseLevel(config.LogLevel)
 	if err != nil {
-		log.Warnf("Invalid log level: '%s'", env.LogLevel)
+		log.Warnf("Invalid log level: '%s'", config.LogLevel)
 	} else {
 		log.SetLevel(level)
 	}
@@ -37,19 +39,19 @@ func main() {
 		return
 	}
 
-	initWorker()
+	initWorker(config)
 }
 
-func initWorker() {
+func initWorker(config *env.Env) {
 	log.Info("Connecting to Kafka...")
-	kafkaService, err := services.NewKafkaService(env.KafkaEndpoint)
+	kafkaService, err := services.NewKafkaService(config.KafkaEndpoint)
 	if err != nil {
 		log.WithError(err).Fatal()
 	}
 	defer kafkaService.CloseAllWriters()
 
 	log.Info("Connecting to MinIO...")
-	minioService, err := services.NewMinioService()
+	minioService, err := services.NewMinioService(config.S3Endpoint, config.S3AccessKey, config.S3SecretKey, config.S3Bucket)
 	if err != nil {
 		log.WithError(err).Fatal()
 	}
