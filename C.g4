@@ -119,12 +119,14 @@ statement: (
 			| 'break'
 			| structDeclaration
 			| enumDeclaration
+			| gotoStatement
 		) ';'
 	)
 	| ifStatement
 	| forStatement
 	| whileStatement
 	| block
+	| labelStatement
 	| BlockComment
 	| LineComment;
 
@@ -137,6 +139,10 @@ forStatement:
 	)? ';' (post = expression)? ')' statement;
 
 whileStatement: 'while' '(' expression ')' statement;
+
+gotoStatement: 'goto' Identifier;
+
+labelStatement: Identifier ':';
 
 includePreprocessor: IncludeDirective;
 

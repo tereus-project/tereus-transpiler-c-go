@@ -270,3 +270,31 @@ func main() {
 
 	testRemix(t, source, target)
 }
+
+func TestGoto(t *testing.T) {
+	source := `
+#include <stdio.h>
+int main()
+{
+	goto out;
+out:
+	printf("hey goto");
+}
+`
+
+	target := `
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	goto out
+out:
+	fmt.Printf("hey goto")
+}
+`
+
+	testRemix(t, source, target)
+}

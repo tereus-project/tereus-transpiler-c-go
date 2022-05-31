@@ -152,6 +152,14 @@ func (v *BaseCVisitor) VisitWhileStatement(ctx *WhileStatementContext) interface
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitGotoStatement(ctx *GotoStatementContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitLabelStatement(ctx *LabelStatementContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitIncludePreprocessor(ctx *IncludePreprocessorContext) interface{} {
 	return v.VisitChildren(ctx)
 }

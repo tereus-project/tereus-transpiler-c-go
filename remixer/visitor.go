@@ -788,9 +788,21 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return ast.NewASTComment(true, child.GetText()), nil
 	} else if child := ctx.LineComment(); child != nil {
 		return ast.NewASTComment(false, child.GetText()), nil
+	} else if child := ctx.GotoStatement(); child != nil {
+		return v.VisitGotoStatement(child.(*parser.GotoStatementContext))
+	} else if child := ctx.LabelStatement(); child != nil {
+		return v.VisitLabelStatement(child.(*parser.LabelStatementContext))
 	}
 
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
+}
+
+func (v *Visitor) VisitGotoStatement(ctx *parser.GotoStatementContext) (*ast.ASTGoto, error) {
+	return ast.NewASTGoto(ctx.Identifier().GetText()), nil
+}
+
+func (v *Visitor) VisitLabelStatement(ctx *parser.LabelStatementContext) (*ast.ASTLabel, error) {
+	return ast.NewASTLabel(ctx.Identifier().GetText()), nil
 }
 
 func (v *Visitor) VisitIfStatement(ctx *parser.IfStatementContext) (*ast.ASTIf, error) {
