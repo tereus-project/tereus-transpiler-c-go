@@ -36,8 +36,18 @@ func (v *ASTVariableDeclaration) String() string {
 				expressions = append(expressions, "nil")
 			case ASTTypeKindStruct:
 				expressions = append(expressions, fmt.Sprintf("%s{}", v.Type.Name))
-			// case ASTTypeKindString:
-			// 	expressions = append(expressions, "nil")
+			case ASTTypeKindFloat32:
+				expressions = append(expressions, "float32(0)")
+			case ASTTypeKindFloat64:
+				expressions = append(expressions, "float64(0)")
+			case ASTTypeKindInt:
+				expressions = append(expressions, "0")
+			case ASTTypeKindInt16:
+				expressions = append(expressions, "int16(0)")
+			case ASTTypeKindInt64:
+				expressions = append(expressions, "int64(0)")
+			case ASTTypeKindChar:
+				expressions = append(expressions, "byte(0)")
 			default:
 				expressions = append(expressions, "0")
 			}
