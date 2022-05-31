@@ -6,7 +6,9 @@ import (
 )
 
 type ASTStruct struct {
-	Name       string
+	Name string
+
+	IsOpaque   bool
 	Properties []*ASTStructProperty
 }
 
@@ -15,21 +17,33 @@ type ASTStructProperty struct {
 	Type *ASTType
 }
 
-func NewASTStruct(name string, properties []*ASTStructProperty) *ASTStruct {
+func NewAstStructOpaque(name string) *ASTStruct {
 	return &ASTStruct{
-		Name:       name,
-		Properties: properties,
+		Name:     name,
+		IsOpaque: true,
 	}
+}
+
+func (s *ASTStruct) SetProperties(properties []*ASTStructProperty) *ASTStruct {
+	s.IsOpaque = false
+	s.Properties = properties
+	return s
 }
 
 func (s *ASTStruct) String() string {
 	properties := make([]string, len(s.Properties))
 
-	for i, property := range s.Properties {
-		properties[i] = "\t" + property.String()
+	if !s.IsOpaque {
+		for i, property := range s.Properties {
+			properties[i] = "\t" + property.String()
+		}
 	}
 
 	return fmt.Sprintf("type %s struct {\n%s\n}", s.Name, strings.Join(properties, "\n"))
+}
+
+func (s *ASTStruct) TypeString() string {
+	return s.Name
 }
 
 func NewASTStructProperty(name string, typ *ASTType) *ASTStructProperty {
@@ -40,5 +54,5 @@ func NewASTStructProperty(name string, typ *ASTType) *ASTStructProperty {
 }
 
 func (m *ASTStructProperty) String() string {
-	return fmt.Sprintf("%s %s", m.Name, m.Type)
+	return fmt.Sprintf("%s %s", m.Name, m.Type.String())
 }

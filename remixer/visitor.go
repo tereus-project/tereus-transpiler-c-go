@@ -13,6 +13,7 @@ import (
 	"github.com/tereus-project/tereus-remixer-c-go/libc"
 	"github.com/tereus-project/tereus-remixer-c-go/parser"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer/ast"
+	"github.com/tereus-project/tereus-remixer-c-go/remixer/scope"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer/utils"
 )
 
@@ -24,7 +25,7 @@ type Visitor struct {
 	Imports mapset.Set
 	Output  map[string]string
 
-	Scope           *Scope
+	Scope           *scope.Scope
 	CurrentFunction *utils.Stack[string]
 }
 
@@ -37,7 +38,7 @@ func NewVisitor(path string, code string) *Visitor {
 		Imports: mapset.NewSet(),
 		Output:  make(map[string]string),
 
-		Scope:           NewScope(),
+		Scope:           scope.NewScope(),
 		CurrentFunction: utils.NewStack[string](),
 	}
 }
@@ -134,7 +135,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 	v.Scope.Push()
 
 	for _, arg := range function.Args {
-		v.Scope.Add(NewScopeVariable(arg.Name, "", arg.Type))
+		v.Scope.Add(scope.NewScopeVariable(arg.Name, "", arg.Type))
 	}
 
 	argumentsInitialization := make([]ast.IASTItem, 0)
@@ -179,7 +180,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 
 	variableType := ast.NewASTType(ast.ASTTypeKindFunction, function.Name)
 	variableType.FunctionType = function
-	v.Scope.Parent.Add(NewScopeVariable(function.Name, "", variableType))
+	v.Scope.Parent.Add(scope.NewScopeVariable(function.Name, "", variableType))
 
 	function.Body, err = v.VisitBlock(ctx.Block().(*parser.BlockContext))
 	if err != nil {
@@ -253,6 +254,16 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 		return ast.NewASTType(ast.ASTTypeKindFloat32, "float32"), nil
 	} else if child := ctx.Double(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindFloat64, "float64"), nil
+	} else if child := ctx.StructDeclaration(); child != nil {
+		structType, err := v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
+		if err != nil {
+			return nil, err
+		}
+
+		typ := ast.NewASTType(ast.ASTTypeKindStruct, structType.Name)
+		typ.SetStructType(structType)
+
+		return typ, nil
 	} else if child := ctx.Star(); child != nil {
 		pointerType, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
 		if err != nil {
@@ -260,7 +271,7 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 		}
 
 		typ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
-		typ.PointerType = pointerType
+		typ.SetPointerType(pointerType)
 
 		return typ, nil
 	}
@@ -275,18 +286,60 @@ func (v *Visitor) VisitStructDeclaration(ctx *parser.StructDeclarationContext) (
 		name = child.GetText()
 	}
 
-	properties := make([]*ast.ASTStructProperty, 0)
+	item := v.Scope.GetFirst(name)
 
-	for _, child := range ctx.AllStructProperty() {
-		member, err := v.VisitStructProperty(child.(*parser.StructPropertyContext))
+	var astStruct *ast.ASTStruct
+	if item != nil {
+		scopeType := item.(*scope.ScopeType)
+		if scopeType == nil {
+			return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("redefinition of '%s' as different kind of symbol", name))
+		}
+
+		scopeTypeUnderlyingType := scopeType.GetType()
+
+		if scopeTypeUnderlyingType.Kind != ast.ASTTypeKindStruct {
+			return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("redefinition of '%s' as different kind of symbol", name))
+		}
+
+		astStruct = scopeTypeUnderlyingType.StructType
+	} else {
+		astStruct = ast.NewAstStructOpaque(name)
+
+		typ := ast.NewASTType(ast.ASTTypeKindStruct, name)
+		typ.SetStructType(astStruct)
+		v.Scope.Add(scope.NewScopeType(name, name, typ))
+	}
+
+	if StructDeclarationBodyContext := ctx.StructDeclarationBody(); StructDeclarationBodyContext != nil {
+		if !astStruct.IsOpaque {
+			return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("redefinition of '%s'", name))
+		}
+
+		properties, err := v.VisitStructDeclarationBody(StructDeclarationBodyContext.(*parser.StructDeclarationBodyContext))
 		if err != nil {
 			return nil, err
 		}
 
-		properties = append(properties, member)
+		astStruct.SetProperties(properties)
 	}
 
-	return ast.NewASTStruct(name, properties), nil
+	return astStruct, nil
+}
+
+func (v *Visitor) VisitStructDeclarationBody(ctx *parser.StructDeclarationBodyContext) ([]*ast.ASTStructProperty, error) {
+	structPropertiesContext := ctx.AllStructProperty()
+	structProperties := make([]*ast.ASTStructProperty, len(structPropertiesContext))
+
+	for i, child := range structPropertiesContext {
+		structProperty, err := v.VisitStructProperty(child.(*parser.StructPropertyContext))
+		if err != nil {
+			return nil, err
+		}
+
+		structProperties[i] = structProperty
+	}
+
+	return structProperties, nil
 }
 
 func (v *Visitor) VisitStructProperty(ctx *parser.StructPropertyContext) (*ast.ASTStructProperty, error) {
@@ -334,7 +387,7 @@ func (v *Visitor) VisitEnumProperties(ctx *parser.EnumPropertiesContext) ([]*ast
 		}
 	}
 
-	v.Scope.Add(NewScopeVariable(name, "", ast.NewASTType(ast.ASTTypeKindInt64, "int64")))
+	v.Scope.Add(scope.NewScopeVariable(name, "", ast.NewASTType(ast.ASTTypeKindInt64, "int64")))
 
 	properties := []*ast.ASTEnumProperty{ast.NewASTEnumProperty(name, expression)}
 
@@ -382,7 +435,7 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 		item.Expression = expression
 	}
 
-	v.Scope.Add(NewScopeVariable(name, "", typ))
+	v.Scope.Add(scope.NewScopeVariable(name, "", typ))
 
 	items := []*ast.ASTVariableDeclarationItem{item}
 

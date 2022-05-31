@@ -30,6 +30,7 @@ type ASTType struct {
 	ArrayType    *ASTType
 	PointerType  *ASTType
 	FunctionType *ASTFunction
+	StructType   *ASTStruct
 }
 
 func NewASTType(kind ASTTypeKind, name string) *ASTType {
@@ -54,6 +55,11 @@ func (t *ASTType) SetFunctionType(functionType *ASTFunction) *ASTType {
 	return t
 }
 
+func (t *ASTType) SetStructType(structType *ASTStruct) *ASTType {
+	t.StructType = structType
+	return t
+}
+
 func (t *ASTType) String() string {
 	switch t.Kind {
 	case ASTTypeKindArray:
@@ -62,6 +68,8 @@ func (t *ASTType) String() string {
 		return fmt.Sprintf("*%s", t.PointerType.String())
 	case ASTTypeKindFunction:
 		return t.FunctionType.TypeString(false)
+	case ASTTypeKindStruct:
+		return t.StructType.TypeString()
 	default:
 		return t.Name
 	}

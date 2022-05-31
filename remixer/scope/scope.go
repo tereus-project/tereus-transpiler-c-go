@@ -1,4 +1,4 @@
-package remixer
+package scope
 
 import "github.com/tereus-project/tereus-remixer-c-go/remixer/ast"
 
@@ -31,22 +31,6 @@ func (s *ScopeItem) GetTranslatedName() string {
 	}
 
 	return s.Name
-}
-
-type ScopeVariable struct {
-	*ScopeItem
-	Type *ast.ASTType
-}
-
-func NewScopeVariable(name string, translatedName string, typ *ast.ASTType) *ScopeVariable {
-	return &ScopeVariable{
-		ScopeItem: NewScopeItem(name, translatedName),
-		Type:      typ,
-	}
-}
-
-func (s *ScopeVariable) GetType() *ast.ASTType {
-	return s.Type
 }
 
 type Scope struct {
@@ -89,4 +73,16 @@ func (s *Scope) Get(name string) []IScopeItem {
 	}
 
 	return s.Items[name]
+}
+
+func (s *Scope) GetFirst(name string) IScopeItem {
+	if parent := s.Parent; parent != nil {
+		return parent.GetFirst(name)
+	}
+
+	if items := s.Items[name]; len(items) > 0 {
+		return items[0]
+	}
+
+	return nil
 }

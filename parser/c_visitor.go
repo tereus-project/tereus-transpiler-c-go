@@ -29,6 +29,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#structDeclaration.
 	VisitStructDeclaration(ctx *StructDeclarationContext) interface{}
 
+	// Visit a parse tree produced by CParser#structDeclarationBody.
+	VisitStructDeclarationBody(ctx *StructDeclarationBodyContext) interface{}
+
 	// Visit a parse tree produced by CParser#structProperty.
 	VisitStructProperty(ctx *StructPropertyContext) interface{}
 

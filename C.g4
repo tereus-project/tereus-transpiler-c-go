@@ -24,9 +24,16 @@ typeSpecifier:
 	| 'char'
 	| 'float'
 	| 'double'
+	| structDeclaration
 	| typeSpecifier '*';
 
-structDeclaration: 'struct' Identifier? '{' structProperty* '}';
+structDeclaration:
+	'struct' (
+		Identifier structDeclarationBody?
+		| structDeclarationBody
+	);
+
+structDeclarationBody: '{' structProperty* '}';
 
 structProperty: typeSpecifier Identifier? ';';
 

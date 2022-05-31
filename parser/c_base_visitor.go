@@ -36,6 +36,10 @@ func (v *BaseCVisitor) VisitStructDeclaration(ctx *StructDeclarationContext) int
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitStructDeclarationBody(ctx *StructDeclarationBodyContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitStructProperty(ctx *StructPropertyContext) interface{} {
 	return v.VisitChildren(ctx)
 }
