@@ -466,6 +466,24 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 		typ_ := ast.NewASTType(ast.ASTTypeKindArray, "array")
 		typ_.ArrayType = ast.NewASTType(ast.ASTTypeKindChar, "char")
 		return ast.NewASTExpressionLiteral(child.GetText(), typ_), nil
+	case *parser.PropertyAccessExpressionContext:
+		expression, err := v.VisitExpression(child.Expression())
+		if err != nil {
+			return nil, err
+		}
+
+		expressionType := expression.GetType()
+		if expressionType.Kind != ast.ASTTypeKindStruct {
+			return nil, v.PositionedTranslationError(child.Expression().GetStart(), "property access is only allowed on structs")
+		}
+
+		propertyName := child.Identifier().GetText()
+		property := expressionType.StructType.GetProperty(propertyName)
+		if property == nil {
+			return nil, v.PositionedTranslationError(child.Identifier().GetSymbol(), fmt.Sprintf("struct has no property named '%s'", propertyName))
+		}
+
+		return ast.NewASTExpressionPropertyAccess(expression, property), nil
 	case *parser.ParenthesizedExpressionContext:
 		expression, err := v.VisitExpression(child.Expression())
 		if err != nil {

@@ -51,6 +51,7 @@ expression:
 	Identifier														# IdentifierExpression
 	| Constant														# ConstantExpression
 	| StringLiteral													# ConstantStringExpression
+	| expression '.' Identifier										# PropertyAccessExpression
 	| expression '[' expression ']'									# ArrayIndexExpression
 	| expression '(' functionCallArguments? ')'						# FunctionCallExpression
 	| '(' typeSpecifier ')' expression								# CastExpression

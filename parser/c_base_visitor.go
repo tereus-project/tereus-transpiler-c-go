@@ -64,6 +64,22 @@ func (v *BaseCVisitor) VisitParenthesizedExpression(ctx *ParenthesizedExpression
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitConstantExpression(ctx *ConstantExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitConstantStringExpression(ctx *ConstantStringExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitFunctionCallExpression(ctx *FunctionCallExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitIdentifierExpression(ctx *IdentifierExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitSizeofExpression(ctx *SizeofExpressionContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -84,27 +100,15 @@ func (v *BaseCVisitor) VisitBinaryExpression(ctx *BinaryExpressionContext) inter
 	return v.VisitChildren(ctx)
 }
 
-func (v *BaseCVisitor) VisitConstantExpression(ctx *ConstantExpressionContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
 func (v *BaseCVisitor) VisitUnaryExpressionPre(ctx *UnaryExpressionPreContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitPropertyAccessExpression(ctx *PropertyAccessExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitCastExpression(ctx *CastExpressionContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseCVisitor) VisitConstantStringExpression(ctx *ConstantStringExpressionContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseCVisitor) VisitFunctionCallExpression(ctx *FunctionCallExpressionContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseCVisitor) VisitIdentifierExpression(ctx *IdentifierExpressionContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 

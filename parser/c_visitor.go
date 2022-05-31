@@ -50,6 +50,18 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#ParenthesizedExpression.
 	VisitParenthesizedExpression(ctx *ParenthesizedExpressionContext) interface{}
 
+	// Visit a parse tree produced by CParser#ConstantExpression.
+	VisitConstantExpression(ctx *ConstantExpressionContext) interface{}
+
+	// Visit a parse tree produced by CParser#ConstantStringExpression.
+	VisitConstantStringExpression(ctx *ConstantStringExpressionContext) interface{}
+
+	// Visit a parse tree produced by CParser#FunctionCallExpression.
+	VisitFunctionCallExpression(ctx *FunctionCallExpressionContext) interface{}
+
+	// Visit a parse tree produced by CParser#IdentifierExpression.
+	VisitIdentifierExpression(ctx *IdentifierExpressionContext) interface{}
+
 	// Visit a parse tree produced by CParser#SizeofExpression.
 	VisitSizeofExpression(ctx *SizeofExpressionContext) interface{}
 
@@ -65,23 +77,14 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#BinaryExpression.
 	VisitBinaryExpression(ctx *BinaryExpressionContext) interface{}
 
-	// Visit a parse tree produced by CParser#ConstantExpression.
-	VisitConstantExpression(ctx *ConstantExpressionContext) interface{}
-
 	// Visit a parse tree produced by CParser#UnaryExpressionPre.
 	VisitUnaryExpressionPre(ctx *UnaryExpressionPreContext) interface{}
 
+	// Visit a parse tree produced by CParser#PropertyAccessExpression.
+	VisitPropertyAccessExpression(ctx *PropertyAccessExpressionContext) interface{}
+
 	// Visit a parse tree produced by CParser#CastExpression.
 	VisitCastExpression(ctx *CastExpressionContext) interface{}
-
-	// Visit a parse tree produced by CParser#ConstantStringExpression.
-	VisitConstantStringExpression(ctx *ConstantStringExpressionContext) interface{}
-
-	// Visit a parse tree produced by CParser#FunctionCallExpression.
-	VisitFunctionCallExpression(ctx *FunctionCallExpressionContext) interface{}
-
-	// Visit a parse tree produced by CParser#IdentifierExpression.
-	VisitIdentifierExpression(ctx *IdentifierExpressionContext) interface{}
 
 	// Visit a parse tree produced by CParser#assignementOperator.
 	VisitAssignementOperator(ctx *AssignementOperatorContext) interface{}

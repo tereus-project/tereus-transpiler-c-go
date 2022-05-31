@@ -12,11 +12,6 @@ type ASTStruct struct {
 	Properties []*ASTStructProperty
 }
 
-type ASTStructProperty struct {
-	Name string
-	Type *ASTType
-}
-
 func NewAstStructOpaque(name string) *ASTStruct {
 	return &ASTStruct{
 		Name:     name,
@@ -28,6 +23,16 @@ func (s *ASTStruct) SetProperties(properties []*ASTStructProperty) *ASTStruct {
 	s.IsOpaque = false
 	s.Properties = properties
 	return s
+}
+
+func (s *ASTStruct) GetProperty(name string) *ASTStructProperty {
+	for _, property := range s.Properties {
+		if property.Name == name {
+			return property
+		}
+	}
+
+	return nil
 }
 
 func (s *ASTStruct) String() string {
@@ -46,6 +51,11 @@ func (s *ASTStruct) TypeString() string {
 	return s.Name
 }
 
+type ASTStructProperty struct {
+	Name string
+	Type *ASTType
+}
+
 func NewASTStructProperty(name string, typ *ASTType) *ASTStructProperty {
 	return &ASTStructProperty{
 		Name: name,
@@ -53,6 +63,10 @@ func NewASTStructProperty(name string, typ *ASTType) *ASTStructProperty {
 	}
 }
 
+func (p *ASTStructProperty) GetTranslatedName() string {
+	return strings.ToUpper(string(p.Name[0])) + p.Name[1:]
+}
+
 func (m *ASTStructProperty) String() string {
-	return fmt.Sprintf("%s %s", m.Name, m.Type.String())
+	return fmt.Sprintf("%s %s", m.GetTranslatedName(), m.Type.String())
 }
