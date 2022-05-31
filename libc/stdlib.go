@@ -33,3 +33,9 @@ func Free(pointer unsafe.Pointer) {
 
 	delete(memoryAddresses, address)
 }
+
+func Assert(condition bool) {
+	if !condition {
+		panic("Assertion failed")
+	}
+}
