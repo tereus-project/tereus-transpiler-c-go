@@ -633,6 +633,20 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
 				),
 			)
+	case "assert":
+		identifier = "libc.Assert"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("assert").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"condition",
+						ast.NewASTType(ast.ASTTypeKindPointer, "bool"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
+				),
+			)
 	}
 
 	if identifier != "" && typ != nil {

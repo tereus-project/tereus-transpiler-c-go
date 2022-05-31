@@ -298,3 +298,28 @@ out:
 
 	testRemix(t, source, target)
 }
+
+func TestAssert(t *testing.T) {
+	source := `
+#include <stdio.h>
+#include <assert.h>
+
+void main() {
+	assert(1 == 1);
+}
+`
+
+	target := `
+package main
+
+import (
+	"github.com/tereus-project/tereus-remixer-c-go/libc"
+)
+
+func main() {
+	libc.Assert(1 == 1)
+}
+`
+
+	testRemix(t, source, target)
+}
