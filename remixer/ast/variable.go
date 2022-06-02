@@ -33,7 +33,7 @@ func (v *ASTVariableDeclaration) String() string {
 		} else {
 			switch v.Type.Kind {
 			case ASTTypeKindArray, ASTTypeKindPointer:
-				expressions = append(expressions, "nil")
+				expressions = append(expressions, fmt.Sprintf("(%s)(nil)", v.Type.String()))
 			case ASTTypeKindStruct:
 				expressions = append(expressions, fmt.Sprintf("%s{}", v.Type.Name))
 			case ASTTypeKindFloat32:
