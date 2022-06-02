@@ -52,6 +52,7 @@ expression:
 	| Constant														# ConstantExpression
 	| StringLiteral													# ConstantStringExpression
 	| expression '.' Identifier										# PropertyAccessExpression
+	| expression '->' Identifier									# PointerPropertyAccessExpression
 	| expression '[' expression ']'									# ArrayIndexExpression
 	| expression '(' functionCallArguments? ')'						# FunctionCallExpression
 	| '(' typeSpecifier ')' expression								# CastExpression

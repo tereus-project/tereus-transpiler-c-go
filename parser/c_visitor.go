@@ -83,6 +83,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#PropertyAccessExpression.
 	VisitPropertyAccessExpression(ctx *PropertyAccessExpressionContext) interface{}
 
+	// Visit a parse tree produced by CParser#PointerPropertyAccessExpression.
+	VisitPointerPropertyAccessExpression(ctx *PointerPropertyAccessExpressionContext) interface{}
+
 	// Visit a parse tree produced by CParser#CastExpression.
 	VisitCastExpression(ctx *CastExpressionContext) interface{}
 

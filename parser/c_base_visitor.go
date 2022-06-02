@@ -108,6 +108,10 @@ func (v *BaseCVisitor) VisitPropertyAccessExpression(ctx *PropertyAccessExpressi
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitPointerPropertyAccessExpression(ctx *PointerPropertyAccessExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitCastExpression(ctx *CastExpressionContext) interface{} {
 	return v.VisitChildren(ctx)
 }
