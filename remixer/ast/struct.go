@@ -51,6 +51,20 @@ func (s *ASTStruct) TypeString() string {
 	return s.Name
 }
 
+func (s *ASTStruct) IsSameTo(other *ASTStruct) bool {
+	if len(s.Properties) != len(other.Properties) {
+		return false
+	}
+
+	for i, property := range s.Properties {
+		if !property.Type.IsSameTo(other.Properties[i].Type) {
+			return false
+		}
+	}
+
+	return true
+}
+
 type ASTStructProperty struct {
 	Name string
 	Type *ASTType
