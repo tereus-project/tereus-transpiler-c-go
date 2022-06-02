@@ -432,7 +432,12 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 			return nil, err
 		}
 
-		item.Expression = expression
+		converted, err := ast.NewAstTypeConversion(expression, typ)
+		if err != nil {
+			return nil, err
+		}
+
+		item.Expression = converted
 	}
 
 	v.Scope.Add(scope.NewScopeVariable(name, "", typ))
@@ -559,7 +564,12 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 			return nil, err
 		}
 
-		return ast.NewASTExpressionBinary(left, child.AssignementOperator().GetText(), right), nil
+		converted, err := ast.NewAstTypeConversion(right, left.GetType())
+		if err != nil {
+			return nil, err
+		}
+
+		return ast.NewASTExpressionBinary(left, child.AssignementOperator().GetText(), converted), nil
 	case *parser.BinaryExpressionContext:
 		left, err := v.VisitExpression(child.Expression(0))
 		if err != nil {
@@ -571,7 +581,12 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 			return nil, err
 		}
 
-		return ast.NewASTExpressionBinary(left, child.BinaryOperator().GetText(), right), nil
+		converted, err := ast.NewAstTypeConversion(right, left.GetType())
+		if err != nil {
+			return nil, err
+		}
+
+		return ast.NewASTExpressionBinary(left, child.BinaryOperator().GetText(), converted), nil
 	case *parser.FunctionCallExpressionContext:
 		return v.VisitFunctionCallExpression(child)
 	}
