@@ -15,6 +15,8 @@ const (
 	ASTTypeKindFloat32
 	ASTTypeKindFloat64
 
+	ASTTypeKindBool
+
 	ASTTypeKindArray
 	ASTTypeKindPointer
 
