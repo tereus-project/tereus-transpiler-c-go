@@ -755,28 +755,49 @@ func (v *Visitor) VisitFunctionCallExpression(ctx *parser.FunctionCallExpression
 		return nil, err
 	}
 
+	expressionType := expression.GetType()
+
+	if !expressionType.IsFunction() {
+		return nil, v.PositionedTranslationError(ctx.GetStart(), "function call on non-function")
+	}
+
+	function := expressionType.FunctionType
+
 	var args []ast.IASTExpression
 
 	if child := ctx.FunctionCallArguments(); child != nil {
-		args, err = v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext))
+		args, err = v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext), function, 0)
 		if err != nil {
 			return nil, err
 		}
 	}
 
+	if len(args) < len(function.Args) {
+		return nil, v.PositionedTranslationError(ctx.GetStart(), "not enough arguments")
+	}
+
+	if len(args) > len(function.Args) {
+		return nil, v.PositionedTranslationError(ctx.GetStart(), "too many arguments")
+	}
+
 	return ast.NewASTExpressionFunctionCall(expression, args), nil
 }
 
-func (v *Visitor) VisitFunctionCallArguments(ctx *parser.FunctionCallArgumentsContext) ([]ast.IASTExpression, error) {
+func (v *Visitor) VisitFunctionCallArguments(ctx *parser.FunctionCallArgumentsContext, function *ast.ASTFunction, index int) ([]ast.IASTExpression, error) {
 	expression, err := v.VisitExpression(ctx.Expression())
 	if err != nil {
 		return nil, err
 	}
 
-	args := []ast.IASTExpression{expression}
+	converted, err := ast.NewAstTypeConversion(expression, function.Args[index].Type)
+	if err != nil {
+		return nil, err
+	}
+
+	args := []ast.IASTExpression{converted}
 
 	if child := ctx.FunctionCallArguments(); child != nil {
-		others, err := v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext))
+		others, err := v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext), function, index+1)
 		if err != nil {
 			return nil, err
 		}
