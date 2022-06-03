@@ -24,7 +24,7 @@ func (f *ASTFunction) SetArgs(args []*ASTFunctionArgument) *ASTFunction {
 	return f
 }
 
-func (f *ASTFunction) SetIsVaridic(isVariadic bool) *ASTFunction {
+func (f *ASTFunction) SetIsVariadic(isVariadic bool) *ASTFunction {
 	f.IsVariadic = isVariadic
 	return f
 }
