@@ -124,6 +124,14 @@ func (t *ASTType) IsConvertibleTo(targetType *ASTType) bool {
 }
 
 func (t *ASTType) IsSameTo(other *ASTType) bool {
+	if t.Kind == ASTTypeKindPointer && other.Kind == ASTTypeKindArray {
+		return t.PointerType.IsSameTo(other.ArrayType)
+	}
+
+	if t.Kind == ASTTypeKindArray && other.Kind == ASTTypeKindPointer {
+		return t.ArrayType.IsSameTo(other.PointerType)
+	}
+
 	if t.Kind != other.Kind {
 		return false
 	}
