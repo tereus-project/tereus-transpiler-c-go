@@ -3,16 +3,18 @@ package ast
 import "fmt"
 
 type ASTExpressionBinary struct {
-	Left     IASTExpression
-	Operator string
-	Right    IASTExpression
+	Left       IASTExpression
+	Operator   string
+	Right      IASTExpression
+	ReturnType *ASTType
 }
 
-func NewASTExpressionBinary(left IASTExpression, operator string, right IASTExpression) *ASTExpressionBinary {
+func NewASTExpressionBinary(left IASTExpression, operator string, right IASTExpression, returnType *ASTType) *ASTExpressionBinary {
 	return &ASTExpressionBinary{
-		Left:     left,
-		Operator: operator,
-		Right:    right,
+		Left:       left,
+		Operator:   operator,
+		Right:      right,
+		ReturnType: returnType,
 	}
 }
 
@@ -21,5 +23,5 @@ func (e *ASTExpressionBinary) String() string {
 }
 
 func (e *ASTExpressionBinary) GetType() *ASTType {
-	return e.Left.GetType()
+	return e.ReturnType
 }
