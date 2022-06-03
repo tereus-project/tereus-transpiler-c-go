@@ -429,8 +429,7 @@ func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContex
 
 func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationListContext, typ *ast.ASTType) ([]*ast.ASTVariableDeclarationItem, error) {
 	name := ctx.Identifier().GetText()
-
-	item := ast.NewASTVariableDeclarationItem(name, nil)
+	variable := ast.NewASTVariableDeclarationItem(name, nil)
 
 	if child := ctx.Expression(); child != nil {
 		expression, err := v.VisitExpression(child)
@@ -443,12 +442,38 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 			return nil, err
 		}
 
-		item.Expression = converted
+		variable.Expression = converted
+	} else if child := ctx.ListInitialization(); child != nil {
+		expressions, err := v.VisitListInitialization(child.(*parser.ListInitializationContext))
+		if err != nil {
+			return nil, err
+		}
+
+		if typ.IsStruct() {
+			if len(expressions) > len(typ.StructType.Properties) {
+				return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("too many initializers for '%s'", typ.Name))
+			}
+
+			for i, expression := range expressions {
+				converted, err := ast.NewAstTypeConversion(expression, typ.StructType.GetPropertyByIndex(i).Type)
+				if err != nil {
+					return nil, err
+				}
+
+				expressions[i] = converted
+			}
+
+			variable.Expression = ast.NewAstStructInitialization(typ, expressions)
+		} else if len(expressions) == 1 {
+			variable.Expression = expressions[0]
+		} else {
+			return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("too many initializers for '%s'", typ.Name))
+		}
 	}
 
 	v.Scope.Add(scope.NewScopeVariable(name, "", typ))
 
-	items := []*ast.ASTVariableDeclarationItem{item}
+	variables := []*ast.ASTVariableDeclarationItem{variable}
 
 	if child := ctx.VariableDeclarationList(); child != nil {
 		others, err := v.VisitVariableDeclarationList(child.(*parser.VariableDeclarationListContext), typ)
@@ -456,10 +481,47 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 			return nil, err
 		}
 
-		items = append(items, others...)
+		variables = append(variables, others...)
+	}
+
+	return variables, nil
+}
+
+func (v *Visitor) VisitListInitialization(ctx *parser.ListInitializationContext) ([]ast.IASTExpression, error) {
+	expressionsContext := ctx.AllExpression()
+	items := make([]ast.IASTExpression, len(expressionsContext))
+
+	for i, child := range expressionsContext {
+		expression, err := v.VisitExpression(child)
+		if err != nil {
+			return nil, err
+		}
+
+		items[i] = expression
 	}
 
 	return items, nil
+}
+
+func (v *Visitor) VisitNamedListInitialization(ctx *parser.NamedListInitializationContext) ([]string, []ast.IASTExpression, error) {
+	namedListInitializationItems := ctx.AllNamedListInitializationItem()
+
+	names := make([]string, len(namedListInitializationItems))
+	expressions := make([]ast.IASTExpression, len(namedListInitializationItems))
+
+	for i, child := range namedListInitializationItems {
+		ctx := child.(*parser.NamedListInitializationItemContext)
+
+		expression, err := v.VisitExpression(ctx.Expression())
+		if err != nil {
+			return nil, nil, err
+		}
+
+		names[i] = ctx.Identifier().GetText()
+		expressions[i] = expression
+	}
+
+	return names, expressions, nil
 }
 
 func (v *Visitor) VisitExpression(ctx parser.IExpressionContext) (ast.IASTExpression, error) {
@@ -477,6 +539,57 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 		typ_ := ast.NewASTType(ast.ASTTypeKindArray, "array")
 		typ_.ArrayType = ast.NewASTType(ast.ASTTypeKindChar, "char")
 		return ast.NewASTExpressionLiteral(child.GetText(), typ_), nil
+	case *parser.StructInitializationExpressionContext:
+		typ, err := v.VisitTypeSpecifier(child.TypeSpecifier().(*parser.TypeSpecifierContext))
+		if err != nil {
+			return nil, err
+		}
+
+		if !typ.IsStruct() {
+			return nil, v.PositionedTranslationError(child.GetStart(), fmt.Sprintf("'%s' is not a struct", typ.Name))
+		}
+
+		if child := child.ListInitialization(); child != nil {
+			expressions, err := v.VisitListInitialization(child.(*parser.ListInitializationContext))
+			if err != nil {
+				return nil, err
+			}
+
+			if len(expressions) > len(typ.StructType.Properties) {
+				return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("too many initializers for '%s'", typ.Name))
+			}
+
+			for i, expression := range expressions {
+				converted, err := ast.NewAstTypeConversion(expression, typ.StructType.GetPropertyByIndex(i).Type)
+				if err != nil {
+					return nil, err
+				}
+
+				expressions[i] = converted
+			}
+
+			return ast.NewAstStructInitialization(typ, expressions), nil
+		}
+
+		if child := child.NamedListInitialization(); child != nil {
+			names, expressions, err := v.VisitNamedListInitialization(child.(*parser.NamedListInitializationContext))
+			if err != nil {
+				return nil, err
+			}
+
+			for i, expression := range expressions {
+				converted, err := ast.NewAstTypeConversion(expression, typ.StructType.GetProperty(names[i]).Type)
+				if err != nil {
+					return nil, err
+				}
+
+				expressions[i] = converted
+			}
+
+			return ast.NewAstStructNamedInitialization(typ, names, expressions), nil
+		}
+
+		return nil, v.PositionedTranslationError(ctx.GetStart(), "Not implemented")
 	case *parser.PropertyAccessExpressionContext:
 		expression, err := v.VisitExpression(child.Expression())
 		if err != nil {

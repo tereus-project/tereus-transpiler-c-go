@@ -47,6 +47,18 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#variableDeclarationList.
 	VisitVariableDeclarationList(ctx *VariableDeclarationListContext) interface{}
 
+	// Visit a parse tree produced by CParser#listInitialization.
+	VisitListInitialization(ctx *ListInitializationContext) interface{}
+
+	// Visit a parse tree produced by CParser#namedListInitialization.
+	VisitNamedListInitialization(ctx *NamedListInitializationContext) interface{}
+
+	// Visit a parse tree produced by CParser#namedListInitializationItem.
+	VisitNamedListInitializationItem(ctx *NamedListInitializationItemContext) interface{}
+
+	// Visit a parse tree produced by CParser#StructInitializationExpression.
+	VisitStructInitializationExpression(ctx *StructInitializationExpressionContext) interface{}
+
 	// Visit a parse tree produced by CParser#ParenthesizedExpression.
 	VisitParenthesizedExpression(ctx *ParenthesizedExpressionContext) interface{}
 

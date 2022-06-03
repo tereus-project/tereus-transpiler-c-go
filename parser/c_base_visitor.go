@@ -60,6 +60,22 @@ func (v *BaseCVisitor) VisitVariableDeclarationList(ctx *VariableDeclarationList
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitListInitialization(ctx *ListInitializationContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitNamedListInitialization(ctx *NamedListInitializationContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitNamedListInitializationItem(ctx *NamedListInitializationItemContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitStructInitializationExpression(ctx *StructInitializationExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitParenthesizedExpression(ctx *ParenthesizedExpressionContext) interface{} {
 	return v.VisitChildren(ctx)
 }

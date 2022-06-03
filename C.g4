@@ -45,12 +45,30 @@ enumProperties:
 variableDeclaration: typeSpecifier variableDeclarationList;
 
 variableDeclarationList:
-	Identifier ('=' expression)? (',' variableDeclarationList)?;
+	Identifier ('=' (expression | listInitialization))? (
+		',' variableDeclarationList
+	)?;
+
+listInitialization:
+	'{' (expression (',' expression)* ','?)? '}';
+
+namedListInitialization:
+	'{' (
+		namedListInitializationItem (
+			',' namedListInitializationItem
+		)* ','?
+	)? '}';
+
+namedListInitializationItem: '.' Identifier '=' expression;
 
 expression:
-	Identifier														# IdentifierExpression
-	| Constant														# ConstantExpression
-	| StringLiteral													# ConstantStringExpression
+	Identifier		# IdentifierExpression
+	| Constant		# ConstantExpression
+	| StringLiteral	# ConstantStringExpression
+	| '(' typeSpecifier ')' (
+		listInitialization
+		| namedListInitialization
+	)																# StructInitializationExpression
 	| expression '.' Identifier										# PropertyAccessExpression
 	| expression '->' Identifier									# PointerPropertyAccessExpression
 	| expression '[' expression ']'									# ArrayIndexExpression

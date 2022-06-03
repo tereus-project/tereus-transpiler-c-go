@@ -35,6 +35,10 @@ func (s *ASTStruct) GetProperty(name string) *ASTStructProperty {
 	return nil
 }
 
+func (s *ASTStruct) GetPropertyByIndex(index int) *ASTStructProperty {
+	return s.Properties[index]
+}
+
 func (s *ASTStruct) String() string {
 	properties := make([]string, len(s.Properties))
 
