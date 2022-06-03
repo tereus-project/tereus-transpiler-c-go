@@ -27,5 +27,9 @@ func (t *ASTTypeConversion) String() string {
 		return t.Expression.String()
 	}
 
+	if t.TargetType.IsInteger() || t.TargetType.IsFloat() {
+		return fmt.Sprintf("%s(%s)", t.TargetType.String(), t.Expression.String())
+	}
+
 	return fmt.Sprintf("(%s)(%s)", t.TargetType.String(), t.Expression.String())
 }
