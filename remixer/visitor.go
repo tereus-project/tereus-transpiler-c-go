@@ -158,14 +158,20 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 		}
 
 		if len(function.Args) >= 2 {
-			typ := ast.NewASTType(ast.ASTTypeKindArray, "array")
-			typ.ArrayType = ast.NewASTType(ast.ASTTypeKindChar, "string")
+			typ := ast.NewASTType(ast.ASTTypeKindArray, "array").
+				SetArrayType(
+					ast.NewASTType(ast.ASTTypeKindChar, "char"),
+				)
 
 			variable := ast.NewASTVariableDeclaration(typ)
 
-			typ_ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
-			typ_.PointerType = ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
-			typ_.PointerType = ast.NewASTType(ast.ASTTypeKindChar, "char")
+			typ_ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+				SetPointerType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(
+							ast.NewASTType(ast.ASTTypeKindChar, "char"),
+						),
+				)
 
 			variable.Items = []*ast.ASTVariableDeclarationItem{
 				// TODO: change this to a proper structure when it gets implemented
@@ -615,7 +621,7 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
 					),
 				}).
-				SetIsVaridic(true).
+				SetIsVariadic(true).
 				SetReturnType(
 					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
 				),
@@ -632,7 +638,7 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
 					),
 				}).
-				SetIsVaridic(true).
+				SetIsVariadic(true).
 				SetReturnType(
 					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
 				),
@@ -729,8 +735,11 @@ func (v *Visitor) VisitSizeofExpression(ctx *parser.SizeofExpressionContext) (as
 
 		switch typ.Kind {
 		case ast.ASTTypeKindPointer:
-			typ_ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
-			typ_.PointerType = ast.NewASTType(ast.ASTTypeKindVoid, "void")
+			typ_ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+				SetPointerType(
+					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
+				)
+
 			emptyExpression = ast.NewASTExpressionCast(ast.NewASTExpressionLiteral("nil", typ_), typ)
 		// case ast.ASTTypeKindStruct:
 		// 	emptyExpression =
@@ -776,25 +785,27 @@ func (v *Visitor) VisitFunctionCallExpression(ctx *parser.FunctionCallExpression
 		return nil, v.PositionedTranslationError(ctx.GetStart(), "not enough arguments")
 	}
 
-	if len(args) > len(function.Args) {
-		return nil, v.PositionedTranslationError(ctx.GetStart(), "too many arguments")
-	}
-
 	return ast.NewASTExpressionFunctionCall(expression, args), nil
 }
 
 func (v *Visitor) VisitFunctionCallArguments(ctx *parser.FunctionCallArgumentsContext, function *ast.ASTFunction, index int) ([]ast.IASTExpression, error) {
+	if !function.IsVariadic && index >= len(function.Args) {
+		return nil, v.PositionedTranslationError(ctx.GetStart(), "too many arguments")
+	}
+
 	expression, err := v.VisitExpression(ctx.Expression())
 	if err != nil {
 		return nil, err
 	}
 
-	converted, err := ast.NewAstTypeConversion(expression, function.Args[index].Type)
-	if err != nil {
-		return nil, err
+	if index < len(function.Args) {
+		expression, err = ast.NewAstTypeConversion(expression, function.Args[index].Type)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	args := []ast.IASTExpression{converted}
+	args := []ast.IASTExpression{expression}
 
 	if child := ctx.FunctionCallArguments(); child != nil {
 		others, err := v.VisitFunctionCallArguments(child.(*parser.FunctionCallArgumentsContext), function, index+1)
