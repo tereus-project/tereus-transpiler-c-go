@@ -822,6 +822,29 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
 				),
 			)
+	case "memset":
+		identifier = "libc.Memset"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("memset").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"value",
+						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+					),
+					ast.NewASTFunctionArgument(
+						"size",
+						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
+				),
+			)
 	}
 
 	if identifier != "" && typ != nil {
