@@ -834,7 +834,7 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 					),
 					ast.NewASTFunctionArgument(
 						"value",
-						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+						ast.NewASTType(ast.ASTTypeKindInt, "byte"),
 					),
 					ast.NewASTFunctionArgument(
 						"size",
