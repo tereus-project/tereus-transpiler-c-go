@@ -1,6 +1,10 @@
 package ast
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/sirupsen/logrus"
+)
 
 type ASTTypeConversion struct {
 	Expression IASTExpression
@@ -9,6 +13,11 @@ type ASTTypeConversion struct {
 
 func NewAstTypeConversion(expression IASTExpression, targetType *ASTType) (*ASTTypeConversion, error) {
 	if !expression.GetType().IsConvertibleTo(targetType) {
+		logrus.WithFields(logrus.Fields{
+			"expression":     expression,
+			"expressionType": expression.GetType(),
+			"targetType":     targetType,
+		}).Error("Expression is not convertible to target type")
 		return nil, fmt.Errorf("Can't implicitly convert '%s' to '%s'", expression.GetType().String(), targetType.String())
 	}
 
