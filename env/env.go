@@ -18,6 +18,8 @@ type Env struct {
 	LogLevel  string `env:"LOG_LEVEL" env-default:"info"`
 	SentryDSN string `env:"SENTRY_DSN"`
 	Env       string `env:"ENV" env-required:"true"`
+
+	MetricsPort string `env:"METRICS_PORT" env-default:"8080"`
 }
 
 var env Env

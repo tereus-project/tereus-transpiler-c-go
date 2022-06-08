@@ -3,15 +3,28 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
+	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/tereus-project/tereus-go-std/logging"
 	"github.com/tereus-project/tereus-remixer-c-go/env"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer"
 	"github.com/tereus-project/tereus-remixer-c-go/services"
+)
+
+var (
+	prom_namespace       = "remixer_c_go"
+	remixingDurationHist = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		Namespace: prom_namespace,
+		Name:      "remixing_duration_seconds",
+		Help:      "Histogram of remixing duration",
+	}, []string{"status"})
 )
 
 func main() {
@@ -47,7 +60,20 @@ func main() {
 		return
 	}
 
+	go exposeMetrics()
+
 	initWorker(config)
+}
+
+func exposeMetrics() {
+	config := env.Get()
+
+	prometheus.MustRegister(remixingDurationHist)
+
+	http.Handle("/metrics", promhttp.Handler())
+	listenAddr := fmt.Sprintf("0.0.0.0:%s", config.MetricsPort)
+	log.Infof("Beginning to serve metrics on %s", listenAddr)
+	log.Fatal(http.ListenAndServe(listenAddr, nil))
 }
 
 func initWorker(config *env.Env) {
@@ -73,6 +99,8 @@ func startRemixJobListener(k *services.KafkaService, minioService *services.Mini
 	submissions := k.ConsumeSubmissions(context.Background())
 
 	for job := range submissions {
+		startTime := time.Now()
+
 		err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
 			ID:     job.ID,
 			Status: services.StatusProcessing,
@@ -86,6 +114,7 @@ func startRemixJobListener(k *services.KafkaService, minioService *services.Mini
 		err = remix(job.ID, minioService)
 		if err != nil {
 			log.WithError(err).WithField("job_id", job.ID).Errorf("Failed to remix and upload job")
+			remixingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
 
 			err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
 				ID:     job.ID,
@@ -96,6 +125,7 @@ func startRemixJobListener(k *services.KafkaService, minioService *services.Mini
 				log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
 			}
 		} else {
+			remixingDurationHist.WithLabelValues(string(services.StatusDone)).Observe(time.Since(startTime).Seconds())
 			err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
 				ID:     job.ID,
 				Status: services.StatusDone,
