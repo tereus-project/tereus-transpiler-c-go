@@ -17,6 +17,11 @@ require (
 )
 
 require (
+	github.com/getsentry/sentry-go v0.13.0 // indirect
+	github.com/onrik/logrus v0.9.0 // indirect
+)
+
+require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect
@@ -33,6 +38,7 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
 	github.com/rs/xid v1.2.1 // indirect
 	github.com/smartystreets/assertions v1.13.0 // indirect
+	github.com/tereus-project/tereus-go-std v0.0.0-20220524132507-eb792bc3b2e6
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect

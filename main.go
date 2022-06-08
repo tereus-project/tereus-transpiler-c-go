@@ -6,7 +6,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
+	"github.com/tereus-project/tereus-go-std/logging"
 	"github.com/tereus-project/tereus-remixer-c-go/env"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer"
 	"github.com/tereus-project/tereus-remixer-c-go/services"
@@ -20,12 +22,18 @@ func main() {
 
 	config := env.Get()
 
-	level, err := log.ParseLevel(config.LogLevel)
+	sentryHook, err := logging.SetupLog(logging.LogConfig{
+		Format:       config.LogFormat,
+		LogLevel:     config.LogLevel,
+		ShowFilename: true,
+		ReportCaller: true,
+		SentryDSN:    config.SentryDSN,
+	})
 	if err != nil {
-		log.Warnf("Invalid log level: '%s'", config.LogLevel)
-	} else {
-		log.SetLevel(level)
+		logrus.WithError(err).Fatal("Failed to set log configuration")
 	}
+	defer sentryHook.Flush()
+	defer logging.RecoverAndLogPanic()
 
 	if len(os.Args) >= 2 {
 		path := os.Args[1]
