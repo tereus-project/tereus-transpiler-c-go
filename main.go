@@ -1,18 +1,22 @@
 package main
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
+	"github.com/nsqio/go-nsq"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/tereus-project/tereus-go-std/logging"
+	std "github.com/tereus-project/tereus-go-std/nsq"
 	"github.com/tereus-project/tereus-remixer-c-go/env"
 	"github.com/tereus-project/tereus-remixer-c-go/remixer"
 	"github.com/tereus-project/tereus-remixer-c-go/services"
@@ -90,53 +94,105 @@ func initWorker(config *env.Env) {
 		log.WithError(err).Fatal()
 	}
 
+	log.Info("Connection to NSQ...")
+	nsqService, err := std.NewNSQService(config.NSQEndpoint, config.NSQLookupdEndpoint)
+
 	log.Info("Starting remix job listener...")
-	startRemixJobListener(kafkaService, minioService)
-	log.Warn("Listener has stopped")
+	startRemixJobListener(kafkaService, minioService, nsqService)
 }
 
-func startRemixJobListener(k *services.KafkaService, minioService *services.MinioService) {
-	submissions := k.ConsumeSubmissions(context.Background())
+type remixMessageHandler struct {
+	minioService *services.MinioService
+	nsqService   *std.NSQService
+}
 
-	for job := range submissions {
-		startTime := time.Now()
+type SubmissionMessage struct {
+	ID string `json:"id"`
+}
 
-		err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
-			ID:     job.ID,
-			Status: services.StatusProcessing,
-		})
-		if err != nil {
-			log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
-		}
+func (h *remixMessageHandler) SetSubmissionStatus(status services.SubmissionStatusMessage, subID string) error {
+	log.Debugf("Setting submission status to %s", status)
 
-		log.Debugf("Job '%s' started", job.ID)
-
-		err = remix(job.ID, minioService)
-		if err != nil {
-			log.WithError(err).WithField("job_id", job.ID).Errorf("Failed to remix and upload job")
-			remixingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
-
-			err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
-				ID:     job.ID,
-				Status: services.StatusFailed,
-				Reason: err.Error(),
-			})
-			if err != nil {
-				log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
-			}
-		} else {
-			remixingDurationHist.WithLabelValues(string(services.StatusDone)).Observe(time.Since(startTime).Seconds())
-			err := k.PublishSubmissionStatus(services.SubmissionStatusMessage{
-				ID:     job.ID,
-				Status: services.StatusDone,
-			})
-			if err != nil {
-				log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
-			}
-
-			log.Debugf("Job '%s' completed", job.ID)
-		}
+	message, err := json.Marshal(status)
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	err = h.nsqService.Publish("remix_submission_status", message)
+
+	return err
+}
+
+// HandleMessage implements the Handler interface.
+// Returning a non-nil error will automatically send a REQ command to NSQ to re-queue the message.
+func (h *remixMessageHandler) HandleMessage(m *nsq.Message) error {
+	var startTime = time.Now()
+
+	logrus.WithField("message", string(m.Body)).Info("Received message")
+
+	var job SubmissionMessage
+	err := json.Unmarshal(m.Body, &job)
+	if err != nil {
+		logrus.WithError(err).Error("Error unmarshaling message")
+		return nil
+	}
+
+	err = h.SetSubmissionStatus(services.SubmissionStatusMessage{
+		ID:     job.ID,
+		Status: services.StatusProcessing,
+	}, job.ID)
+	if err != nil {
+		remixingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
+		log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
+		return err
+	}
+
+	err = remix(job.ID, h.minioService)
+	if err != nil {
+		log.WithError(err).WithField("job_id", job.ID).Errorf("Failed to remix and upload job")
+		remixingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
+
+		err = h.SetSubmissionStatus(services.SubmissionStatusMessage{
+			ID:     job.ID,
+			Status: services.StatusFailed,
+			Reason: err.Error(),
+		}, job.ID)
+		if err != nil {
+			remixingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
+			log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
+			return err
+		}
+	} else {
+		err = h.SetSubmissionStatus(services.SubmissionStatusMessage{
+			ID:     job.ID,
+			Status: services.StatusDone,
+		}, job.ID)
+		remixingDurationHist.WithLabelValues(string(services.StatusDone)).Observe(time.Since(startTime).Seconds())
+		if err != nil {
+			remixingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
+			log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
+			return err
+		}
+
+		log.Debugf("Job '%s' completed", job.ID)
+	}
+
+	return nil
+}
+
+func startRemixJobListener(k *services.KafkaService, minioService *services.MinioService, nsqService *std.NSQService) {
+	nsqService.RegisterHandler("remix_jobs_c_to_go", "remixer", &remixMessageHandler{
+		minioService: minioService,
+		nsqService:   nsqService,
+	})
+
+	// wait for signal to exit
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	<-sigChan
+
+	log.Info("Shutting down...")
+	nsqService.ShutDown()
 }
 
 type jobFile struct {
