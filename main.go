@@ -89,6 +89,9 @@ func initWorker(config *env.Env) {
 
 	log.Info("Connection to NSQ...")
 	nsqService, err := std.NewNSQService(config.NSQEndpoint, config.NSQLookupdEndpoint)
+	if err != nil {
+		log.WithError(err).Fatal("Failed to connect to NSQ")
+	}
 
 	log.Info("Starting remix job listener...")
 	startRemixJobListener(minioService, nsqService)
