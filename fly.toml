@@ -7,8 +7,9 @@ processes = []
 [env]
     ENV = "prod"
     LOG_LEVEL = "debug"
-    S3_BUCKET = "tereus-remix"
-    S3_ENDPOINT = "s3.fr-par.scw.cloud"
+    S3_BUCKET = "tereus"
+    S3_ENDPOINT = "ams3.digitaloceanspaces.com"
+    S3_HTTPS_ENABLED = "true"
 
 [experimental]
     allowed_public_ports = []
