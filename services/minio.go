@@ -17,11 +17,10 @@ type MinioService struct {
 	client *minio.Client
 }
 
-func NewMinioService(endpoint string, accessKey string, secretKey string, bucket string) (*MinioService, error) {
-	// Initialize minio client object.
+func NewMinioService(endpoint string, accessKey string, secretKey string, bucket string, secure bool) (*MinioService, error) {
 	client, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
-		Secure: false,
+		Secure: secure,
 	})
 	if err != nil {
 		return nil, err

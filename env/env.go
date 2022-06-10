@@ -7,10 +7,11 @@ import (
 )
 
 type Env struct {
-	S3Bucket    string `env:"S3_BUCKET" env-required:"true"`
-	S3AccessKey string `env:"S3_ACCESS_KEY" env-required:"true"`
-	S3SecretKey string `env:"S3_SECRET_KEY" env-required:"true"`
-	S3Endpoint  string `env:"S3_ENDPOINT" env-required:"true"`
+	S3Bucket       string `env:"S3_BUCKET" env-required:"true"`
+	S3AccessKey    string `env:"S3_ACCESS_KEY" env-required:"true"`
+	S3SecretKey    string `env:"S3_SECRET_KEY" env-required:"true"`
+	S3Endpoint     string `env:"S3_ENDPOINT" env-required:"true"`
+	S3HTTPSEnabled bool   `env:"S3_HTTPS_ENABLED" env-default:"false"`
 
 	NSQEndpoint        string `env:"NSQ_ENDPOINT" env-required:"true"`
 	NSQLookupdEndpoint string `env:"NSQ_LOOKUPD" env-required:"true"`

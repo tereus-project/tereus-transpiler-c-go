@@ -82,7 +82,7 @@ func exposeMetrics() {
 
 func initWorker(config *env.Env) {
 	log.Info("Connecting to MinIO...")
-	minioService, err := services.NewMinioService(config.S3Endpoint, config.S3AccessKey, config.S3SecretKey, config.S3Bucket)
+	minioService, err := services.NewMinioService(config.S3Endpoint, config.S3AccessKey, config.S3SecretKey, config.S3Bucket, config.S3HTTPSEnabled)
 	if err != nil {
 		log.WithError(err).Fatal()
 	}
