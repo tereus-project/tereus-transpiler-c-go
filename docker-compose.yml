@@ -1,0 +1,17 @@
+version: "3.2"
+
+networks:
+  tereus_shared:
+    external: true # define by API compose
+
+services:
+  remixer:
+    image: cosmtrek/air
+    networks:
+      - tereus_shared
+    volumes:
+      - ./:/app
+    env_file: .env
+    environment:
+      air_wd: /app
+    tty: true
