@@ -181,10 +181,14 @@ func (h *remixMessageHandler) HandleMessage(m *nsq.Message) error {
 }
 
 func startRemixJobListener(k *services.KafkaService, minioService *services.MinioService, nsqService *std.NSQService) {
-	nsqService.RegisterHandler("remix_jobs_c_to_go", "remixer", &remixMessageHandler{
+	err := nsqService.RegisterHandler("remix_jobs_c_to_go", "remixer", &remixMessageHandler{
 		minioService: minioService,
 		nsqService:   nsqService,
 	})
+
+	if err != nil {
+		log.WithError(err).Fatal("Failed to register handler")
+	}
 
 	// wait for signal to exit
 	sigChan := make(chan os.Signal, 1)
