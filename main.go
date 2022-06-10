@@ -81,13 +81,6 @@ func exposeMetrics() {
 }
 
 func initWorker(config *env.Env) {
-	log.Info("Connecting to Kafka...")
-	kafkaService, err := services.NewKafkaService(config.KafkaEndpoint)
-	if err != nil {
-		log.WithError(err).Fatal()
-	}
-	defer kafkaService.CloseAllWriters()
-
 	log.Info("Connecting to MinIO...")
 	minioService, err := services.NewMinioService(config.S3Endpoint, config.S3AccessKey, config.S3SecretKey, config.S3Bucket)
 	if err != nil {
@@ -98,7 +91,7 @@ func initWorker(config *env.Env) {
 	nsqService, err := std.NewNSQService(config.NSQEndpoint, config.NSQLookupdEndpoint)
 
 	log.Info("Starting remix job listener...")
-	startRemixJobListener(kafkaService, minioService, nsqService)
+	startRemixJobListener(minioService, nsqService)
 }
 
 type remixMessageHandler struct {
@@ -180,7 +173,7 @@ func (h *remixMessageHandler) HandleMessage(m *nsq.Message) error {
 	return nil
 }
 
-func startRemixJobListener(k *services.KafkaService, minioService *services.MinioService, nsqService *std.NSQService) {
+func startRemixJobListener(minioService *services.MinioService, nsqService *std.NSQService) {
 	err := nsqService.RegisterHandler("remix_jobs_c_to_go", "remixer", &remixMessageHandler{
 		minioService: minioService,
 		nsqService:   nsqService,
