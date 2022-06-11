@@ -45,7 +45,7 @@ func NewMinioService(endpoint string, accessKey string, secretKey string, bucket
 	}, nil
 }
 
-var transpilationPrefix = "transpilation"
+var transpilationPrefix = "transpilations"
 
 func (s *MinioService) GetFiles(id string) <-chan string {
 	files := make(chan string)
