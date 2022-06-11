@@ -10,4 +10,4 @@ RUN go mod download
 COPY . .
 RUN go build -tags musl
 
-CMD ./tereus-remixer-c-go
+CMD ./tereus-transpiler-c-go

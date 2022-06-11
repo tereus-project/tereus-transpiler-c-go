@@ -1,4 +1,4 @@
-package remixer
+package transpiler
 
 import (
 	"os"

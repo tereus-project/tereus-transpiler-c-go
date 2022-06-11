@@ -17,17 +17,17 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tereus-project/tereus-go-std/logging"
 	std "github.com/tereus-project/tereus-go-std/nsq"
-	"github.com/tereus-project/tereus-remixer-c-go/env"
-	"github.com/tereus-project/tereus-remixer-c-go/remixer"
-	"github.com/tereus-project/tereus-remixer-c-go/services"
+	"github.com/tereus-project/tereus-transpiler-c-go/env"
+	"github.com/tereus-project/tereus-transpiler-c-go/services"
+	"github.com/tereus-project/tereus-transpiler-c-go/transpiler"
 )
 
 var (
-	prom_namespace       = "remixer_c_go"
-	remixingDurationHist = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+	prom_namespace          = "transpiler_c_go"
+	transpilingDurationHist = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: prom_namespace,
-		Name:      "remixing_duration_seconds",
-		Help:      "Histogram of remixing duration",
+		Name:      "transpiling_duration_seconds",
+		Help:      "Histogram of transpiling duration",
 	}, []string{"status"})
 )
 
@@ -55,9 +55,9 @@ func main() {
 	if len(os.Args) >= 2 {
 		path := os.Args[1]
 
-		output, err := remixer.Remix(path)
+		output, err := transpiler.Remix(path)
 		if err != nil {
-			log.WithError(err).Fatalf("Failed to remix '%s'", path)
+			log.WithError(err).Fatalf("Failed to transpile '%s'", path)
 		}
 
 		fmt.Println(output)
@@ -72,7 +72,7 @@ func main() {
 func exposeMetrics() {
 	config := env.Get()
 
-	prometheus.MustRegister(remixingDurationHist)
+	prometheus.MustRegister(transpilingDurationHist)
 
 	http.Handle("/metrics", promhttp.Handler())
 	listenAddr := fmt.Sprintf("0.0.0.0:%s", config.MetricsPort)
@@ -93,11 +93,11 @@ func initWorker(config *env.Env) {
 		log.WithError(err).Fatal("Failed to connect to NSQ")
 	}
 
-	log.Info("Starting remix job listener...")
+	log.Info("Starting transpilation job listener...")
 	startRemixJobListener(minioService, nsqService)
 }
 
-type remixMessageHandler struct {
+type transpilationMessageHandler struct {
 	minioService *services.MinioService
 	nsqService   *std.NSQService
 }
@@ -106,7 +106,7 @@ type SubmissionMessage struct {
 	ID string `json:"id"`
 }
 
-func (h *remixMessageHandler) SetSubmissionStatus(status services.SubmissionStatusMessage, subID string) error {
+func (h *transpilationMessageHandler) SetSubmissionStatus(status services.SubmissionStatusMessage, subID string) error {
 	log.Debugf("Setting submission status to %s", status)
 
 	message, err := json.Marshal(status)
@@ -114,14 +114,14 @@ func (h *remixMessageHandler) SetSubmissionStatus(status services.SubmissionStat
 		log.Fatal(err)
 	}
 
-	err = h.nsqService.Publish("remix_submission_status", message)
+	err = h.nsqService.Publish("transpilation_submission_status", message)
 
 	return err
 }
 
 // HandleMessage implements the Handler interface.
 // Returning a non-nil error will automatically send a REQ command to NSQ to re-queue the message.
-func (h *remixMessageHandler) HandleMessage(m *nsq.Message) error {
+func (h *transpilationMessageHandler) HandleMessage(m *nsq.Message) error {
 	var startTime = time.Now()
 
 	logrus.WithField("message", string(m.Body)).Info("Received message")
@@ -138,15 +138,15 @@ func (h *remixMessageHandler) HandleMessage(m *nsq.Message) error {
 		Status: services.StatusProcessing,
 	}, job.ID)
 	if err != nil {
-		remixingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
+		transpilingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
 		log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
 		return err
 	}
 
-	err = remix(job.ID, h.minioService)
+	err = transpilation(job.ID, h.minioService)
 	if err != nil {
-		log.WithError(err).WithField("job_id", job.ID).Errorf("Failed to remix and upload job")
-		remixingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
+		log.WithError(err).WithField("job_id", job.ID).Errorf("Failed to transpile and upload job")
+		transpilingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
 
 		err = h.SetSubmissionStatus(services.SubmissionStatusMessage{
 			ID:     job.ID,
@@ -154,7 +154,7 @@ func (h *remixMessageHandler) HandleMessage(m *nsq.Message) error {
 			Reason: err.Error(),
 		}, job.ID)
 		if err != nil {
-			remixingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
+			transpilingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
 			log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
 			return err
 		}
@@ -163,9 +163,9 @@ func (h *remixMessageHandler) HandleMessage(m *nsq.Message) error {
 			ID:     job.ID,
 			Status: services.StatusDone,
 		}, job.ID)
-		remixingDurationHist.WithLabelValues(string(services.StatusDone)).Observe(time.Since(startTime).Seconds())
+		transpilingDurationHist.WithLabelValues(string(services.StatusDone)).Observe(time.Since(startTime).Seconds())
 		if err != nil {
-			remixingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
+			transpilingDurationHist.WithLabelValues(string(services.StatusFailed)).Observe(time.Since(startTime).Seconds())
 			log.WithError(err).WithField("job_id", job.ID).Errorf("Error publishing status message for job")
 			return err
 		}
@@ -177,7 +177,7 @@ func (h *remixMessageHandler) HandleMessage(m *nsq.Message) error {
 }
 
 func startRemixJobListener(minioService *services.MinioService, nsqService *std.NSQService) {
-	err := nsqService.RegisterHandler("remix_jobs_c_to_go", "remixer", &remixMessageHandler{
+	err := nsqService.RegisterHandler("transpilation_jobs_c_to_go", "transpiler", &transpilationMessageHandler{
 		minioService: minioService,
 		nsqService:   nsqService,
 	})
@@ -200,7 +200,7 @@ type jobFile struct {
 	localPath  string
 }
 
-func remix(jobId string, minioService *services.MinioService) error {
+func transpilation(jobId string, minioService *services.MinioService) error {
 	files, err := downloadObjectsToTempFiles(minioService, jobId)
 	if err != nil {
 		return err
@@ -223,7 +223,7 @@ func remix(jobId string, minioService *services.MinioService) error {
 
 		log.Debugf("Remixing file '%s'", file.objectPath)
 
-		output, err := remixer.Remix(file.localPath)
+		output, err := transpiler.Remix(file.localPath)
 		if err != nil {
 			return err
 		}

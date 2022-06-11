@@ -1,6 +1,6 @@
 package scope
 
-import "github.com/tereus-project/tereus-remixer-c-go/remixer/ast"
+import "github.com/tereus-project/tereus-transpiler-c-go/transpiler/ast"
 
 type ScopeVariable struct {
 	*ScopeItem

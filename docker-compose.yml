@@ -5,7 +5,7 @@ networks:
     external: true # define by API compose
 
 services:
-  remixer:
+  transpiler:
     image: cosmtrek/air
     networks:
       - tereus_shared

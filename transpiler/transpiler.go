@@ -1,11 +1,11 @@
-package remixer
+package transpiler
 
 import (
 	"fmt"
 	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/tereus-project/tereus-remixer-c-go/parser"
+	"github.com/tereus-project/tereus-transpiler-c-go/parser"
 )
 
 type RemixerErrorListener struct {

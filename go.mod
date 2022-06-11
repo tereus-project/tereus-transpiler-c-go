@@ -1,4 +1,4 @@
-module github.com/tereus-project/tereus-remixer-c-go
+module github.com/tereus-project/tereus-transpiler-c-go
 
 go 1.18
 

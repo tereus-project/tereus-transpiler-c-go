@@ -45,11 +45,11 @@ func NewMinioService(endpoint string, accessKey string, secretKey string, bucket
 	}, nil
 }
 
-var remixPrefix = "remix"
+var transpilationPrefix = "transpilation"
 
 func (s *MinioService) GetFiles(id string) <-chan string {
 	files := make(chan string)
-	prefix := fmt.Sprintf("%s/%s/", remixPrefix, id)
+	prefix := fmt.Sprintf("%s/%s/", transpilationPrefix, id)
 
 	go func() {
 		for object := range s.client.ListObjects(
@@ -70,7 +70,7 @@ func (s *MinioService) GetFiles(id string) <-chan string {
 }
 
 func (s *MinioService) GetFile(id string, filepath string) (string, error) {
-	objectPath := fmt.Sprintf("%s/%s/%s", remixPrefix, id, filepath)
+	objectPath := fmt.Sprintf("%s/%s/%s", transpilationPrefix, id, filepath)
 
 	object, err := s.client.GetObject(
 		context.Background(),
@@ -102,7 +102,7 @@ func (s *MinioService) GetFile(id string, filepath string) (string, error) {
 }
 
 func (s *MinioService) PutFile(id string, filepath string, content string) error {
-	objectPath := fmt.Sprintf("%s-results/%s/%s", remixPrefix, id, filepath)
+	objectPath := fmt.Sprintf("%s-results/%s/%s", transpilationPrefix, id, filepath)
 
 	_, err := s.client.PutObject(
 		context.Background(),

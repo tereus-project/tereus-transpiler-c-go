@@ -1,4 +1,4 @@
-package remixer
+package transpiler
 
 import (
 	"os"
@@ -259,7 +259,7 @@ import (
 	"os"
 	"unsafe"
 
-	"github.com/tereus-project/tereus-remixer-c-go/libc"
+	"github.com/tereus-project/tereus-transpiler-c-go/libc"
 )
 
 func main() {
@@ -313,7 +313,7 @@ void main() {
 package main
 
 import (
-	"github.com/tereus-project/tereus-remixer-c-go/libc"
+	"github.com/tereus-project/tereus-transpiler-c-go/libc"
 )
 
 func main() {

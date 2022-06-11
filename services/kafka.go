@@ -18,7 +18,7 @@ type KafkaService struct {
 func NewKafkaService(endpoint string) (*KafkaService, error) {
 	return &KafkaService{
 		endpoint:        endpoint,
-		consumerGroupID: "remixer-c-to-go",
+		consumerGroupID: "transpiler-c-to-go",
 		writers:         make(map[string]*kafka.Writer),
 	}, nil
 }
@@ -67,7 +67,7 @@ func (k *KafkaService) ConsumeSubmissions(ctx context.Context) <-chan Submission
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:     []string{k.endpoint},
 		GroupID:     k.consumerGroupID,
-		Topic:       "remix_jobs_c_to_go",
+		Topic:       "transpilation_jobs_c_to_go",
 		MaxWait:     1 * time.Second,
 		StartOffset: kafka.LastOffset,
 	})

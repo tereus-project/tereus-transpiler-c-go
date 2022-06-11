@@ -1,22 +1,24 @@
-app = "tereus-remixer-c-go"
+# fly.toml file generated for tereus-transpiler-c-go on 2022-06-11T11:32:57+02:00
+
+app = "tereus-transpiler-c-go"
 
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
 [env]
-    ENV = "prod"
-    LOG_LEVEL = "debug"
-    S3_BUCKET = "tereus"
-    S3_ENDPOINT = "ams3.digitaloceanspaces.com"
-    S3_HTTPS_ENABLED = "true"
+  ENV = "prod"
+  LOG_LEVEL = "debug"
+  S3_BUCKET = "tereus"
+  S3_ENDPOINT = "ams3.digitaloceanspaces.com"
+  S3_HTTPS_ENABLED = "true"
 
 [experimental]
-    allowed_public_ports = []
-    auto_rollback = true
+  allowed_public_ports = []
+  auto_rollback = true
 
 [[services]]
-    http_checks = []
-    processes = ["app"]
-    protocol = "tcp"
-    script_checks = []
+  http_checks = []
+  processes = ["app"]
+  protocol = "tcp"
+  script_checks = []

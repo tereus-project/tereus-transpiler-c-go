@@ -1,4 +1,4 @@
-package remixer
+package transpiler
 
 import (
 	"fmt"
@@ -10,11 +10,11 @@ import (
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	mapset "github.com/deckarep/golang-set"
-	"github.com/tereus-project/tereus-remixer-c-go/libc"
-	"github.com/tereus-project/tereus-remixer-c-go/parser"
-	"github.com/tereus-project/tereus-remixer-c-go/remixer/ast"
-	"github.com/tereus-project/tereus-remixer-c-go/remixer/scope"
-	"github.com/tereus-project/tereus-remixer-c-go/remixer/utils"
+	"github.com/tereus-project/tereus-transpiler-c-go/libc"
+	"github.com/tereus-project/tereus-transpiler-c-go/parser"
+	"github.com/tereus-project/tereus-transpiler-c-go/transpiler/ast"
+	"github.com/tereus-project/tereus-transpiler-c-go/transpiler/scope"
+	"github.com/tereus-project/tereus-transpiler-c-go/transpiler/utils"
 )
 
 type Visitor struct {
@@ -1132,7 +1132,7 @@ func (v *Visitor) VisitIncludePreprocessor(ctx *parser.IncludePreprocessorContex
 			return nil, v.PositionedTranslationError(ctx.IncludeDirective().GetSymbol(), "unsupported system header: "+header)
 		}
 
-		v.Imports.Add("github.com/tereus-project/tereus-remixer-c-go/libc")
+		v.Imports.Add("github.com/tereus-project/tereus-transpiler-c-go/libc")
 	} else if matches := localIncludePreprocessorRegex.FindStringSubmatch(directive); len(matches) > 0 {
 		return nil, v.TranslationError(ctx.BaseParserRuleContext, "unsupported include type")
 	} else {
