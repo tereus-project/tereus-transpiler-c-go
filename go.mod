@@ -9,6 +9,8 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.3.0
 	github.com/joho/godotenv v1.4.0
 	github.com/minio/minio-go/v7 v7.0.26
+	github.com/nsqio/go-nsq v1.1.0
+	github.com/prometheus/client_golang v1.12.2
 	github.com/rabbitmq/amqp091-go v1.3.4
 	github.com/segmentio/kafka-go v0.4.32
 	github.com/sirupsen/logrus v1.8.1
@@ -38,10 +40,8 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/nsqio/go-nsq v1.1.0
 	github.com/onrik/logrus v0.9.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
-	github.com/prometheus/client_golang v1.12.2
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
