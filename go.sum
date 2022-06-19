@@ -242,12 +242,6 @@ github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJy
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/tereus-project/tereus-go-std v0.0.0-20220614202837-a7fd72970220 h1:MKQbAejuKUqIIjQavQrmEyMMY7nkSHnkGXOfRMd5PU4=
 github.com/tereus-project/tereus-go-std v0.0.0-20220614202837-a7fd72970220/go.mod h1:4W9VxA6Y/mrlvgG7/u7hJ4OBVgYffR6+YQn+0TrFxEw=
-github.com/tereus-project/tereus-transpiler-std v0.0.0-20220614205359-5cf65571b4d7 h1:yOTdQwUYumbFVAbQgzbhEKslXemVPWODPWpVPRPxMZ4=
-github.com/tereus-project/tereus-transpiler-std v0.0.0-20220614205359-5cf65571b4d7/go.mod h1:VbSPztIHnQLUDHxd2sVEseca1ior5JRQDj425slZS1I=
-github.com/tereus-project/tereus-transpiler-std v0.0.0-20220614205640-7320c8b93b5d h1:cNY5RRHIdvJ+BwSMH2FkiJXiSxwJ8oWeB9EyYXaogDA=
-github.com/tereus-project/tereus-transpiler-std v0.0.0-20220614205640-7320c8b93b5d/go.mod h1:VbSPztIHnQLUDHxd2sVEseca1ior5JRQDj425slZS1I=
-github.com/tereus-project/tereus-transpiler-std v0.0.0-20220614205906-9da9c6ab2bd9 h1:pWZpp8DaMSE6+7lLmIK9KaHvlH5oogoohpkp0IPc5fU=
-github.com/tereus-project/tereus-transpiler-std v0.0.0-20220614205906-9da9c6ab2bd9/go.mod h1:VbSPztIHnQLUDHxd2sVEseca1ior5JRQDj425slZS1I=
 github.com/tereus-project/tereus-transpiler-std v0.0.0-20220619203811-37064ce80d28 h1:A/A3fDfwGdZ6Mg2DQ/dfwfFSQ6mW4aeSgOVvF3brpAU=
 github.com/tereus-project/tereus-transpiler-std v0.0.0-20220619203811-37064ce80d28/go.mod h1:VbSPztIHnQLUDHxd2sVEseca1ior5JRQDj425slZS1I=
 github.com/tidwall/gjson v1.14.1 h1:iymTbGkQBhveq21bEvAQ81I0LEBork8BFe1CUZXdyuo=
