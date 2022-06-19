@@ -323,3 +323,43 @@ func main() {
 
 	testRemix(t, source, target)
 }
+
+func TestMemset(t *testing.T) {
+	source := `
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+	char *string;
+	// string = malloc(sizeof(char) * 5);
+
+	memset(string, '.', 5);
+
+	printf("string: %s", string);
+
+	return 0;
+}
+`
+
+	target := `
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/tereus-project/tereus-transpiler-c-go/libc"
+)
+
+func main() {
+	string := (*int8)(nil)
+	// string = malloc(sizeof(char) * 5);
+	libc.Memset((*void)(string), byte('.'), 5)
+	fmt.Printf("string: %s", string)
+	os.Exit(0)
+}
+`
+
+	testRemix(t, source, target)
+}
