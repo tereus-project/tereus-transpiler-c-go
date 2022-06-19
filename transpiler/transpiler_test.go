@@ -332,7 +332,7 @@ func TestMemset(t *testing.T) {
 int main()
 {
 	char *string;
-	// string = malloc(sizeof(char) * 5);
+	string = malloc(sizeof(char) * 5);
 
 	memset(string, '.', 5);
 
@@ -348,13 +348,14 @@ package main
 import (
 	"fmt"
 	"os"
+	"unsafe"
 
 	"github.com/tereus-project/tereus-transpiler-c-go/libc"
 )
 
 func main() {
 	string := (*int8)(nil)
-	// string = malloc(sizeof(char) * 5);
+	unsafe.Add(unsafe.Pointer(string), (*int8)(libc.Malloc(int(unsafe.Sizeof((int8)(0)))*5)))
 	libc.Memset((*void)(string), byte('.'), 5)
 	fmt.Printf("string: %s", string)
 	os.Exit(0)
