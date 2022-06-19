@@ -6,7 +6,7 @@ require (
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220209173558-ad29539cd2e9
 	github.com/deckarep/golang-set v1.8.0
 	github.com/dlclark/regexp2 v1.4.0
-	github.com/tereus-project/tereus-transpiler-std v0.0.0-20220614205906-9da9c6ab2bd9
+	github.com/tereus-project/tereus-transpiler-std v0.0.0-20220619203811-37064ce80d28
 	golang.org/x/exp v0.0.0-20220516143420-24438e51023a
 	golang.org/x/tools v0.1.10
 )
