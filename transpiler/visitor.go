@@ -700,9 +700,14 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 			return nil, err
 		}
 
-		converted, err := ast.NewAstTypeConversion(right, left.GetType())
-		if err != nil {
-			return nil, err
+		converted := right
+
+		if !(left.GetType().IsPointer() && right.GetType().IsInteger()) {
+			var err error
+			converted, err = ast.NewAstTypeConversion(right, left.GetType())
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		returnType := left.GetType()
