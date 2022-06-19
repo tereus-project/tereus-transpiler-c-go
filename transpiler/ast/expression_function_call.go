@@ -28,5 +28,5 @@ func (e *ASTExpressionFunctionCall) String() string {
 }
 
 func (e *ASTExpressionFunctionCall) GetType() *ASTType {
-	return e.Left.GetType()
+	return e.Left.GetType().FunctionType.ReturnType
 }
