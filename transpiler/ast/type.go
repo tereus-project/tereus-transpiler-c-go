@@ -119,6 +119,10 @@ func (t *ASTType) IsConvertibleTo(targetType *ASTType) bool {
 			return false
 		}
 
+		if t.PointerType.PointerType.IsVoid() {
+			return true
+		}
+
 		return t.PointerType.IsConvertibleTo(targetType.PointerType)
 	}
 
