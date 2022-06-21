@@ -98,12 +98,26 @@ func (v *Visitor) VisitTranslation(ctx *parser.TranslationContext) (string, erro
 func (v *Visitor) VisitDeclaration(ctx *parser.DeclarationContext) (ast.IASTItem, error) {
 	if child := ctx.FunctionDeclaration(); child != nil {
 		return v.VisitFunctionDeclaration(child.(*parser.FunctionDeclarationContext))
-	} else if child := ctx.StructDeclaration(); child != nil {
+	}
+
+	if child := ctx.StructDeclaration(); child != nil {
 		return v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
-	} else if child := ctx.EnumDeclaration(); child != nil {
+	}
+
+	if child := ctx.EnumDeclaration(); child != nil {
 		return v.VisitEnumDeclaration(child.(*parser.EnumDeclarationContext))
-	} else if child := ctx.IncludePreprocessor(); child != nil {
+	}
+
+	if child := ctx.IncludePreprocessor(); child != nil {
 		return v.VisitIncludePreprocessor(child.(*parser.IncludePreprocessorContext))
+	}
+
+	if child := ctx.BlockComment(); child != nil {
+		return ast.NewASTComment(true, child.GetText()), nil
+	}
+
+	if child := ctx.LineComment(); child != nil {
+		return ast.NewASTComment(false, child.GetText()), nil
 	}
 
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)

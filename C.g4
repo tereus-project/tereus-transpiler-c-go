@@ -6,7 +6,9 @@ declaration:
 	functionDeclaration
 	| (structDeclaration ';')
 	| (enumDeclaration ';')
-	| includePreprocessor;
+	| includePreprocessor
+	| BlockComment
+	| LineComment;
 
 functionDeclaration:
 	typeSpecifier Identifier '(' functionArguments? ')' block;
