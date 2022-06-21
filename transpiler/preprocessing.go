@@ -53,7 +53,7 @@ func (v *Preprocessor) Preprocess() (string, error) {
 	defines := make(map[string]*Define)
 	definesStartIndex := make(map[string]int)
 
-	for match, _ := preprocessorRegex.FindStringMatch(v.Code); match != nil; match, _ = preprocessorRegex.FindNextMatch(match) {
+	for match, _ := preprocessorRegex.FindStringMatch(v.Code); match != nil; match, _ = preprocessorRegex.FindStringMatch(v.Code) {
 		if str := match.GroupByName("String"); str != nil && str.Length > 0 {
 			continue
 		}
