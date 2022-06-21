@@ -6,6 +6,7 @@ require (
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220209173558-ad29539cd2e9
 	github.com/deckarep/golang-set v1.8.0
 	github.com/dlclark/regexp2 v1.4.0
+	github.com/sirupsen/logrus v1.8.1
 	github.com/tereus-project/tereus-transpiler-std v0.0.0-20220619203811-37064ce80d28
 	golang.org/x/exp v0.0.0-20220516143420-24438e51023a
 	golang.org/x/tools v0.1.10
@@ -39,7 +40,6 @@ require (
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rs/xid v1.2.1 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/tereus-project/tereus-go-std v0.0.0-20220614202837-a7fd72970220 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
