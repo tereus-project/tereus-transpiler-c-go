@@ -1024,6 +1024,8 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return v.VisitFunctionReturn(child.(*parser.FunctionReturnContext))
 	} else if child := ctx.Break(); child != nil {
 		return ast.NewASTBreak(), nil
+	} else if child := ctx.Continue(); child != nil {
+		return ast.NewASTContinue(), nil
 	} else if child := ctx.StructDeclaration(); child != nil {
 		return v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
 	} else if child := ctx.EnumDeclaration(); child != nil {
