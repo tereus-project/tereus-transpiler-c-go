@@ -49,11 +49,18 @@ var (
 	preprocessorArgumentRegex = regexp.MustCompile(`^[a-zA-Z_]\w*$`)
 )
 
+type PreprocessorCusor struct {
+	Start int
+	End   int
+}
+
 func (v *Preprocessor) Preprocess() (string, error) {
 	defines := make(map[string]*Define)
-	definesStartIndex := make(map[string]int)
+	definesStartIndex := make(map[string]*PreprocessorCusor)
 
-	for match, _ := preprocessorRegex.FindStringMatch(v.Code); match != nil; match, _ = preprocessorRegex.FindStringMatch(v.Code) {
+	firstPass := v.Code
+
+	for match, _ := preprocessorRegex.FindStringMatch(firstPass); match != nil; match, _ = preprocessorRegex.FindNextMatch(match) {
 		if str := match.GroupByName("String"); str != nil && str.Length > 0 {
 			continue
 		}
@@ -92,9 +99,10 @@ func (v *Preprocessor) Preprocess() (string, error) {
 			}
 		}
 
-		definesStartIndex[name] = match.Index
-
-		v.Code = v.Code[:match.Index] + v.Code[match.Index+match.Length:]
+		definesStartIndex[name] = &PreprocessorCusor{
+			Start: match.Index,
+			End:   match.Index + match.Length,
+		}
 	}
 
 	sortedDefines := make([]*Define, 0, len(defines))
@@ -104,16 +112,16 @@ func (v *Preprocessor) Preprocess() (string, error) {
 	}
 
 	sort.Slice(sortedDefines, func(i, j int) bool {
-		return definesStartIndex[sortedDefines[i].Name] > definesStartIndex[sortedDefines[j].Name]
+		return definesStartIndex[sortedDefines[i].Name].Start > definesStartIndex[sortedDefines[j].Name].Start
 	})
 
 	for _, define := range sortedDefines {
-		index := definesStartIndex[define.Name]
+		cursor := definesStartIndex[define.Name]
 
 		if define.IsFunction {
 			defineRegex := regexp2.MustCompile(`(?:\"(?:(?:\\.)|[^\"])*\")|(?<Target>(?<=^|[^\w])`+define.Name+`\s*\()`, regexp2.RightToLeft)
 
-			selectedPart := v.Code[index:]
+			selectedPart := v.Code[cursor.Start:]
 
 			for match, _ := defineRegex.FindStringMatch(selectedPart); match != nil; match, _ = defineRegex.FindNextMatch(match) {
 				group := match.GroupByName("Target")
@@ -188,11 +196,11 @@ func (v *Preprocessor) Preprocess() (string, error) {
 				selectedPart = selectedPart[:start] + content + selectedPart[end+1:]
 			}
 
-			v.Code = v.Code[:index] + selectedPart
+			v.Code = v.Code[:cursor.Start] + selectedPart
 		} else {
 			defineRegex := regexp2.MustCompile(`(?:\"(?:(?:\\.)|[^\"])*\")|(?<Target>(?<=^|[^\w])`+define.Name+`(?=[^\w]|$))`, 0)
 
-			content, err := defineRegex.ReplaceFunc(v.Code[index:], func(match regexp2.Match) string {
+			content, err := defineRegex.ReplaceFunc(v.Code[cursor.End:], func(match regexp2.Match) string {
 				if group := match.GroupByName("Target"); group != nil && group.Length > 0 {
 					return define.Content
 				}
@@ -203,7 +211,7 @@ func (v *Preprocessor) Preprocess() (string, error) {
 				return "", err
 			}
 
-			v.Code = v.Code[:index] + content
+			v.Code = v.Code[:cursor.Start] + content
 		}
 	}
 
