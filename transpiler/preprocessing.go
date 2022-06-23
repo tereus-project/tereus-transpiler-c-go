@@ -121,7 +121,7 @@ func (v *Preprocessor) Preprocess() (string, error) {
 		if define.IsFunction {
 			defineRegex := regexp2.MustCompile(`(?:\"(?:(?:\\.)|[^\"])*\")|(?<Target>(?<=^|[^\w])`+define.Name+`\s*\()`, regexp2.RightToLeft)
 
-			selectedPart := v.Code[cursor.Start:]
+			selectedPart := v.Code[cursor.End:]
 
 			for match, _ := defineRegex.FindStringMatch(selectedPart); match != nil; match, _ = defineRegex.FindNextMatch(match) {
 				group := match.GroupByName("Target")
