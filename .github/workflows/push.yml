@@ -45,7 +45,7 @@ jobs:
         run: go test ./... -v
 
   docker-build-push:
-    runs-on: ubuntu-latest
+    name: Build and push Docker image
     needs: [build, lint, test]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
