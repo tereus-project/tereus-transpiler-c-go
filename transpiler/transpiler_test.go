@@ -240,6 +240,42 @@ func main() {
 	testRemix(t, source, target)
 }
 
+func TestContinue(t *testing.T) {
+	source := `
+int main() {
+	int a = 1;
+	while (a < 10) {
+		a++;
+		if (a == 5) {
+			continue;
+		}
+	}
+	return 0;
+}
+`
+
+	target := `
+package main
+
+import (
+	"os"
+)
+
+func main() {
+	a := 1
+	for a < 10 {
+		a++
+		if a == 5 {
+			continue
+		}
+	}
+	os.Exit(0)
+}
+`
+
+	testRemix(t, source, target)
+}
+
 func TestStdMalloc(t *testing.T) {
 	source := `
 #include <stdlib.h>

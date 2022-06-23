@@ -138,6 +138,7 @@ statement: (
 			| expression
 			| functionReturn
 			| 'break'
+			| 'continue'
 			| structDeclaration
 			| enumDeclaration
 			| gotoStatement
