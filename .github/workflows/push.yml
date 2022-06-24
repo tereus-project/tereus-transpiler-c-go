@@ -69,7 +69,24 @@ jobs:
           tags: |
             rg.fr-par.scw.cloud/tereus/transpiler-c-go:latest
 
-  deploy:
+  deploy-scw:
+    name: Deploy app to Scaleway CaaS
+    needs: [docker-build-push]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    steps:
+      - name: Install scw-cli
+        run: |
+          sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.3/scw-2.5.3-linux-x86_64"
+          sudo chmod +x /usr/local/bin/scw
+          scw version
+      - name: Init scw-cli
+        run: |
+          scw init secret-key=${{ secrets.SCW_SECRET_KEY }} send-telemetry=false install-autocomplete=false with-ssh-key=false region=fr-par zone=fr-par-1
+      - name: Deploy app
+        run: scw container container deploy ${{ secrets.SCW_CT_ID }}
+
+  deploy-fly:
     name: Deploy app to fly
     needs: [build, lint, test]
     runs-on: ubuntu-latest
