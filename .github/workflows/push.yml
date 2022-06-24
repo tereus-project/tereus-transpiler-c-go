@@ -82,7 +82,9 @@ jobs:
           scw version
       - name: Init scw-cli
         run: |
-          scw init secret-key=${{ secrets.SCW_SECRET_KEY }} send-telemetry=false install-autocomplete=false with-ssh-key=false region=fr-par zone=fr-par-1
+          scw init secret-key="$SCW_SECRET_KEY" send-telemetry=false install-autocomplete=false with-ssh-key=false region=fr-par zone=fr-par-1
+        env:
+          SCW_SECRET_KEY: ${{ secrets.SCW_SECRET_KEY }}
       - name: Deploy app
         run: scw container container deploy ${{ secrets.SCW_CT_ID }}
 
