@@ -41,6 +41,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#enumProperties.
 	VisitEnumProperties(ctx *EnumPropertiesContext) interface{}
 
+	// Visit a parse tree produced by CParser#typedefDeclaration.
+	VisitTypedefDeclaration(ctx *TypedefDeclarationContext) interface{}
+
 	// Visit a parse tree produced by CParser#variableDeclaration.
 	VisitVariableDeclaration(ctx *VariableDeclarationContext) interface{}
 

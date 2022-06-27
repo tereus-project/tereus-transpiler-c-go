@@ -112,6 +112,10 @@ func (v *Visitor) VisitDeclaration(ctx *parser.DeclarationContext) (ast.IASTItem
 		return v.VisitIncludePreprocessor(child.(*parser.IncludePreprocessorContext))
 	}
 
+	if child := ctx.TypedefDeclaration(); child != nil {
+		return v.VisitTypedefDeclaration(child.(*parser.TypedefDeclarationContext))
+	}
+
 	if child := ctx.BlockComment(); child != nil {
 		return ast.NewASTComment(true, child.GetText()), nil
 	}
@@ -284,6 +288,13 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 		typ.SetStructType(structType)
 
 		return typ, nil
+	} else if name := ctx.Identifier(); name != nil {
+		item := v.Scope.GetFirst(name.GetText())
+		if item == nil {
+			return nil, fmt.Errorf("type %s not found", name.GetText())
+		}
+
+		return item.GetType(), nil
 	} else if child := ctx.Star(); child != nil {
 		pointerType, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
 		if err != nil {
@@ -1204,4 +1215,17 @@ func (v *Visitor) VisitIncludePreprocessor(ctx *parser.IncludePreprocessorContex
 	}
 
 	return nil, nil
+}
+
+func (v *Visitor) VisitTypedefDeclaration(ctx *parser.TypedefDeclarationContext) (ast.IASTItem, error) {
+	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	if err != nil {
+		return nil, err
+	}
+
+	name := ctx.Identifier().GetText()
+
+	v.Scope.Add(scope.NewScopeType(name, name, typ))
+
+	return ast.NewASTTypedef(name, typ), nil
 }

@@ -7,6 +7,7 @@ declaration:
 	| (structDeclaration ';')
 	| (enumDeclaration ';')
 	| includePreprocessor
+	| (typedefDeclaration ';')
 	| BlockComment
 	| LineComment;
 
@@ -27,6 +28,7 @@ typeSpecifier:
 	| 'float'
 	| 'double'
 	| structDeclaration
+	| Identifier
 	| typeSpecifier '*';
 
 structDeclaration:
@@ -43,6 +45,8 @@ enumDeclaration: 'enum' Identifier? '{' enumProperties ','? '}';
 
 enumProperties:
 	Identifier ('=' expression)? (',' enumProperties)?;
+
+typedefDeclaration: 'typedef' typeSpecifier Identifier;
 
 variableDeclaration: typeSpecifier variableDeclarationList;
 

@@ -52,6 +52,10 @@ func (v *BaseCVisitor) VisitEnumProperties(ctx *EnumPropertiesContext) interface
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitTypedefDeclaration(ctx *TypedefDeclarationContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitVariableDeclaration(ctx *VariableDeclarationContext) interface{} {
 	return v.VisitChildren(ctx)
 }
