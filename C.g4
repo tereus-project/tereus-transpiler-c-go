@@ -68,9 +68,9 @@ namedListInitialization:
 namedListInitializationItem: '.' Identifier '=' expression;
 
 expression:
-	Identifier		# IdentifierExpression
-	| Constant		# ConstantExpression
-	| StringLiteral	# ConstantStringExpression
+	Identifier													# IdentifierExpression
+	| (IntegerConstant | FloatingConstant | CharacterConstant)	# ConstantExpression
+	| StringLiteral												# ConstantStringExpression
 	| '(' typeSpecifier ')' (
 		listInitialization
 		| namedListInitialization
@@ -277,13 +277,7 @@ fragment UniversalCharacterName:
 fragment HexQuad:
 	HexadecimalDigit HexadecimalDigit HexadecimalDigit HexadecimalDigit;
 
-Constant:
-	IntegerConstant
-	| FloatingConstant
-	//|   EnumerationConstant
-	| CharacterConstant;
-
-fragment IntegerConstant:
+IntegerConstant:
 	DecimalConstant IntegerSuffix?
 	| OctalConstant IntegerSuffix?
 	| HexadecimalConstant IntegerSuffix?
@@ -318,7 +312,7 @@ fragment LongSuffix: [lL];
 
 fragment LongLongSuffix: 'll' | 'LL';
 
-fragment FloatingConstant:
+FloatingConstant:
 	DecimalFloatingConstant
 	| HexadecimalFloatingConstant;
 
@@ -352,7 +346,7 @@ fragment HexadecimalDigitSequence: HexadecimalDigit+;
 
 fragment FloatingSuffix: [flFL];
 
-fragment CharacterConstant:
+CharacterConstant:
 	'\'' CCharSequence '\''
 	| 'L\'' CCharSequence '\''
 	| 'u\'' CCharSequence '\''

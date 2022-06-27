@@ -558,7 +558,18 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 	case *parser.IdentifierExpressionContext:
 		return v.VisitIdentifierExpression(child)
 	case *parser.ConstantExpressionContext:
-		typ_ := ast.NewASTType(ast.ASTTypeKindInt, "int")
+		var typ_ *ast.ASTType
+
+		if constant := child.IntegerConstant(); constant != nil {
+			typ_ = ast.NewASTType(ast.ASTTypeKindInt, "int")
+		} else if constant := child.FloatingConstant(); constant != nil {
+			typ_ = ast.NewASTType(ast.ASTTypeKindFloat32, "float32")
+		} else if constant := child.CharacterConstant(); constant != nil {
+			typ_ = ast.NewASTType(ast.ASTTypeKindChar, "char")
+		} else {
+			return nil, v.PositionedTranslationError(ctx.GetStart(), "Not implemented")
+		}
+
 		return ast.NewASTExpressionLiteral(child.GetText(), typ_), nil
 	case *parser.ConstantStringExpressionContext:
 		typ_ := ast.NewASTType(ast.ASTTypeKindArray, "array")

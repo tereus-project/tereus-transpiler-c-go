@@ -89,6 +89,10 @@ func (t *ASTType) IsPointer() bool {
 	return t.Kind == ASTTypeKindPointer
 }
 
+func (t *ASTType) IsArray() bool {
+	return t.Kind == ASTTypeKindArray
+}
+
 func (t *ASTType) IsStruct() bool {
 	return t.Kind == ASTTypeKindStruct
 }

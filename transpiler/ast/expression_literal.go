@@ -1,5 +1,7 @@
 package ast
 
+import "strings"
+
 type ASTExpressionLiteral struct {
 	Value string
 	Type  *ASTType
@@ -13,6 +15,10 @@ func NewASTExpressionLiteral(value string, typ_ *ASTType) *ASTExpressionLiteral 
 }
 
 func (e *ASTExpressionLiteral) String() string {
+	if e.Type.Kind == ASTTypeKindChar || (e.Type.IsArray() && e.Type.ArrayType.Kind == ASTTypeKindChar) {
+		return strings.ReplaceAll(e.Value, "\\0", "\\000")
+	}
+
 	return e.Value
 }
 
