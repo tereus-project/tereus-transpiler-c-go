@@ -1034,6 +1034,8 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return v.VisitIfStatement(child.(*parser.IfStatementContext))
 	} else if child := ctx.ForStatement(); child != nil {
 		return v.VisitForStatement(child.(*parser.ForStatementContext))
+	} else if child := ctx.DoWhileStatement(); child != nil {
+		return v.VisitDoWhileStatement(child.(*parser.DoWhileStatementContext))
 	} else if child := ctx.WhileStatement(); child != nil {
 		return v.VisitWhileStatement(child.(*parser.WhileStatementContext))
 	} else if child := ctx.Block(); child != nil {
@@ -1141,6 +1143,24 @@ func (v *Visitor) VisitForStatement(ctx *parser.ForStatementContext) (*ast.ASTFo
 	v.Scope.Pop()
 
 	return for_, nil
+}
+
+func (v *Visitor) VisitDoWhileStatement(ctx *parser.DoWhileStatementContext) (*ast.ASTDoWhile, error) {
+	cond, err := v.VisitExpression(ctx.Expression())
+	if err != nil {
+		return nil, err
+	}
+
+	v.Scope.Push()
+
+	statement, err := v.VisitStatement(ctx.Statement().(*parser.StatementContext))
+	if err != nil {
+		return nil, err
+	}
+
+	v.Scope.Pop()
+
+	return ast.NewASTDoWhile(cond, statement), nil
 }
 
 func (v *Visitor) VisitWhileStatement(ctx *parser.WhileStatementContext) (*ast.ASTWhile, error) {

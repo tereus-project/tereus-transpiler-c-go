@@ -168,6 +168,10 @@ func (v *BaseCVisitor) VisitForStatement(ctx *ForStatementContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitDoWhileStatement(ctx *DoWhileStatementContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitWhileStatement(ctx *WhileStatementContext) interface{} {
 	return v.VisitChildren(ctx)
 }

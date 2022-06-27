@@ -142,6 +142,7 @@ statement: (
 			| structDeclaration
 			| enumDeclaration
 			| gotoStatement
+			| doWhileStatement
 		) ';'
 	)
 	| ifStatement
@@ -159,6 +160,8 @@ forStatement:
 	'for' '(' (init = expression | variableDeclaration)? ';' (
 		condition = expression
 	)? ';' (post = expression)? ')' statement;
+
+doWhileStatement: 'do' statement 'while' '(' expression ')';
 
 whileStatement: 'while' '(' expression ')' statement;
 
