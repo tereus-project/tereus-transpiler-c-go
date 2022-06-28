@@ -706,6 +706,23 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 		}
 
 		return ast.NewASTExpressionUnaryPre(operator, right, isStatement), nil
+	case *parser.TernaryExpressionContext:
+		condition, err := v.VisitExpression(child.Expression(0))
+		if err != nil {
+			return nil, err
+		}
+
+		trueExpression, err := v.VisitExpression(child.Expression(1))
+		if err != nil {
+			return nil, err
+		}
+
+		falseExpression, err := v.VisitExpression(child.Expression(2))
+		if err != nil {
+			return nil, err
+		}
+
+		return ast.NewASTExpressionTernary(condition, trueExpression, falseExpression, isStatement), nil
 	case *parser.SizeofExpressionContext:
 		return v.VisitSizeofExpression(child)
 	case *parser.AssignmentExpressionContext:

@@ -84,6 +84,10 @@ func (v *BaseCVisitor) VisitParenthesizedExpression(ctx *ParenthesizedExpression
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitTernaryExpression(ctx *TernaryExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitConstantExpression(ctx *ConstantExpressionContext) interface{} {
 	return v.VisitChildren(ctx)
 }

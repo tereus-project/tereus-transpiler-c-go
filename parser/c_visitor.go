@@ -65,6 +65,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#ParenthesizedExpression.
 	VisitParenthesizedExpression(ctx *ParenthesizedExpressionContext) interface{}
 
+	// Visit a parse tree produced by CParser#TernaryExpression.
+	VisitTernaryExpression(ctx *TernaryExpressionContext) interface{}
+
 	// Visit a parse tree produced by CParser#ConstantExpression.
 	VisitConstantExpression(ctx *ConstantExpressionContext) interface{}
 

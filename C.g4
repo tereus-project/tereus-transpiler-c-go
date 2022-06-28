@@ -85,7 +85,8 @@ expression:
 	| unaryOperatorPre expression									# UnaryExpressionPre
 	| expression assignementOperator expression						# AssignmentExpression
 	| expression binaryOperator expression							# BinaryExpression
-	| Sizeof ('(' typeSpecifier ')' | typeSpecifier | expression)	# SizeofExpression;
+	| Sizeof ('(' typeSpecifier ')' | typeSpecifier | expression)	# SizeofExpression
+	| expression '?' expression ':' expression						# TernaryExpression;
 
 assignementOperator:
 	'='
