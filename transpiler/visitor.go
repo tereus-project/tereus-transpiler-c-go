@@ -266,19 +266,33 @@ func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (ast.IA
 func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.ASTType, error) {
 	if child := ctx.Void(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindVoid, "void"), nil
-	} else if child := ctx.Int(); child != nil {
+	}
+
+	if child := ctx.Int(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindInt, "int"), nil
-	} else if child := ctx.Short(); child != nil {
+	}
+
+	if child := ctx.Short(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindInt, "int16"), nil
-	} else if child := ctx.Long(); child != nil {
+	}
+
+	if child := ctx.Long(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindInt, "int64"), nil
-	} else if child := ctx.Char(); child != nil {
+	}
+
+	if child := ctx.Char(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindChar, "int8"), nil
-	} else if child := ctx.Float(); child != nil {
+	}
+
+	if child := ctx.Float(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindFloat32, "float32"), nil
-	} else if child := ctx.Double(); child != nil {
+	}
+
+	if child := ctx.Double(); child != nil {
 		return ast.NewASTType(ast.ASTTypeKindFloat64, "float64"), nil
-	} else if child := ctx.StructDeclaration(); child != nil {
+	}
+
+	if child := ctx.StructDeclaration(); child != nil {
 		structType, err := v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
 		if err != nil {
 			return nil, err
@@ -288,14 +302,18 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 		typ.SetStructType(structType)
 
 		return typ, nil
-	} else if name := ctx.Identifier(); name != nil {
+	}
+
+	if name := ctx.Identifier(); name != nil {
 		item := v.Scope.GetFirst(name.GetText())
 		if item == nil {
 			return nil, fmt.Errorf("type %s not found", name.GetText())
 		}
 
 		return item.GetType(), nil
-	} else if child := ctx.Star(); child != nil {
+	}
+
+	if child := ctx.Star(); child != nil {
 		pointerType, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
 		if err != nil {
 			return nil, err
@@ -1057,35 +1075,65 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		}
 
 		return variableDeclaration, nil
-	} else if child := ctx.Expression(); child != nil {
+	}
+
+	if child := ctx.Expression(); child != nil {
 		return v.VisitExpressionWithConfigurableIsStatement(child, true)
-	} else if child := ctx.FunctionReturn(); child != nil {
+	}
+
+	if child := ctx.FunctionReturn(); child != nil {
 		return v.VisitFunctionReturn(child.(*parser.FunctionReturnContext))
-	} else if child := ctx.Break(); child != nil {
+	}
+
+	if child := ctx.Break(); child != nil {
 		return ast.NewASTBreak(), nil
-	} else if child := ctx.Continue(); child != nil {
+	}
+
+	if child := ctx.Continue(); child != nil {
 		return ast.NewASTContinue(), nil
-	} else if child := ctx.StructDeclaration(); child != nil {
+	}
+
+	if child := ctx.StructDeclaration(); child != nil {
 		return v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
-	} else if child := ctx.EnumDeclaration(); child != nil {
+	}
+
+	if child := ctx.EnumDeclaration(); child != nil {
 		return v.VisitEnumDeclaration(child.(*parser.EnumDeclarationContext))
-	} else if child := ctx.IfStatement(); child != nil {
+	}
+
+	if child := ctx.IfStatement(); child != nil {
 		return v.VisitIfStatement(child.(*parser.IfStatementContext))
-	} else if child := ctx.ForStatement(); child != nil {
+	}
+
+	if child := ctx.ForStatement(); child != nil {
 		return v.VisitForStatement(child.(*parser.ForStatementContext))
-	} else if child := ctx.DoWhileStatement(); child != nil {
+	}
+
+	if child := ctx.DoWhileStatement(); child != nil {
 		return v.VisitDoWhileStatement(child.(*parser.DoWhileStatementContext))
-	} else if child := ctx.WhileStatement(); child != nil {
+	}
+
+	if child := ctx.WhileStatement(); child != nil {
 		return v.VisitWhileStatement(child.(*parser.WhileStatementContext))
-	} else if child := ctx.Block(); child != nil {
+	}
+
+	if child := ctx.Block(); child != nil {
 		return v.VisitBlock(child.(*parser.BlockContext))
-	} else if child := ctx.BlockComment(); child != nil {
+	}
+
+	if child := ctx.BlockComment(); child != nil {
 		return ast.NewASTComment(true, child.GetText()), nil
-	} else if child := ctx.LineComment(); child != nil {
+	}
+
+	if child := ctx.LineComment(); child != nil {
 		return ast.NewASTComment(false, child.GetText()), nil
-	} else if child := ctx.GotoStatement(); child != nil {
+	}
+
+	if child := ctx.GotoStatement(); child != nil {
 		return v.VisitGotoStatement(child.(*parser.GotoStatementContext))
-	} else if child := ctx.LabelStatement(); child != nil {
+	}
+
+	if child := ctx.LabelStatement(); child != nil {
 		return v.VisitLabelStatement(child.(*parser.LabelStatementContext))
 	}
 
