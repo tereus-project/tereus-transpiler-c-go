@@ -172,6 +172,18 @@ func (v *BaseCVisitor) VisitIfStatement(ctx *IfStatementContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitSwitchStatement(ctx *SwitchStatementContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitCaseStatement(ctx *CaseStatementContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitDefaultStatement(ctx *DefaultStatementContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitForStatement(ctx *ForStatementContext) interface{} {
 	return v.VisitChildren(ctx)
 }

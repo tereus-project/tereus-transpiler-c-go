@@ -151,6 +151,7 @@ statement: (
 		) ';'
 	)
 	| ifStatement
+	| switchStatement
 	| forStatement
 	| whileStatement
 	| block
@@ -160,6 +161,13 @@ statement: (
 
 ifStatement:
 	'if' '(' expression ')' statement ('else' statement)?;
+
+switchStatement:
+	'switch' '(' expression ')' '{' caseStatement* defaultStatement? '}';
+
+caseStatement: 'case' expression ':' statement*;
+
+defaultStatement: 'default' ':' statement*;
 
 forStatement:
 	'for' '(' (init = expression | variableDeclaration)? ';' (

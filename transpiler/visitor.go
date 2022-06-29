@@ -247,20 +247,13 @@ func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (ast.IA
 		return nil, err
 	}
 
-	if v.CurrentFunction.Top() == "main" {
+	isInMain := v.CurrentFunction.Top() == "main"
+
+	if isInMain {
 		v.Imports.Add("os")
-
-		typ_ := ast.NewASTType(ast.ASTTypeKindFunction, "function")
-		functionType := ast.NewASTFunction("os.Exit")
-		functionType.Args = []*ast.ASTFunctionArgument{
-			ast.NewASTFunctionArgument("code", ast.NewASTType(ast.ASTTypeKindInt, "int")),
-		}
-		functionType.ReturnType = ast.NewASTType(ast.ASTTypeKindVoid, "void")
-
-		return ast.NewASTExpressionFunctionCall(ast.NewASTExpressionLiteral("os.Exit", typ_), []ast.IASTExpression{expression}), nil
 	}
 
-	return ast.NewASTFunctionReturn(expression), nil
+	return ast.NewASTFunctionReturn(expression, isInMain), nil
 }
 
 func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.ASTType, error) {
@@ -1105,6 +1098,10 @@ func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, er
 		return v.VisitIfStatement(child.(*parser.IfStatementContext))
 	}
 
+	if child := ctx.SwitchStatement(); child != nil {
+		return v.VisitSwitchStatement(child.(*parser.SwitchStatementContext))
+	}
+
 	if child := ctx.ForStatement(); child != nil {
 		return v.VisitForStatement(child.(*parser.ForStatementContext))
 	}
@@ -1177,6 +1174,82 @@ func (v *Visitor) VisitIfStatement(ctx *parser.IfStatementContext) (*ast.ASTIf, 
 	}
 
 	return if_, nil
+}
+
+func (v *Visitor) VisitSwitchStatement(ctx *parser.SwitchStatementContext) (*ast.ASTSwitch, error) {
+	v.Scope.Push()
+
+	condition, err := v.VisitExpression(ctx.Expression())
+	if err != nil {
+		return nil, err
+	}
+
+	v.Scope.Pop()
+
+	switch_ := ast.NewASTSwitch(condition)
+
+	for _, case_ := range ctx.AllCaseStatement() {
+		case_, err := v.VisitCaseStatement(case_.(*parser.CaseStatementContext))
+		if err != nil {
+			return nil, err
+		}
+
+		switch_.AddCase(case_)
+	}
+
+	if child := ctx.DefaultStatement(); child != nil {
+		default_, err := v.VisitDefaultStatement(child.(*parser.DefaultStatementContext))
+		if err != nil {
+			return nil, err
+		}
+
+		switch_.SetDefaultCase(default_)
+	}
+
+	return switch_, nil
+}
+
+func (v *Visitor) VisitCaseStatement(ctx *parser.CaseStatementContext) (*ast.ASTCase, error) {
+	v.Scope.Push()
+
+	condition, err := v.VisitExpression(ctx.Expression())
+	if err != nil {
+		return nil, err
+	}
+
+	v.Scope.Pop()
+
+	block := ast.NewASTBlock(nil)
+
+	for _, statement := range ctx.AllStatement() {
+		statement, err := v.VisitStatement(statement.(*parser.StatementContext))
+		if err != nil {
+			return nil, err
+		}
+
+		block.Statements = append(block.Statements, statement)
+	}
+
+	return ast.NewASTCase(condition, block), nil
+}
+
+func (v *Visitor) VisitDefaultStatement(ctx *parser.DefaultStatementContext) (*ast.ASTDefault, error) {
+	v.Scope.Push()
+
+	block := ast.NewASTBlock(nil)
+
+	for _, statement := range ctx.AllStatement() {
+		statement, err := v.VisitStatement(statement.(*parser.StatementContext))
+		if err != nil {
+			return nil, err
+		}
+
+		block.Statements = append(block.Statements, statement)
+	}
+
+	v.Scope.Pop()
+
+	return ast.NewASTDefault(block), nil
 }
 
 func (v *Visitor) VisitForStatement(ctx *parser.ForStatementContext) (*ast.ASTFor, error) {

@@ -31,3 +31,24 @@ func (b *ASTBlock) StringInner() string {
 
 	return strings.Join(statements, "\n")
 }
+
+func (b *ASTBlock) IsEmpty() bool {
+	return len(b.Statements) == 0
+}
+
+func blockEndsWith[T any](block *ASTBlock) bool {
+	if block.IsEmpty() {
+		return false
+	}
+
+	_, ok := block.Statements[len(block.Statements)-1].(T)
+	return ok
+}
+
+func (b *ASTBlock) EndsWithBreak() bool {
+	return blockEndsWith[*ASTBreak](b)
+}
+
+func (b *ASTBlock) EndsWithReturn() bool {
+	return blockEndsWith[*ASTFunctionReturn](b)
+}
