@@ -59,7 +59,7 @@ jobs:
       - name: Login to Scaleway Container Registry
         uses: docker/login-action@v2
         with:
-          registry: rg.fr-par.scw.cloud/tereus
+          registry: rg.fr-par.scw.cloud/tereus-registry
           username: nologin
           password: ${{ secrets.SCW_SECRET_KEY }}
       - name: Build and push
@@ -67,7 +67,7 @@ jobs:
         with:
           push: true
           tags: |
-            rg.fr-par.scw.cloud/tereus/transpiler-c-go:latest
+            rg.fr-par.scw.cloud/tereus-registry/transpiler-c-go:latest
 
   deploy-scw:
     name: Deploy app to Scaleway CaaS
