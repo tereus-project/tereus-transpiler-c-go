@@ -44,47 +44,47 @@ jobs:
       - name: Run tests
         run: go test ./... -v
 
-  docker-build-push:
-    name: Build and push Docker image
-    needs: [build, lint, test]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to Scaleway Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: rg.fr-par.scw.cloud/tereus-registry
-          username: nologin
-          password: ${{ secrets.SCW_SECRET_KEY }}
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: |
-            rg.fr-par.scw.cloud/tereus-registry/transpiler-c-go:latest
+  # docker-build-push:
+  #   name: Build and push Docker image
+  #   needs: [build, lint, test]
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v2
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v2
+  #     - name: Login to Scaleway Container Registry
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: rg.fr-par.scw.cloud/tereus-registry
+  #         username: nologin
+  #         password: ${{ secrets.SCW_SECRET_KEY }}
+  #     - name: Build and push
+  #       uses: docker/build-push-action@v2
+  #       with:
+  #         push: true
+  #         tags: |
+  #           rg.fr-par.scw.cloud/tereus-registry/transpiler-c-go:latest
 
-  deploy-scw:
-    name: Deploy app to Scaleway CaaS
-    needs: [docker-build-push]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    steps:
-      - name: Install scw-cli
-        run: |
-          sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.3/scaleway-cli_2.5.3_linux_amd64"
-          sudo chmod +x /usr/local/bin/scw
-          scw version
-      - name: Init scw-cli
-        run: |
-          scw init secret-key=${{ secrets.SCW_SECRET_KEY }} access-key=${{ secrets.SCW_ACCESS_KEY }} send-telemetry=false install-autocomplete=false with-ssh-key=false region=fr-par zone=fr-par-1
-      - name: Deploy app
-        run: scw container container deploy ${{ secrets.SCW_CT_ID }}
+  # deploy-scw:
+  #   name: Deploy app to Scaleway CaaS
+  #   needs: [docker-build-push]
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+  #   steps:
+  #     - name: Install scw-cli
+  #       run: |
+  #         sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.3/scaleway-cli_2.5.3_linux_amd64"
+  #         sudo chmod +x /usr/local/bin/scw
+  #         scw version
+  #     - name: Init scw-cli
+  #       run: |
+  #         scw init secret-key=${{ secrets.SCW_SECRET_KEY }} access-key=${{ secrets.SCW_ACCESS_KEY }} send-telemetry=false install-autocomplete=false with-ssh-key=false region=fr-par zone=fr-par-1
+  #     - name: Deploy app
+  #       run: scw container container deploy ${{ secrets.SCW_CT_ID }}
 
   deploy-fly:
     name: Deploy app to fly
