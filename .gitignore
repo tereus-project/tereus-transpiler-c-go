@@ -21,3 +21,5 @@
 !.env.example
 
 tmp/
+
+tereus-transpiler-c-go
