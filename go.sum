@@ -246,6 +246,8 @@ github.com/tereus-project/tereus-transpiler-std v0.0.0-20220623204952-5e1c832826
 github.com/tereus-project/tereus-transpiler-std v0.0.0-20220623204952-5e1c832826ea/go.mod h1:VbSPztIHnQLUDHxd2sVEseca1ior5JRQDj425slZS1I=
 github.com/tereus-project/tereus-transpiler-std v0.0.0-20220701120314-f80ca336c898 h1:n4L9pusbaitIqgcQYZu/MZW8Sm0UZyQCFX+Y00wTSJ0=
 github.com/tereus-project/tereus-transpiler-std v0.0.0-20220701120314-f80ca336c898/go.mod h1:VbSPztIHnQLUDHxd2sVEseca1ior5JRQDj425slZS1I=
+github.com/tereus-project/tereus-transpiler-std v0.0.0-20220701121800-9e712c6cd021 h1:Dq7Rwn5cPJB9K6vOoqXP3mcVLjLJZl2N30sHB8ZUgFE=
+github.com/tereus-project/tereus-transpiler-std v0.0.0-20220701121800-9e712c6cd021/go.mod h1:VbSPztIHnQLUDHxd2sVEseca1ior5JRQDj425slZS1I=
 github.com/tidwall/gjson v1.14.1 h1:iymTbGkQBhveq21bEvAQ81I0LEBork8BFe1CUZXdyuo=
 github.com/tidwall/match v1.1.1 h1:+Ho715JplO36QYgwN9PGYNhgZvoUSc9X2c80KVTi+GA=
 github.com/tidwall/pretty v1.2.0 h1:RWIZEg2iJ8/g6fDDYzMpobmaoGh5OLl4AXtGUGPcqCs=

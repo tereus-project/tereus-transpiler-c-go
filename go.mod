@@ -7,7 +7,7 @@ require (
 	github.com/deckarep/golang-set v1.8.0
 	github.com/dlclark/regexp2 v1.4.0
 	github.com/sirupsen/logrus v1.8.1
-	github.com/tereus-project/tereus-transpiler-std v0.0.0-20220701120314-f80ca336c898
+	github.com/tereus-project/tereus-transpiler-std v0.0.0-20220701121800-9e712c6cd021
 	golang.org/x/exp v0.0.0-20220516143420-24438e51023a
 	golang.org/x/tools v0.1.10
 )
