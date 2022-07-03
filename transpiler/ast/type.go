@@ -92,7 +92,7 @@ func (t *ASTType) String() string {
 
 		return "uint64"
 	case ASTTypeKindChar:
-		return "char"
+		return "int8"
 	case ASTTypeKindFloat32:
 		return "float32"
 	case ASTTypeKindFloat64:
@@ -154,15 +154,19 @@ func (t *ASTType) IsConvertibleTo(targetType *ASTType) bool {
 	}
 
 	if targetType.IsPointer() {
-		if !t.IsPointer() {
-			return false
+		if t.IsPointer() {
+			if t.PointerType.IsVoid() || targetType.PointerType.IsVoid() {
+				return true
+			}
+
+			return t.PointerType.IsConvertibleTo(targetType.PointerType)
 		}
 
-		if t.PointerType.IsVoid() || targetType.PointerType.IsVoid() {
-			return true
+		if t.IsArray() {
+			return t.ArrayType.IsConvertibleTo(targetType.PointerType)
 		}
 
-		return t.PointerType.IsConvertibleTo(targetType.PointerType)
+		return false
 	}
 
 	return false
@@ -197,5 +201,5 @@ func (t *ASTType) IsSameTo(other *ASTType) bool {
 		return t.StructType.IsSameTo(other.StructType)
 	}
 
-	return false
+	return true
 }

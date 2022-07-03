@@ -307,9 +307,7 @@ func (v *Visitor) VisitTypeSpecifierWithModifier(ctx *parser.TypeSpecifierWithMo
 
 	if ctx.Signed() != nil {
 		typ.SetIsSigned(true)
-	}
-
-	if ctx.Unsigned() != nil {
+	} else if ctx.Unsigned() == nil {
 		typ.SetIsSigned(false)
 	}
 
@@ -618,9 +616,11 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 
 		return ast.NewASTExpressionLiteral(child.GetText(), typ_), nil
 	case *parser.ConstantStringExpressionContext:
-		typ_ := ast.NewASTType(ast.ASTTypeKindArray, "array")
-		typ_.ArrayType = ast.NewASTType(ast.ASTTypeKindChar, "char")
-		return ast.NewASTExpressionLiteral(child.GetText(), typ_), nil
+		return ast.NewASTExpressionLiteral(
+			child.GetText(),
+			ast.NewASTType(ast.ASTTypeKindArray, "array").
+				SetArrayType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+		), nil
 	case *parser.StructInitializationExpressionContext:
 		typ, err := v.VisitTypeSpecifier(child.TypeSpecifier())
 		if err != nil {
