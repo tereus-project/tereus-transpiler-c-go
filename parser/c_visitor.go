@@ -77,6 +77,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#TernaryExpression.
 	VisitTernaryExpression(ctx *TernaryExpressionContext) interface{}
 
+	// Visit a parse tree produced by CParser#ConditionalBinaryExpression.
+	VisitConditionalBinaryExpression(ctx *ConditionalBinaryExpressionContext) interface{}
+
 	// Visit a parse tree produced by CParser#ConstantExpression.
 	VisitConstantExpression(ctx *ConstantExpressionContext) interface{}
 
@@ -118,6 +121,9 @@ type CVisitor interface {
 
 	// Visit a parse tree produced by CParser#assignementOperator.
 	VisitAssignementOperator(ctx *AssignementOperatorContext) interface{}
+
+	// Visit a parse tree produced by CParser#conditionalBinaryOperator.
+	VisitConditionalBinaryOperator(ctx *ConditionalBinaryOperatorContext) interface{}
 
 	// Visit a parse tree produced by CParser#binaryOperator.
 	VisitBinaryOperator(ctx *BinaryOperatorContext) interface{}

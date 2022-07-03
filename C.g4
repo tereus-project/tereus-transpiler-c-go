@@ -88,6 +88,7 @@ expression:
 	| unaryOperatorPre expression									# UnaryExpressionPre
 	| expression assignementOperator expression						# AssignmentExpression
 	| expression binaryOperator expression							# BinaryExpression
+	| expression conditionalBinaryOperator expression				# ConditionalBinaryExpression
 	| Sizeof ('(' typeSpecifier ')' | typeSpecifier | expression)	# SizeofExpression
 	| expression '?' expression ':' expression						# TernaryExpression;
 
@@ -103,6 +104,8 @@ assignementOperator:
 	| '&='
 	| '^='
 	| '|=';
+
+conditionalBinaryOperator: '&&' | '||';
 
 binaryOperator:
 	'*'
@@ -120,9 +123,7 @@ binaryOperator:
 	| '<='
 	| '>='
 	| '=='
-	| '!='
-	| '&&'
-	| '||';
+	| '!=';
 
 unaryOperatorPost: '++' | '--';
 
