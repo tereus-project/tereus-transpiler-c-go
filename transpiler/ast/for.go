@@ -22,7 +22,7 @@ func (f *ASTFor) String() string {
 
 	cond := ""
 	if f.Cond != nil {
-		cond = f.Cond.String()
+		cond = EnsureConditionalValidity(f.Cond).String()
 	}
 
 	post := ""

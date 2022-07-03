@@ -23,5 +23,5 @@ func (w *ASTWhile) String() string {
 		then = NewASTBlock([]IASTItem{w.Then}).String()
 	}
 
-	return fmt.Sprintf("for %s %s", w.Cond.String(), then)
+	return fmt.Sprintf("for %s %s", EnsureConditionalValidity(w.Cond).String(), then)
 }

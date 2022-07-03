@@ -35,8 +35,8 @@ func (i *ASTIf) String() string {
 			else_ = NewASTBlock([]IASTItem{i.Else}).String()
 		}
 
-		return fmt.Sprintf("if %s %s else %s", i.Condition.String(), then, else_)
+		return fmt.Sprintf("if %s %s else %s", EnsureConditionalValidity(i.Condition).String(), then, else_)
 	}
 
-	return fmt.Sprintf("if %s %s", i.Condition.String(), then)
+	return fmt.Sprintf("if %s %s", EnsureConditionalValidity(i.Condition).String(), then)
 }

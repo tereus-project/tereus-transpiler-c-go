@@ -27,7 +27,7 @@ func (w *ASTDoWhile) String() string {
 		statements = w.Then.String()
 	}
 
-	condition := NewASTIf(NewASTExpressionUnaryPre("!", NewAstExpressionParenthesized(w.Cond), false), NewASTBreak())
+	condition := NewASTIf(NewASTExpressionUnaryPre("!", EnsureConditionalValidity(NewAstExpressionParenthesized(w.Cond)), false), NewASTBreak())
 
 	return fmt.Sprintf("for {\n%s\n\n%s\n}", utils.Indent(statements), condition.String())
 }

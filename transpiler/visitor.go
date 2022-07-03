@@ -1375,8 +1375,8 @@ func (v *Visitor) VisitSizeofExpression(ctx *parser.SizeofExpressionContext) (as
 				)
 
 			emptyExpression = ast.NewASTExpressionCast(ast.NewASTExpressionLiteral("nil", typ_), typ)
-		// case ast.ASTTypeKindStruct:
-		// 	emptyExpression =
+		case ast.ASTTypeKindStruct:
+			emptyExpression = ast.NewAstStructInitialization(typ, []ast.IASTExpression{})
 		default:
 			emptyExpression = ast.NewASTExpressionCast(ast.NewASTExpressionLiteral("0", ast.NewASTType(ast.ASTTypeKindInt, "int")), typ)
 		}
