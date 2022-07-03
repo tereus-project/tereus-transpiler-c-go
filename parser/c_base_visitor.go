@@ -72,6 +72,10 @@ func (v *BaseCVisitor) VisitVariableDeclarationList(ctx *VariableDeclarationList
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitSizedArrayModifier(ctx *SizedArrayModifierContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitListInitialization(ctx *ListInitializationContext) interface{} {
 	return v.VisitChildren(ctx)
 }

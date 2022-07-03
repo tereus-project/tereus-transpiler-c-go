@@ -56,6 +56,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#variableDeclarationList.
 	VisitVariableDeclarationList(ctx *VariableDeclarationListContext) interface{}
 
+	// Visit a parse tree produced by CParser#sizedArrayModifier.
+	VisitSizedArrayModifier(ctx *SizedArrayModifierContext) interface{}
+
 	// Visit a parse tree produced by CParser#listInitialization.
 	VisitListInitialization(ctx *ListInitializationContext) interface{}
 

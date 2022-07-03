@@ -33,6 +33,7 @@ type ASTType struct {
 	IsSigned bool
 
 	ArrayType    *ASTType
+	ArraySize    IASTExpression
 	PointerType  *ASTType
 	FunctionType *ASTFunction
 	StructType   *ASTStruct
@@ -57,6 +58,11 @@ func (t *ASTType) SetPointerType(pointerType *ASTType) *ASTType {
 
 func (t *ASTType) SetArrayType(arrayType *ASTType) *ASTType {
 	t.ArrayType = arrayType
+	return t
+}
+
+func (t *ASTType) SetArraySize(expression IASTExpression) *ASTType {
+	t.ArraySize = expression
 	return t
 }
 
@@ -107,6 +113,10 @@ func (t *ASTType) String() string {
 	case ASTTypeKindBool:
 		return "bool"
 	case ASTTypeKindArray:
+		if t.ArraySize != nil {
+			return fmt.Sprintf("[%s]%s", t.ArraySize.String(), t.ArrayType.String())
+		}
+
 		return fmt.Sprintf("[]%s", t.ArrayType.String())
 	case ASTTypeKindPointer:
 		return fmt.Sprintf("*%s", t.PointerType.String())

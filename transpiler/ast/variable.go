@@ -6,19 +6,17 @@ import (
 )
 
 type ASTVariableDeclaration struct {
-	Type  *ASTType
 	Items []*ASTVariableDeclarationItem
 }
 
 type ASTVariableDeclarationItem struct {
 	Name       string
+	Type       *ASTType
 	Expression IASTExpression
 }
 
-func NewASTVariableDeclaration(typ *ASTType) *ASTVariableDeclaration {
-	return &ASTVariableDeclaration{
-		Type: typ,
-	}
+func NewASTVariableDeclaration() *ASTVariableDeclaration {
+	return &ASTVariableDeclaration{}
 }
 
 func (v *ASTVariableDeclaration) String() string {
@@ -31,11 +29,11 @@ func (v *ASTVariableDeclaration) String() string {
 		if item.Expression != nil {
 			expressions = append(expressions, item.Expression.String())
 		} else {
-			switch v.Type.Kind {
+			switch item.Type.Kind {
 			case ASTTypeKindArray, ASTTypeKindPointer:
-				expressions = append(expressions, fmt.Sprintf("(%s)(nil)", v.Type.String()))
+				expressions = append(expressions, fmt.Sprintf("(%s)(nil)", item.Type.String()))
 			case ASTTypeKindStruct:
-				expressions = append(expressions, fmt.Sprintf("%s{}", v.Type.Name))
+				expressions = append(expressions, fmt.Sprintf("%s{}", item.Type.Name))
 			case ASTTypeKindFloat32:
 				expressions = append(expressions, "float32(0)")
 			case ASTTypeKindFloat64:
@@ -49,7 +47,7 @@ func (v *ASTVariableDeclaration) String() string {
 			case ASTTypeKindChar:
 				expressions = append(expressions, "byte(0)")
 			default:
-				expressions = append(expressions, "0")
+				expressions = append(expressions, "unknown")
 			}
 		}
 	}
@@ -57,9 +55,10 @@ func (v *ASTVariableDeclaration) String() string {
 	return fmt.Sprintf("%s := %s", strings.Join(names, ", "), strings.Join(expressions, ", "))
 }
 
-func NewASTVariableDeclarationItem(name string, expression IASTExpression) *ASTVariableDeclarationItem {
+func NewASTVariableDeclarationItem(name string, typ *ASTType, expression IASTExpression) *ASTVariableDeclarationItem {
 	return &ASTVariableDeclarationItem{
 		Name:       name,
+		Type:       typ,
 		Expression: expression,
 	}
 }

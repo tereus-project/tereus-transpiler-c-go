@@ -164,26 +164,26 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 		}
 
 		if len(function.Args) >= 1 {
-			variable := ast.NewASTVariableDeclaration(ast.NewASTType(ast.ASTTypeKindInt, "int"))
-			variable.Items = []*ast.ASTVariableDeclarationItem{
+			argcType := ast.NewASTType(ast.ASTTypeKindInt, "int")
+			variables := ast.NewASTVariableDeclaration()
+			variables.Items = []*ast.ASTVariableDeclarationItem{
 				// TODO: change this to a proper structure when it gets implemented
-				ast.NewASTVariableDeclarationItem(function.Args[0].Name, ast.NewASTExpressionLiteral("len(os.Args)", ast.NewASTType(ast.ASTTypeKindInt, "int"))),
+				ast.NewASTVariableDeclarationItem(
+					function.Args[0].Name,
+					argcType,
+					ast.NewASTExpressionLiteral("len(os.Args)", argcType),
+				),
 			}
 
 			v.Imports.Add("os")
 
-			argumentsInitialization = append(argumentsInitialization, variable)
+			argumentsInitialization = append(argumentsInitialization, variables)
 		}
 
 		if len(function.Args) >= 2 {
-			typ := ast.NewASTType(ast.ASTTypeKindArray, "array").
-				SetArrayType(
-					ast.NewASTType(ast.ASTTypeKindChar, "char"),
-				)
+			variables := ast.NewASTVariableDeclaration()
 
-			variable := ast.NewASTVariableDeclaration(typ)
-
-			typ_ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+			argvType := ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
 				SetPointerType(
 					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
 						SetPointerType(
@@ -191,12 +191,16 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 						),
 				)
 
-			variable.Items = []*ast.ASTVariableDeclarationItem{
+			variables.Items = []*ast.ASTVariableDeclarationItem{
 				// TODO: change this to a proper structure when it gets implemented
-				ast.NewASTVariableDeclarationItem(function.Args[1].Name, ast.NewASTExpressionLiteral("os.Args", typ_)),
+				ast.NewASTVariableDeclarationItem(
+					function.Args[1].Name,
+					argvType,
+					ast.NewASTExpressionLiteral("os.Args", argvType),
+				),
 			}
 
-			argumentsInitialization = append(argumentsInitialization, variable)
+			argumentsInitialization = append(argumentsInitialization, variables)
 		}
 
 		function.Args = nil
@@ -484,7 +488,7 @@ func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContex
 		return nil, err
 	}
 
-	variable := ast.NewASTVariableDeclaration(typ)
+	variable := ast.NewASTVariableDeclaration()
 
 	items, err := v.VisitVariableDeclarationList(ctx.VariableDeclarationList().(*parser.VariableDeclarationListContext), typ)
 	if err != nil {
@@ -498,7 +502,19 @@ func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContex
 
 func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationListContext, typ *ast.ASTType) ([]*ast.ASTVariableDeclarationItem, error) {
 	name := ctx.Identifier().GetText()
-	variable := ast.NewASTVariableDeclarationItem(name, nil)
+
+	if child := ctx.SizedArrayModifier(); child != nil {
+		size, err := v.VisitSizedArrayModifier(child.(*parser.SizedArrayModifierContext))
+		if err != nil {
+			return nil, err
+		}
+
+		typ = ast.NewASTType(ast.ASTTypeKindArray, "array").
+			SetArrayType(typ).
+			SetArraySize(size)
+	}
+
+	variable := ast.NewASTVariableDeclarationItem(name, typ, nil)
 
 	if child := ctx.Expression(); child != nil {
 		expression, err := v.VisitExpression(child)
@@ -533,6 +549,17 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 			}
 
 			variable.Expression = ast.NewAstStructInitialization(typ, expressions)
+		} else if typ.IsArray() {
+			for i, expression := range expressions {
+				converted, err := ast.NewAstTypeConversion(expression, typ.ArrayType)
+				if err != nil {
+					return nil, err
+				}
+
+				expressions[i] = converted
+			}
+
+			variable.Expression = ast.NewAstArrayInitialization(typ, expressions)
 		} else if len(expressions) == 1 {
 			variable.Expression = expressions[0]
 		} else {
@@ -554,6 +581,10 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 	}
 
 	return variables, nil
+}
+
+func (v *Visitor) VisitSizedArrayModifier(ctx *parser.SizedArrayModifierContext) (ast.IASTExpression, error) {
+	return v.VisitExpression(ctx.Expression())
 }
 
 func (v *Visitor) VisitListInitialization(ctx *parser.ListInitializationContext) ([]ast.IASTExpression, error) {

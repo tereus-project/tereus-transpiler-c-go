@@ -3,10 +3,13 @@ package ast
 import (
 	"fmt"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 type ASTStruct struct {
-	Name string
+	TypeId string
+	Name   string
 
 	IsOpaque   bool
 	Properties []*ASTStructProperty
@@ -14,6 +17,7 @@ type ASTStruct struct {
 
 func NewAstStructOpaque(name string) *ASTStruct {
 	return &ASTStruct{
+		TypeId:   uuid.New().String(),
 		Name:     name,
 		IsOpaque: true,
 	}
@@ -56,17 +60,7 @@ func (s *ASTStruct) TypeString() string {
 }
 
 func (s *ASTStruct) IsSameTo(other *ASTStruct) bool {
-	if len(s.Properties) != len(other.Properties) {
-		return false
-	}
-
-	for i, property := range s.Properties {
-		if !property.Type.IsSameTo(other.Properties[i].Type) {
-			return false
-		}
-	}
-
-	return true
+	return s.TypeId == other.TypeId
 }
 
 type ASTStructProperty struct {
