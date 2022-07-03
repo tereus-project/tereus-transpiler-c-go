@@ -17,7 +17,7 @@ functionDeclaration:
 functionArguments:
 	typeSpecifier Identifier (',' functionArguments)?;
 
-functionReturn: 'return' expression;
+functionReturn: 'return' expression?;
 
 typeSpecifier:
 	'void'

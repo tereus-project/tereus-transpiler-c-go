@@ -7,17 +7,24 @@ type ASTFunctionReturn struct {
 	IsInMain   bool
 }
 
-func NewASTFunctionReturn(expression IASTExpression, isInMain bool) *ASTFunctionReturn {
+func NewASTFunctionReturn(isInMain bool) *ASTFunctionReturn {
 	return &ASTFunctionReturn{
-		Expression: expression,
-		IsInMain:   isInMain,
+		IsInMain: isInMain,
 	}
 }
 
+func (b *ASTFunctionReturn) SetExpression(expression IASTExpression) {
+	b.Expression = expression
+}
+
 func (b *ASTFunctionReturn) String() string {
-	if b.IsInMain {
-		return fmt.Sprintf("os.Exit(%s)", b.Expression.String())
+	if b.Expression != nil {
+		if b.IsInMain {
+			return fmt.Sprintf("os.Exit(%s)", b.Expression.String())
+		}
+
+		return fmt.Sprintf("return %s", b.Expression.String())
 	}
 
-	return fmt.Sprintf("return %s", b.Expression.String())
+	return "return"
 }

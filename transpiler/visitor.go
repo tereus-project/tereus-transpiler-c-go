@@ -242,18 +242,22 @@ func (v *Visitor) VisitFunctionArguments(ctx *parser.FunctionArgumentsContext) (
 }
 
 func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (ast.IASTItem, error) {
-	expression, err := v.VisitExpression(ctx.Expression())
-	if err != nil {
-		return nil, err
-	}
-
 	isInMain := v.CurrentFunction.Top() == "main"
+	returnStatement := ast.NewASTFunctionReturn(isInMain)
 
-	if isInMain {
-		v.Imports.Add("os")
+	if child := ctx.Expression(); child != nil {
+		expression, err := v.VisitExpression(ctx.Expression())
+		if err != nil {
+			return nil, err
+		}
+		returnStatement.SetExpression(expression)
+
+		if isInMain {
+			v.Imports.Add("os")
+		}
 	}
 
-	return ast.NewASTFunctionReturn(expression, isInMain), nil
+	return returnStatement, nil
 }
 
 func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.ASTType, error) {
