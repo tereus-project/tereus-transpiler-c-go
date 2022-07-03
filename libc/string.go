@@ -2,6 +2,15 @@ package libc
 
 import "unsafe"
 
+// void *memset(void *str, int c, size_t n)
+func Memset(ptr unsafe.Pointer, value byte, size int) unsafe.Pointer {
+	for i := 0; i < size; i++ {
+		*(*byte)(unsafe.Pointer(uintptr(ptr) + uintptr(i))) = value
+	}
+
+	return ptr
+}
+
 // void *memchr(const void *str, int c, size_t n)
 func Memchr(str unsafe.Pointer, c byte, n int) unsafe.Pointer {
 	for i := 0; i < n; i++ {
