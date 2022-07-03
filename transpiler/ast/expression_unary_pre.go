@@ -45,5 +45,9 @@ func (e *ASTExpressionUnaryPre) String() string {
 }
 
 func (e *ASTExpressionUnaryPre) GetType() *ASTType {
+	if e.Operator == "*" {
+		return e.Operand.GetType().PointerType
+	}
+
 	return e.Operand.GetType()
 }
