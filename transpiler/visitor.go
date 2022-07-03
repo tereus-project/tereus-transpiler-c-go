@@ -1321,6 +1321,337 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 						SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
 				),
 			)
+	case "acos":
+		identifier = "math.Acos"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("acos").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "asin":
+		identifier = "math.Asin"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("asin").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "atan":
+		identifier = "math.Atan"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("atan").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "atan2":
+		identifier = "math.Atan2"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("atan2").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"y",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "cos":
+		identifier = "math.Cos"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("cos").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "cosh":
+		identifier = "math.Cosh"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("cosh").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "sin":
+		identifier = "math.Sin"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("sin").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "sinh":
+		identifier = "math.Sinh"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("sinh").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "tanh":
+		identifier = "math.Tanh"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("tanh").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "exp":
+		identifier = "math.Exp"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("exp").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "frexp":
+		identifier = "math.Frexp"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("frexp").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "ldexp":
+		identifier = "math.Ldexp"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("ldexp").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+					ast.NewASTFunctionArgument(
+						"exp",
+						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "log":
+		identifier = "math.Log"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("log").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "log10":
+		identifier = "math.Log10"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("log10").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "modf":
+		identifier = "math.Modf"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("modf").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "pow":
+		identifier = "math.Pow"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("pow").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+					ast.NewASTFunctionArgument(
+						"y",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "sqrt":
+		identifier = "math.Sqrt"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("sqrt").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "ceil":
+		identifier = "math.Ceil"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("ceil").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "floor":
+		identifier = "math.Floor"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("floor").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "fabs":
+		identifier = "math.Abs"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("abs").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
+	case "fmod":
+		identifier = "math.Mod"
+		v.Imports.Add("math")
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("mod").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"x",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+					ast.NewASTFunctionArgument(
+						"y",
+						ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindFloat64, "float"),
+				),
+			)
 	}
 
 	if identifier != "" && typ != nil {
