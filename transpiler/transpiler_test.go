@@ -400,3 +400,30 @@ func main() {
 
 	testTranspile(t, source, target)
 }
+
+func TestMathHLog10(t *testing.T) {
+	source := `
+#include <math.h>
+
+int main() {
+	int value = log10(10);
+	printf("%d", value);
+}
+`
+
+	target := `
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+func main() {
+	value := int(math.Log10(float64(10)))
+	fmt.Printf("%d", value)
+}
+`
+
+	testTranspile(t, source, target)
+}
