@@ -20,16 +20,17 @@ functionArguments:
 functionReturn: 'return' expression?;
 
 typeSpecifier:
-	'void'
-	| 'int'
-	| 'short'
-	| 'long'
-	| 'char'
-	| 'float'
-	| 'double'
-	| structDeclaration
-	| Identifier
-	| typeSpecifier '*';
+	(
+		('signed' | 'unsigned')? (
+			'int'
+			| 'short'
+			| 'long'
+			| 'char'
+			| Identifier
+		)
+	)													# TypeSpecifierWithModifier
+	| ('void' | 'float' | 'double' | structDeclaration)	# TypeSpecifierGeneric
+	| typeSpecifier '*'									# TypeSpecifierPointer;
 
 structDeclaration:
 	'struct' (

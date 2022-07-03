@@ -134,7 +134,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 	function := ast.NewASTFunction(name)
 
 	if name != "main" {
-		function.ReturnType, err = v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+		function.ReturnType, err = v.VisitTypeSpecifier(ctx.TypeSpecifier())
 		if err != nil {
 			return nil, err
 		}
@@ -222,7 +222,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 func (v *Visitor) VisitFunctionArguments(ctx *parser.FunctionArgumentsContext) ([]*ast.ASTFunctionArgument, error) {
 	name := ctx.Identifier().GetText()
 
-	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier())
 	if err != nil {
 		return nil, err
 	}
@@ -260,25 +260,65 @@ func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (ast.IA
 	return returnStatement, nil
 }
 
-func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.ASTType, error) {
-	if child := ctx.Void(); child != nil {
-		return ast.NewASTType(ast.ASTTypeKindVoid, "void"), nil
+func (v *Visitor) VisitTypeSpecifier(ctx parser.ITypeSpecifierContext) (*ast.ASTType, error) {
+	switch ctx.(type) {
+	case *parser.TypeSpecifierWithModifierContext:
+		return v.VisitTypeSpecifierWithModifier(ctx.(*parser.TypeSpecifierWithModifierContext))
+	case *parser.TypeSpecifierGenericContext:
+		return v.VisitTypeSpecifierGeneric(ctx.(*parser.TypeSpecifierGenericContext))
+	case *parser.TypeSpecifierPointerContext:
+		return v.VisitTypeSpecifierPointer(ctx.(*parser.TypeSpecifierPointerContext))
 	}
 
+	return nil, v.NotImplementedError(ctx.(*parser.TypeSpecifierContext).BaseParserRuleContext)
+}
+
+func (v *Visitor) VisitTypeSpecifierWithModifier(ctx *parser.TypeSpecifierWithModifierContext) (*ast.ASTType, error) {
+	var typ *ast.ASTType
+
 	if child := ctx.Int(); child != nil {
-		return ast.NewASTType(ast.ASTTypeKindInt, "int"), nil
+		typ = ast.NewASTType(ast.ASTTypeKindInt, "int")
 	}
 
 	if child := ctx.Short(); child != nil {
-		return ast.NewASTType(ast.ASTTypeKindInt, "int16"), nil
+		typ = ast.NewASTType(ast.ASTTypeKindInt16, "int16")
 	}
 
 	if child := ctx.Long(); child != nil {
-		return ast.NewASTType(ast.ASTTypeKindInt, "int64"), nil
+		typ = ast.NewASTType(ast.ASTTypeKindInt64, "int64")
 	}
 
 	if child := ctx.Char(); child != nil {
-		return ast.NewASTType(ast.ASTTypeKindChar, "int8"), nil
+		typ = ast.NewASTType(ast.ASTTypeKindChar, "int8")
+	}
+
+	if name := ctx.Identifier(); name != nil {
+		item := v.Scope.GetFirst(name.GetText())
+		if item == nil {
+			return nil, fmt.Errorf("type %s not found", name.GetText())
+		}
+
+		typ = item.GetType()
+	}
+
+	if typ == nil {
+		return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
+	}
+
+	if ctx.Signed() != nil {
+		typ.SetIsSigned(true)
+	}
+
+	if ctx.Unsigned() != nil {
+		typ.SetIsSigned(false)
+	}
+
+	return typ, nil
+}
+
+func (v *Visitor) VisitTypeSpecifierGeneric(ctx *parser.TypeSpecifierGenericContext) (*ast.ASTType, error) {
+	if child := ctx.Void(); child != nil {
+		return ast.NewASTType(ast.ASTTypeKindVoid, "void"), nil
 	}
 
 	if child := ctx.Float(); child != nil {
@@ -301,28 +341,19 @@ func (v *Visitor) VisitTypeSpecifier(ctx *parser.TypeSpecifierContext) (*ast.AST
 		return typ, nil
 	}
 
-	if name := ctx.Identifier(); name != nil {
-		item := v.Scope.GetFirst(name.GetText())
-		if item == nil {
-			return nil, fmt.Errorf("type %s not found", name.GetText())
-		}
-
-		return item.GetType(), nil
-	}
-
-	if child := ctx.Star(); child != nil {
-		pointerType, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
-		if err != nil {
-			return nil, err
-		}
-
-		typ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
-		typ.SetPointerType(pointerType)
-
-		return typ, nil
-	}
-
 	return nil, v.NotImplementedError(ctx.BaseParserRuleContext)
+}
+
+func (v *Visitor) VisitTypeSpecifierPointer(ctx *parser.TypeSpecifierPointerContext) (*ast.ASTType, error) {
+	pointerType, err := v.VisitTypeSpecifier(ctx.TypeSpecifier())
+	if err != nil {
+		return nil, err
+	}
+
+	typ := ast.NewASTType(ast.ASTTypeKindPointer, "pointer")
+	typ.SetPointerType(pointerType)
+
+	return typ, nil
 }
 
 func (v *Visitor) VisitStructDeclaration(ctx *parser.StructDeclarationContext) (*ast.ASTStruct, error) {
@@ -395,7 +426,7 @@ func (v *Visitor) VisitStructProperty(ctx *parser.StructPropertyContext) (*ast.A
 		name = child.GetText()
 	}
 
-	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier())
 	if err != nil {
 		return nil, err
 	}
@@ -450,7 +481,7 @@ func (v *Visitor) VisitEnumProperties(ctx *parser.EnumPropertiesContext) ([]*ast
 }
 
 func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext) (*ast.ASTVariableDeclaration, error) {
-	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier())
 	if err != nil {
 		return nil, err
 	}
@@ -591,7 +622,7 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 		typ_.ArrayType = ast.NewASTType(ast.ASTTypeKindChar, "char")
 		return ast.NewASTExpressionLiteral(child.GetText(), typ_), nil
 	case *parser.StructInitializationExpressionContext:
-		typ, err := v.VisitTypeSpecifier(child.TypeSpecifier().(*parser.TypeSpecifierContext))
+		typ, err := v.VisitTypeSpecifier(child.TypeSpecifier())
 		if err != nil {
 			return nil, err
 		}
@@ -1270,7 +1301,7 @@ func (v *Visitor) VisitCastExpression(ctx *parser.CastExpressionContext) (*ast.A
 		return nil, err
 	}
 
-	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier())
 	if err != nil {
 		return nil, err
 	}
@@ -1294,7 +1325,7 @@ func (v *Visitor) VisitSizeofExpression(ctx *parser.SizeofExpressionContext) (as
 	}
 
 	if child := ctx.TypeSpecifier(); child != nil {
-		typ, err := v.VisitTypeSpecifier(child.(*parser.TypeSpecifierContext))
+		typ, err := v.VisitTypeSpecifier(child)
 		if err != nil {
 			return nil, err
 		}
@@ -1713,7 +1744,7 @@ func (v *Visitor) VisitIncludePreprocessor(ctx *parser.IncludePreprocessorContex
 }
 
 func (v *Visitor) VisitTypedefDeclaration(ctx *parser.TypedefDeclarationContext) (ast.IASTItem, error) {
-	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier().(*parser.TypeSpecifierContext))
+	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier())
 	if err != nil {
 		return nil, err
 	}
