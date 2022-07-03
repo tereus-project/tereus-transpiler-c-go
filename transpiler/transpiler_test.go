@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func testRemix(t *testing.T, source string, target string) {
+func testTranspile(t *testing.T, source string, target string) {
 	source = strings.TrimSpace(source)
 	target = strings.TrimSpace(target)
 
@@ -17,7 +17,7 @@ func testRemix(t *testing.T, source string, target string) {
 		t.Error(err)
 	}
 
-	output, err := Remix(sourceFile)
+	output, err := Transpile(sourceFile)
 	if err != nil {
 		t.Error(err)
 	}
@@ -43,7 +43,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestMainWithArgcAndArgv(t *testing.T) {
@@ -66,7 +66,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestFunctionCall(t *testing.T) {
@@ -92,7 +92,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestIfCondition(t *testing.T) {
@@ -124,7 +124,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestUnaryPreExpression(t *testing.T) {
@@ -148,7 +148,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestUnaryPostExpression(t *testing.T) {
@@ -174,7 +174,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestFmtPrintf(t *testing.T) {
@@ -201,7 +201,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestBreak(t *testing.T) {
@@ -237,7 +237,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestContinue(t *testing.T) {
@@ -273,7 +273,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestStdMalloc(t *testing.T) {
@@ -304,7 +304,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestGoto(t *testing.T) {
@@ -332,7 +332,7 @@ out:
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestAssert(t *testing.T) {
@@ -357,7 +357,7 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }
 
 func TestMemset(t *testing.T) {
@@ -398,5 +398,5 @@ func main() {
 }
 `
 
-	testRemix(t, source, target)
+	testTranspile(t, source, target)
 }

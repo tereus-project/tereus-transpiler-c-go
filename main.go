@@ -11,6 +11,6 @@ func main() {
 		SourceLanguageFileExtension: ".c",
 		TargetLanguage:              "go",
 		TargetLanguageFileExtension: ".go",
-		TranspileFunction:           transpiler.Remix,
+		TranspileFunction:           transpiler.Transpile,
 	})
 }

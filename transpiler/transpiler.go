@@ -33,7 +33,7 @@ func (l *RemixerErrorListener) ReportAttemptingFullContext(recognizer antlr.Pars
 func (l *RemixerErrorListener) ReportContextSensitivity(recognizer antlr.Parser, dfa *antlr.DFA, startIndex, stopIndex, prediction int, configs antlr.ATNConfigSet) {
 }
 
-func Remix(entrypoint string) (string, error) {
+func Transpile(entrypoint string) (string, error) {
 	preprocessor, err := NewPreprocessor(entrypoint)
 	if err != nil {
 		return "", err
