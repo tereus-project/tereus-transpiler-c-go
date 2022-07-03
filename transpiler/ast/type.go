@@ -12,6 +12,7 @@ const (
 	ASTTypeKindInt16
 	ASTTypeKindInt64
 	ASTTypeKindChar
+	ASTTypeKindByte
 	ASTTypeKindFloat32
 	ASTTypeKindFloat64
 
@@ -92,7 +93,13 @@ func (t *ASTType) String() string {
 
 		return "uint64"
 	case ASTTypeKindChar:
-		return "int8"
+		if t.IsSigned {
+			return "int8"
+		}
+
+		return "uint8"
+	case ASTTypeKindByte:
+		return "byte"
 	case ASTTypeKindFloat32:
 		return "float32"
 	case ASTTypeKindFloat64:
@@ -151,6 +158,10 @@ func (t *ASTType) IsConvertibleTo(targetType *ASTType) bool {
 
 	if targetType.IsInteger() || targetType.IsFloat() {
 		return t.IsInteger() || t.IsFloat()
+	}
+
+	if t.Kind == ASTTypeKindChar && targetType.Kind == ASTTypeKindByte {
+		return true
 	}
 
 	if targetType.IsPointer() {

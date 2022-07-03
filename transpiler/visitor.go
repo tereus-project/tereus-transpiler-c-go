@@ -261,13 +261,13 @@ func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (ast.IA
 }
 
 func (v *Visitor) VisitTypeSpecifier(ctx parser.ITypeSpecifierContext) (*ast.ASTType, error) {
-	switch ctx.(type) {
+	switch child := ctx.(type) {
 	case *parser.TypeSpecifierWithModifierContext:
-		return v.VisitTypeSpecifierWithModifier(ctx.(*parser.TypeSpecifierWithModifierContext))
+		return v.VisitTypeSpecifierWithModifier(child)
 	case *parser.TypeSpecifierGenericContext:
-		return v.VisitTypeSpecifierGeneric(ctx.(*parser.TypeSpecifierGenericContext))
+		return v.VisitTypeSpecifierGeneric(child)
 	case *parser.TypeSpecifierPointerContext:
-		return v.VisitTypeSpecifierPointer(ctx.(*parser.TypeSpecifierPointerContext))
+		return v.VisitTypeSpecifierPointer(child)
 	}
 
 	return nil, v.NotImplementedError(ctx.(*parser.TypeSpecifierContext).BaseParserRuleContext)
@@ -307,7 +307,7 @@ func (v *Visitor) VisitTypeSpecifierWithModifier(ctx *parser.TypeSpecifierWithMo
 
 	if ctx.Signed() != nil {
 		typ.SetIsSigned(true)
-	} else if ctx.Unsigned() == nil {
+	} else if ctx.Unsigned() != nil {
 		typ.SetIsSigned(false)
 	}
 
@@ -933,7 +933,7 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 					),
 					ast.NewASTFunctionArgument(
 						"value",
-						ast.NewASTType(ast.ASTTypeKindInt, "byte"),
+						ast.NewASTType(ast.ASTTypeKindByte, "byte"),
 					),
 					ast.NewASTFunctionArgument(
 						"size",

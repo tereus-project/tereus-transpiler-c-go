@@ -36,7 +36,7 @@ func (t *ASTTypeConversion) String() string {
 		return t.Expression.String()
 	}
 
-	if t.TargetType.IsInteger() || t.TargetType.IsFloat() {
+	if t.TargetType.IsInteger() || t.TargetType.IsFloat() || t.TargetType.Kind == ASTTypeKindByte {
 		return fmt.Sprintf("%s(%s)", t.TargetType.String(), t.Expression.String())
 	}
 
