@@ -874,6 +874,10 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 	var typ *ast.ASTType = nil
 
 	switch ctx.GetText() {
+	case "NULL":
+		identifier = "nil"
+		typ = ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+			SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void"))
 	case "printf":
 		v.Imports.Add("fmt")
 		identifier = "fmt.Printf"
