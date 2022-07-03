@@ -19,8 +19,11 @@ func NewASTExpressionBinary(left IASTExpression, operator string, right IASTExpr
 }
 
 func (e *ASTExpressionBinary) String() string {
-	if e.Left.GetType().IsPointer() {
-		return fmt.Sprintf("unsafe.Add(unsafe.Pointer(%s), %s)", e.Left.String(), e.Right.String())
+	leftType := e.Left.GetType()
+	if leftType.IsPointer() {
+		if e.Operator == "+" || e.Operator == "-" {
+			return fmt.Sprintf("unsafe.Add(unsafe.Pointer(%s), %s)", e.Left.String(), e.Right.String())
+		}
 	}
 
 	return fmt.Sprintf("%s %s %s", e.Left.String(), e.Operator, e.Right.String())
