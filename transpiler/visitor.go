@@ -913,6 +913,348 @@ func (v *Visitor) VisitIdentifierExpression(ctx *parser.IdentifierExpressionCont
 					ast.NewASTType(ast.ASTTypeKindVoid, "void"),
 				),
 			)
+	case "memchr":
+		identifier = "libc.Memchr"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("memchr").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"value",
+						ast.NewASTType(ast.ASTTypeKindInt, "byte"),
+					),
+					ast.NewASTFunctionArgument(
+						"size",
+						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+				),
+			)
+	case "memcmp":
+		identifier = "libc.Memcmp"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("memcmp").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"size",
+						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindInt, "int"),
+				),
+			)
+	case "memcpy":
+		identifier = "libc.Memcpy"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("memcpy").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"size",
+						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+				),
+			)
+	case "memmove":
+		identifier = "libc.Memmove"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("memmove").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"size",
+						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+				),
+			)
+	case "strcat":
+		identifier = "libc.Strcat"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strcat").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+				),
+			)
+	case "strncat":
+		identifier = "libc.Strncat"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strncat").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"size",
+						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+				),
+			)
+	case "strchr":
+		identifier = "libc.Strchr"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strchr").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+					),
+					ast.NewASTFunctionArgument(
+						"c",
+						ast.NewASTType(ast.ASTTypeKindInt, "int"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindVoid, "void")),
+				),
+			)
+	case "strcmp":
+		identifier = "libc.Strcmp"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strcmp").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindInt, "int"),
+				),
+			)
+	case "strcoll":
+		identifier = "libc.Strcoll"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strcoll").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindInt, "int"),
+				),
+			)
+	case "strcpy":
+		identifier = "libc.Strcpy"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strcpy").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+				),
+			)
+	case "strcspn":
+		identifier = "libc.Strcspn"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strcspn").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindInt, "int"),
+				),
+			)
+	case "strlen":
+		identifier = "libc.Strlen"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strlen").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindInt, "int"),
+				),
+			)
+	case "strpbrk":
+		identifier = "libc.Strpbrk"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strpbrk").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+				),
+			)
+	case "strrchr":
+		identifier = "libc.Strrchr"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strrchr").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+					ast.NewASTFunctionArgument(
+						"c",
+						ast.NewASTType(ast.ASTTypeKindChar, "char"),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+				),
+			)
+	case "strspn":
+		identifier = "libc.Strspn"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strspn").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindInt, "int"),
+				),
+			)
+	case "strstr":
+		identifier = "libc.Strstr"
+		typ = ast.NewASTType(ast.ASTTypeKindFunction, "func").
+			SetFunctionType(ast.NewASTFunction("strstr").
+				SetArgs([]*ast.ASTFunctionArgument{
+					ast.NewASTFunctionArgument(
+						"ptr1",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+					ast.NewASTFunctionArgument(
+						"ptr2",
+						ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+							SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+					),
+				}).
+				SetReturnType(
+					ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+						SetPointerType(ast.NewASTType(ast.ASTTypeKindChar, "char")),
+				),
+			)
 	}
 
 	if identifier != "" && typ != nil {
