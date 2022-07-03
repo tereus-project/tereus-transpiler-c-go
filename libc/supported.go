@@ -4,6 +4,7 @@ var supportedLibraries = map[string]struct{}{
 	"stdlib.h": {},
 	"stdio.h":  {},
 	"assert.h": {},
+	"string.h": {},
 }
 
 func IsSupported(library string) bool {
