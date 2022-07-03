@@ -638,7 +638,7 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 		if constant := child.IntegerConstant(); constant != nil {
 			typ_ = ast.NewASTType(ast.ASTTypeKindInt, "int")
 		} else if constant := child.FloatingConstant(); constant != nil {
-			typ_ = ast.NewASTType(ast.ASTTypeKindFloat32, "float32")
+			typ_ = ast.NewASTType(ast.ASTTypeKindFloat64, "float64")
 		} else if constant := child.CharacterConstant(); constant != nil {
 			typ_ = ast.NewASTType(ast.ASTTypeKindChar, "char")
 		} else {
