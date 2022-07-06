@@ -56,7 +56,7 @@ func Transpile(config *core.TranspileFunctionConfig) (string, error) {
 	p.Interpreter.SetPredictionMode(antlr.PredictionModeSLL)
 	p.RemoveErrorListeners()
 
-	errorListener := NewRemixerErrorListener(config.LocalPath)
+	errorListener := NewRemixerErrorListener(strings.TrimPrefix(config.LocalPath, config.LocalPathPrefix))
 	p.AddErrorListener(errorListener)
 
 	tree := p.Translation()
