@@ -28,15 +28,19 @@ func (v *BaseCVisitor) VisitFunctionReturn(ctx *FunctionReturnContext) interface
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitTypeSpecifierPointer(ctx *TypeSpecifierPointerContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitTypeSpecifierClassic(ctx *TypeSpecifierClassicContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitTypeSpecifierWithModifier(ctx *TypeSpecifierWithModifierContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
 func (v *BaseCVisitor) VisitTypeSpecifierGeneric(ctx *TypeSpecifierGenericContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseCVisitor) VisitTypeSpecifierPointer(ctx *TypeSpecifierPointerContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 

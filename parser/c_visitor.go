@@ -23,14 +23,17 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#functionReturn.
 	VisitFunctionReturn(ctx *FunctionReturnContext) interface{}
 
+	// Visit a parse tree produced by CParser#TypeSpecifierPointer.
+	VisitTypeSpecifierPointer(ctx *TypeSpecifierPointerContext) interface{}
+
+	// Visit a parse tree produced by CParser#TypeSpecifierClassic.
+	VisitTypeSpecifierClassic(ctx *TypeSpecifierClassicContext) interface{}
+
 	// Visit a parse tree produced by CParser#TypeSpecifierWithModifier.
 	VisitTypeSpecifierWithModifier(ctx *TypeSpecifierWithModifierContext) interface{}
 
 	// Visit a parse tree produced by CParser#TypeSpecifierGeneric.
 	VisitTypeSpecifierGeneric(ctx *TypeSpecifierGenericContext) interface{}
-
-	// Visit a parse tree produced by CParser#TypeSpecifierPointer.
-	VisitTypeSpecifierPointer(ctx *TypeSpecifierPointerContext) interface{}
 
 	// Visit a parse tree produced by CParser#structDeclaration.
 	VisitStructDeclaration(ctx *StructDeclarationContext) interface{}

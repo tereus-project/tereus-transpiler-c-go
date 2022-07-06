@@ -266,15 +266,28 @@ func (v *Visitor) VisitFunctionReturn(ctx *parser.FunctionReturnContext) (ast.IA
 
 func (v *Visitor) VisitTypeSpecifier(ctx parser.ITypeSpecifierContext) (*ast.ASTType, error) {
 	switch child := ctx.(type) {
-	case *parser.TypeSpecifierWithModifierContext:
-		return v.VisitTypeSpecifierWithModifier(child)
-	case *parser.TypeSpecifierGenericContext:
-		return v.VisitTypeSpecifierGeneric(child)
+	case *parser.TypeSpecifierClassicContext:
+		return v.VisitTypeSpecifierClassic(child)
 	case *parser.TypeSpecifierPointerContext:
 		return v.VisitTypeSpecifierPointer(child)
 	}
 
 	return nil, v.NotImplementedError(ctx.(*parser.TypeSpecifierContext).BaseParserRuleContext)
+}
+
+func (v *Visitor) VisitTypeSpecifierClassic(ctx *parser.TypeSpecifierClassicContext) (*ast.ASTType, error) {
+	return v.VisitTypeSpecifierNoPointer(ctx.TypeSpecifierNoPointer())
+}
+
+func (v *Visitor) VisitTypeSpecifierNoPointer(ctx parser.ITypeSpecifierNoPointerContext) (*ast.ASTType, error) {
+	switch child := ctx.(type) {
+	case *parser.TypeSpecifierWithModifierContext:
+		return v.VisitTypeSpecifierWithModifier(child)
+	case *parser.TypeSpecifierGenericContext:
+		return v.VisitTypeSpecifierGeneric(child)
+	}
+
+	return nil, v.NotImplementedError(ctx.(*parser.TypeSpecifierNoPointerContext).BaseParserRuleContext)
 }
 
 func (v *Visitor) VisitTypeSpecifierWithModifier(ctx *parser.TypeSpecifierWithModifierContext) (*ast.ASTType, error) {
@@ -483,7 +496,7 @@ func (v *Visitor) VisitEnumProperties(ctx *parser.EnumPropertiesContext) ([]*ast
 }
 
 func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext) (*ast.ASTVariableDeclaration, error) {
-	typ, err := v.VisitTypeSpecifier(ctx.TypeSpecifier())
+	typ, err := v.VisitTypeSpecifierNoPointer(ctx.TypeSpecifierNoPointer())
 	if err != nil {
 		return nil, err
 	}
@@ -503,18 +516,25 @@ func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContex
 func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationListContext, typ *ast.ASTType) ([]*ast.ASTVariableDeclarationItem, error) {
 	name := ctx.Identifier().GetText()
 
+	variableType := typ
+
+	for range ctx.AllStar() {
+		variableType = ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
+			SetPointerType(variableType)
+	}
+
 	for _, sizeArrayModifierContext := range ctx.AllSizedArrayModifier() {
 		size, err := v.VisitSizedArrayModifier(sizeArrayModifierContext.(*parser.SizedArrayModifierContext))
 		if err != nil {
 			return nil, err
 		}
 
-		typ = ast.NewASTType(ast.ASTTypeKindArray, "array").
-			SetArrayType(typ).
+		variableType = ast.NewASTType(ast.ASTTypeKindArray, "array").
+			SetArrayType(variableType).
 			SetArraySize(size)
 	}
 
-	variable := ast.NewASTVariableDeclarationItem(name, typ, nil)
+	variable := ast.NewASTVariableDeclarationItem(name, variableType, nil)
 
 	if child := ctx.Expression(); child != nil {
 		expression, err := v.VisitExpression(child)
@@ -522,7 +542,7 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 			return nil, err
 		}
 
-		converted, err := ast.NewAstTypeConversion(expression, typ)
+		converted, err := ast.NewAstTypeConversion(expression, variableType)
 		if err != nil {
 			return nil, err
 		}
@@ -534,13 +554,13 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 			return nil, err
 		}
 
-		if typ.IsStruct() {
-			if len(expressions) > len(typ.StructType.Properties) {
-				return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("too many initializers for '%s'", typ.Name))
+		if variableType.IsStruct() {
+			if len(expressions) > len(variableType.StructType.Properties) {
+				return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("too many initializers for '%s'", variableType.Name))
 			}
 
 			for i, expression := range expressions {
-				converted, err := ast.NewAstTypeConversion(expression, typ.StructType.GetPropertyByIndex(i).Type)
+				converted, err := ast.NewAstTypeConversion(expression, variableType.StructType.GetPropertyByIndex(i).Type)
 				if err != nil {
 					return nil, err
 				}
@@ -548,10 +568,10 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 				expressions[i] = converted
 			}
 
-			variable.Expression = ast.NewAstStructInitialization(typ, expressions)
-		} else if typ.IsArray() {
+			variable.Expression = ast.NewAstStructInitialization(variableType, expressions)
+		} else if variableType.IsArray() {
 			for i, expression := range expressions {
-				converted, err := ast.NewAstTypeConversion(expression, typ.ArrayType)
+				converted, err := ast.NewAstTypeConversion(expression, variableType.ArrayType)
 				if err != nil {
 					return nil, err
 				}
@@ -559,15 +579,15 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 				expressions[i] = converted
 			}
 
-			variable.Expression = ast.NewAstArrayInitialization(typ, expressions)
+			variable.Expression = ast.NewAstArrayInitialization(variableType, expressions)
 		} else if len(expressions) == 1 {
 			variable.Expression = expressions[0]
 		} else {
-			return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("too many initializers for '%s'", typ.Name))
+			return nil, v.PositionedTranslationError(ctx.GetStart(), fmt.Sprintf("too many initializers for '%s'", variableType.Name))
 		}
 	}
 
-	v.Scope.Add(scope.NewScopeVariable(name, "", typ))
+	v.Scope.Add(scope.NewScopeVariable(name, "", variableType))
 
 	variables := []*ast.ASTVariableDeclarationItem{variable}
 

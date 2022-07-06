@@ -20,7 +20,10 @@ functionArguments:
 functionReturn: 'return' expression?;
 
 typeSpecifier:
-	(
+	typeSpecifierNoPointer	# TypeSpecifierClassic
+	| typeSpecifier '*'		# TypeSpecifierPointer;
+
+typeSpecifierNoPointer: (
 		('signed' | 'unsigned')? (
 			'int'
 			| 'short'
@@ -29,8 +32,7 @@ typeSpecifier:
 			| Identifier
 		)
 	)													# TypeSpecifierWithModifier
-	| ('void' | 'float' | 'double' | structDeclaration)	# TypeSpecifierGeneric
-	| typeSpecifier '*'									# TypeSpecifierPointer;
+	| ('void' | 'float' | 'double' | structDeclaration)	# TypeSpecifierGeneric;
 
 structDeclaration:
 	'struct' (
@@ -49,10 +51,11 @@ enumProperties:
 
 typedefDeclaration: 'typedef' typeSpecifier Identifier;
 
-variableDeclaration: typeSpecifier variableDeclarationList;
+variableDeclaration:
+	typeSpecifierNoPointer variableDeclarationList;
 
 variableDeclarationList:
-	Identifier sizedArrayModifier* (
+	'*'* Identifier sizedArrayModifier* (
 		'=' (expression | listInitialization)
 	)? (',' variableDeclarationList)?;
 
