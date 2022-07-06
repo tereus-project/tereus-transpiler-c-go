@@ -212,3 +212,55 @@ func main() {
 
 	assertTranspilation(t, source, target)
 }
+
+func TestPascalTriangleProgram(t *testing.T) {
+	source := `
+#include <stdio.h>
+int main() {
+   int rows, i, j, space;
+   printf("Enter the number of rows: ");
+   scanf("%d", &rows);
+   for (i = rows; i >= 1; --i) {
+      for (space = 0; space < rows - i; ++space)
+         printf("  ");
+      for (j = i; j <= 2 * i - 1; ++j)
+         printf("* ");
+      for (j = 0; j < i - 1; ++j)
+         printf("* ");
+      printf("\n");
+   }
+   return 0;
+}
+`
+	target := `
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/tereus-project/tereus-transpiler-c-go/libc"
+)
+
+func main() {
+	rows, i, j, space := 0, 0, 0, 0
+	fmt.Printf("Enter the number of rows: ")
+	fmt.Scanf("%d", &rows)
+	for i = rows; i >= 1; libc.PreDec(&i) {
+		for space = 0; space < rows-i; libc.PreInc(&space) {
+			fmt.Printf("  ")
+		}
+		for j = i; j <= 2*i-1; libc.PreInc(&j) {
+			fmt.Printf("* ")
+		}
+		for j = 0; j < i-1; libc.PreInc(&j) {
+			fmt.Printf("* ")
+		}
+		fmt.Printf("\n")
+	}
+	os.Exit(0)
+}
+`
+
+	assertTranspilation(t, source, target)
+}
