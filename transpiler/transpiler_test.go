@@ -1,31 +1,18 @@
 package transpiler
 
 import (
-	"os"
-	"strings"
 	"testing"
+
+	"github.com/tereus-project/tereus-transpiler-std/core"
 )
 
-func testTranspile(t *testing.T, source string, target string) {
-	source = strings.TrimSpace(source)
-	target = strings.TrimSpace(target)
-
-	dir := t.TempDir()
-	sourceFile := dir + "/test.go"
-	err := os.WriteFile(sourceFile, []byte(source), 0644)
-	if err != nil {
-		t.Error(err)
-	}
-
-	output, err := Transpile(sourceFile)
-	if err != nil {
-		t.Error(err)
-	}
-
-	output = strings.TrimSpace(output)
-	if output != target {
-		t.Errorf("Expected %s, got %s", target, output)
-	}
+func assertTranspilation(t *testing.T, sourceCode string, targetCode string) {
+	core.AssertTranspilation(t, &core.AssertTranspilationConfig{
+		SourceFilename:    "test.go",
+		SourceCode:        sourceCode,
+		TargetCode:        targetCode,
+		TranspileFunction: Transpile,
+	})
 }
 
 func TestEmptyFunction(t *testing.T) {
@@ -43,7 +30,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestMainWithArgcAndArgv(t *testing.T) {
@@ -66,7 +53,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestFunctionCall(t *testing.T) {
@@ -92,7 +79,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestIfCondition(t *testing.T) {
@@ -124,7 +111,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestUnaryPreExpression(t *testing.T) {
@@ -148,7 +135,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestUnaryPostExpression(t *testing.T) {
@@ -174,7 +161,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestFmtPrintf(t *testing.T) {
@@ -201,7 +188,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestBreak(t *testing.T) {
@@ -237,7 +224,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestContinue(t *testing.T) {
@@ -273,7 +260,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestStdMalloc(t *testing.T) {
@@ -304,7 +291,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestGoto(t *testing.T) {
@@ -332,7 +319,7 @@ out:
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestAssert(t *testing.T) {
@@ -357,7 +344,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestMemset(t *testing.T) {
@@ -398,7 +385,7 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }
 
 func TestMathHLog10(t *testing.T) {
@@ -425,5 +412,5 @@ func main() {
 }
 `
 
-	testTranspile(t, source, target)
+	assertTranspilation(t, source, target)
 }

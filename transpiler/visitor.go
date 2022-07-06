@@ -18,8 +18,9 @@ import (
 )
 
 type Visitor struct {
-	Path string
-	Code string
+	Prefix string
+	Path   string
+	Code   string
 
 	Package string
 	Imports mapset.Set
@@ -29,10 +30,11 @@ type Visitor struct {
 	CurrentFunction *utils.Stack[string]
 }
 
-func NewVisitor(path string, code string) *Visitor {
+func NewVisitor(prefix string, path string, code string) *Visitor {
 	return &Visitor{
-		Path: path,
-		Code: code,
+		Prefix: prefix,
+		Path:   path,
+		Code:   code,
 
 		Package: "main",
 		Imports: mapset.NewSet(),
@@ -44,7 +46,7 @@ func NewVisitor(path string, code string) *Visitor {
 }
 
 func (v *Visitor) PositionedTranslationError(start antlr.Token, message string) error {
-	return fmt.Errorf("%s:%d:%d: %s", v.Path, start.GetLine(), start.GetColumn(), message)
+	return fmt.Errorf("%s:%d:%d: %s", strings.TrimPrefix(v.Path, v.Prefix), start.GetLine(), start.GetColumn(), message)
 }
 
 func (v *Visitor) TranslationError(token *antlr.BaseParserRuleContext, message string) error {

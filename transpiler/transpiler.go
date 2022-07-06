@@ -6,6 +6,7 @@ import (
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/tereus-project/tereus-transpiler-c-go/parser"
+	"github.com/tereus-project/tereus-transpiler-std/core"
 )
 
 type RemixerErrorListener struct {
@@ -33,8 +34,8 @@ func (l *RemixerErrorListener) ReportAttemptingFullContext(recognizer antlr.Pars
 func (l *RemixerErrorListener) ReportContextSensitivity(recognizer antlr.Parser, dfa *antlr.DFA, startIndex, stopIndex, prediction int, configs antlr.ATNConfigSet) {
 }
 
-func Transpile(entrypoint string) (string, error) {
-	preprocessor, err := NewPreprocessor(entrypoint)
+func Transpile(config *core.TranspileFunctionConfig) (string, error) {
+	preprocessor, err := NewPreprocessor(config.LocalPath)
 	if err != nil {
 		return "", err
 	}
@@ -46,7 +47,7 @@ func Transpile(entrypoint string) (string, error) {
 
 	// return preprocessed, nil
 
-	visitor := NewVisitor(entrypoint, preprocessed)
+	visitor := NewVisitor(config.LocalPathPrefix, config.LocalPath, preprocessed)
 
 	input := antlr.NewInputStream(visitor.Code)
 	lexer := parser.NewCLexer(input)
@@ -55,7 +56,7 @@ func Transpile(entrypoint string) (string, error) {
 	p.Interpreter.SetPredictionMode(antlr.PredictionModeSLL)
 	p.RemoveErrorListeners()
 
-	errorListener := NewRemixerErrorListener(entrypoint)
+	errorListener := NewRemixerErrorListener(config.LocalPath)
 	p.AddErrorListener(errorListener)
 
 	tree := p.Translation()

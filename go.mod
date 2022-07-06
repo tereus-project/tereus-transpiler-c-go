@@ -6,8 +6,9 @@ require (
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220209173558-ad29539cd2e9
 	github.com/deckarep/golang-set v1.8.0
 	github.com/dlclark/regexp2 v1.4.0
+	github.com/google/uuid v1.1.1
 	github.com/sirupsen/logrus v1.8.1
-	github.com/tereus-project/tereus-transpiler-std v0.0.0-20220704084725-abd944ca01a4
+	github.com/tereus-project/tereus-transpiler-std v0.0.0-20220706080052-deb6aa02b9fe
 	golang.org/x/exp v0.0.0-20220516143420-24438e51023a
 	golang.org/x/tools v0.1.10
 )
@@ -20,7 +21,6 @@ require (
 	github.com/getsentry/sentry-go v0.13.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/uuid v1.1.1 // indirect
 	github.com/ilyakaznacheev/cleanenv v1.3.0 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
