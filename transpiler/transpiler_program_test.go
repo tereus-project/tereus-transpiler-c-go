@@ -536,3 +536,160 @@ func main() {
 
 	assertTranspilation(t, source, target)
 }
+
+func TestHashmapProgram(t *testing.T) {
+	source := `
+#include <stdio.h>
+#include <stdlib.h>
+struct node
+{
+    int key;
+    int val;
+    struct node *next;
+};
+struct table
+{
+    int size;
+    struct node **list;
+};
+struct table *createTable(int size)
+{
+    struct table *t = (struct table *)malloc(sizeof(struct table));
+    t->size = size;
+    t->list = (struct node **)malloc(sizeof(struct node *) * size);
+    int i;
+    for (i = 0; i < size; i++)
+        t->list[i] = NULL;
+    return t;
+}
+int hashCode(struct table *t, int key)
+{
+    if (key < 0)
+        return -(key % t->size);
+    return key % t->size;
+}
+void insert(struct table *t, int key, int val)
+{
+    int pos = hashCode(t, key);
+    struct node *list = t->list[pos];
+    struct node *newNode = (struct node *)malloc(sizeof(struct node));
+    struct node *temp = list;
+    while (temp)
+    {
+        if (temp->key == key)
+        {
+            temp->val = val;
+            return;
+        }
+        temp = temp->next;
+    }
+    newNode->key = key;
+    newNode->val = val;
+    newNode->next = list;
+    t->list[pos] = newNode;
+}
+int lookup(struct table *t, int key)
+{
+    int pos = hashCode(t, key);
+    struct node *list = t->list[pos];
+    struct node *temp = list;
+    while (temp)
+    {
+        if (temp->key == key)
+        {
+            return temp->val;
+        }
+        temp = temp->next;
+    }
+    return -1;
+}
+int main()
+{
+    struct table *t = createTable(5);
+    insert(t, 2, 3);
+    printf("%d", lookup(t, 2));
+    return 0;
+}	
+`
+
+	target := `
+package main
+
+import (
+	"fmt"
+	"os"
+	"unsafe"
+
+	"github.com/tereus-project/tereus-transpiler-c-go/libc"
+)
+
+type node struct {
+	Key  int
+	Val  int
+	Next *node
+}
+
+type table struct {
+	Size int
+	List **node
+}
+
+func createTable(size int) *table {
+	t := (*table)(libc.Malloc(int(unsafe.Sizeof(table{}))))
+	t.Size = size
+	t.List = (**node)(libc.Malloc(int(unsafe.Sizeof((*node)(nil))) * size))
+	var i int
+	for i = 0; i < size; i++ {
+		*(**node)(unsafe.Add(unsafe.Pointer(t.List), uintptr(i)*unsafe.Sizeof((**node)(nil)))) = (*node)(nil)
+	}
+	return t
+}
+
+func hashCode(t *table, key int) int {
+	if key < 0 {
+		return -(key % t.Size)
+	}
+	return key % t.Size
+}
+
+func insert(t *table, key int, val int) {
+	pos := hashCode(t, key)
+	list := *(**node)(unsafe.Add(unsafe.Pointer(t.List), uintptr(pos)*unsafe.Sizeof((**node)(nil))))
+	newNode := (*node)(libc.Malloc(int(unsafe.Sizeof(node{}))))
+	temp := list
+	for temp != nil {
+		if temp.Key == key {
+			temp.Val = val
+			return
+		}
+		temp = temp.Next
+	}
+	newNode.Key = key
+	newNode.Val = val
+	newNode.Next = list
+	*(**node)(unsafe.Add(unsafe.Pointer(t.List), uintptr(pos)*unsafe.Sizeof((**node)(nil)))) = newNode
+}
+
+func lookup(t *table, key int) int {
+	pos := hashCode(t, key)
+	list := *(**node)(unsafe.Add(unsafe.Pointer(t.List), uintptr(pos)*unsafe.Sizeof((**node)(nil))))
+	temp := list
+	for temp != nil {
+		if temp.Key == key {
+			return temp.Val
+		}
+		temp = temp.Next
+	}
+	return -1
+}
+
+func main() {
+	t := createTable(5)
+	insert(t, 2, 3)
+	fmt.Printf("%d", lookup(t, 2))
+	os.Exit(0)
+}
+`
+
+	assertTranspilation(t, source, target)
+}
