@@ -49,5 +49,10 @@ func (e *ASTExpressionUnaryPre) GetType() *ASTType {
 		return e.Operand.GetType().PointerType
 	}
 
+	if e.Operator == "&" {
+		return NewASTType(ASTTypeKindPointer, "pointer").
+			SetPointerType(e.Operand.GetType())
+	}
+
 	return e.Operand.GetType()
 }
