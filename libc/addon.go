@@ -29,7 +29,7 @@ func PostIncPtr[T any](v **T) *T {
 }
 
 func PreDec[T constraints.Integer](v *T) T {
-	*v++
+	*v--
 	return *v
 }
 
@@ -40,7 +40,7 @@ func PreDecPtr[T any](v **T) *T {
 
 func PostDec[T constraints.Integer](v *T) T {
 	old := *v
-	*v++
+	*v--
 	return old
 }
 
