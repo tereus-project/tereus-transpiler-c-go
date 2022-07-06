@@ -22,7 +22,8 @@ func (e *ASTExpressionBinary) String() string {
 	leftType := e.Left.GetType()
 	if leftType.IsPointer() {
 		if e.Operator == "+" || e.Operator == "-" {
-			return fmt.Sprintf("unsafe.Add(unsafe.Pointer(%s), %s)", e.Left.String(), e.Right.String())
+			sizeof := fmt.Sprintf("unsafe.Sizeof(%s)", getDefaultExpression(leftType))
+			return fmt.Sprintf("unsafe.Add(unsafe.Pointer(uintptr(%s)), uintptr(%s) * %s)", e.Left.String(), e.Right.String(), sizeof)
 		}
 	}
 

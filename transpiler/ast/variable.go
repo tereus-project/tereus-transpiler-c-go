@@ -42,7 +42,7 @@ func (v *ASTVariableDeclaration) String() string {
 		if item.Expression != nil {
 			expressions = append(expressions, item.Expression.String())
 		} else {
-			expressions = append(expressions, v.getDefaultExpression(item))
+			expressions = append(expressions, getDefaultExpression(item.Type))
 		}
 	}
 
@@ -69,31 +69,6 @@ func (v *ASTVariableDeclaration) StringStatement() string {
 	}
 
 	return strings.Join(declarations, "\n")
-}
-
-func (v *ASTVariableDeclaration) getDefaultExpression(item *ASTVariableDeclarationItem) string {
-	switch item.Type.Kind {
-	case ASTTypeKindArray:
-		return fmt.Sprintf("%s{}", item.Type.String())
-	case ASTTypeKindPointer:
-		return fmt.Sprintf("(%s)(nil)", item.Type.String())
-	case ASTTypeKindStruct:
-		return fmt.Sprintf("%s{}", item.Type.Name)
-	case ASTTypeKindFloat32:
-		return "float32(0)"
-	case ASTTypeKindFloat64:
-		return "float64(0)"
-	case ASTTypeKindInt:
-		return "0"
-	case ASTTypeKindInt16:
-		return "int16(0)"
-	case ASTTypeKindInt64:
-		return "int64(0)"
-	case ASTTypeKindChar:
-		return "byte(0)"
-	default:
-		return "unknown"
-	}
 }
 
 func NewASTVariableDeclarationItem(name string, typ *ASTType, expression IASTExpression) *ASTVariableDeclarationItem {

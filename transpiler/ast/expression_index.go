@@ -17,7 +17,8 @@ func NewASTExpressionIndex(left IASTExpression, index IASTExpression) *ASTExpres
 func (e *ASTExpressionIndex) String() string {
 	switch e.Left.GetType().Kind {
 	case ASTTypeKindPointer:
-		return fmt.Sprintf("*(%s)(unsafe.Add(unsafe.Pointer(%s), %s))", e.Left.GetType().String(), e.Left.String(), e.Index.String())
+		sizeof := fmt.Sprintf("unsafe.Sizeof(%s)", getDefaultExpression(e.Left.GetType()))
+		return fmt.Sprintf("*(%s)(unsafe.Add(unsafe.Pointer(%s), uintptr(%s) * %s))", e.Left.GetType().String(), e.Left.String(), e.Index.String(), sizeof)
 	default:
 		return fmt.Sprintf("%s[%s]", e.Left.String(), e.Index.String())
 	}

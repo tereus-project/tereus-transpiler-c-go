@@ -232,3 +232,28 @@ func (t *ASTType) IsSameTo(other *ASTType) bool {
 
 	return true
 }
+
+func getDefaultExpression(typ *ASTType) string {
+	switch typ.Kind {
+	case ASTTypeKindArray:
+		return fmt.Sprintf("%s{}", typ.String())
+	case ASTTypeKindPointer:
+		return fmt.Sprintf("(%s)(nil)", typ.String())
+	case ASTTypeKindStruct:
+		return fmt.Sprintf("%s{}", typ.Name)
+	case ASTTypeKindFloat32:
+		return "float32(0)"
+	case ASTTypeKindFloat64:
+		return "float64(0)"
+	case ASTTypeKindInt:
+		return "0"
+	case ASTTypeKindInt16:
+		return "int16(0)"
+	case ASTTypeKindInt64:
+		return "int64(0)"
+	case ASTTypeKindChar:
+		return "byte(0)"
+	default:
+		return "unknown"
+	}
+}
