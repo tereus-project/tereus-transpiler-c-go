@@ -89,6 +89,9 @@ type CVisitor interface {
 	// Visit a parse tree produced by CParser#ConstantStringExpression.
 	VisitConstantStringExpression(ctx *ConstantStringExpressionContext) interface{}
 
+	// Visit a parse tree produced by CParser#EqualityBinaryExpression.
+	VisitEqualityBinaryExpression(ctx *EqualityBinaryExpressionContext) interface{}
+
 	// Visit a parse tree produced by CParser#FunctionCallExpression.
 	VisitFunctionCallExpression(ctx *FunctionCallExpressionContext) interface{}
 
@@ -127,6 +130,9 @@ type CVisitor interface {
 
 	// Visit a parse tree produced by CParser#conditionalBinaryOperator.
 	VisitConditionalBinaryOperator(ctx *ConditionalBinaryOperatorContext) interface{}
+
+	// Visit a parse tree produced by CParser#equalityOperator.
+	VisitEqualityOperator(ctx *EqualityOperatorContext) interface{}
 
 	// Visit a parse tree produced by CParser#binaryOperator.
 	VisitBinaryOperator(ctx *BinaryOperatorContext) interface{}

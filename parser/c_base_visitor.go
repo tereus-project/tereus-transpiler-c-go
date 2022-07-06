@@ -116,6 +116,10 @@ func (v *BaseCVisitor) VisitConstantStringExpression(ctx *ConstantStringExpressi
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseCVisitor) VisitEqualityBinaryExpression(ctx *EqualityBinaryExpressionContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseCVisitor) VisitFunctionCallExpression(ctx *FunctionCallExpressionContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -165,6 +169,10 @@ func (v *BaseCVisitor) VisitAssignementOperator(ctx *AssignementOperatorContext)
 }
 
 func (v *BaseCVisitor) VisitConditionalBinaryOperator(ctx *ConditionalBinaryOperatorContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseCVisitor) VisitEqualityOperator(ctx *EqualityOperatorContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 

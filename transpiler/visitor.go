@@ -854,10 +854,6 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 
 		converted := right
 
-		returnType := left.GetType()
-
-		operator := child.BinaryOperator().(*parser.BinaryOperatorContext)
-
 		if !(left.GetType().IsPointer() && right.GetType().IsInteger()) {
 			var err error
 			converted, err = ast.NewAstTypeConversion(right, left.GetType())
@@ -866,18 +862,19 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 			}
 		}
 
-		if operator.LeftShift() != nil ||
-			operator.RightShift() != nil ||
-			operator.Less() != nil ||
-			operator.Greater() != nil ||
-			operator.LessEqual() != nil ||
-			operator.GreaterEqual() != nil ||
-			operator.Equal() != nil ||
-			operator.NotEqual() != nil {
-			returnType = ast.NewASTType(ast.ASTTypeKindBool, "bool")
+		return ast.NewASTExpressionBinary(left, child.BinaryOperator().GetText(), converted, left.GetType()), nil
+	case *parser.EqualityBinaryExpressionContext:
+		left, err := v.VisitExpression(child.Expression(0))
+		if err != nil {
+			return nil, err
 		}
 
-		return ast.NewASTExpressionBinary(left, child.BinaryOperator().GetText(), converted, returnType), nil
+		right, err := v.VisitExpression(child.Expression(1))
+		if err != nil {
+			return nil, err
+		}
+
+		return ast.NewASTExpressionEqualityBinary(left, child.EqualityOperator().GetText(), right), nil
 	case *parser.ConditionalBinaryExpressionContext:
 		left, err := v.VisitExpression(child.Expression(0))
 		if err != nil {
