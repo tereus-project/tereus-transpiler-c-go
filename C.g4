@@ -52,7 +52,7 @@ typedefDeclaration: 'typedef' typeSpecifier Identifier;
 variableDeclaration: typeSpecifier variableDeclarationList;
 
 variableDeclarationList:
-	Identifier sizedArrayModifier? (
+	Identifier sizedArrayModifier* (
 		'=' (expression | listInitialization)
 	)? (',' variableDeclarationList)?;
 

@@ -503,8 +503,8 @@ func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContex
 func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationListContext, typ *ast.ASTType) ([]*ast.ASTVariableDeclarationItem, error) {
 	name := ctx.Identifier().GetText()
 
-	if child := ctx.SizedArrayModifier(); child != nil {
-		size, err := v.VisitSizedArrayModifier(child.(*parser.SizedArrayModifierContext))
+	for _, sizeArrayModifierContext := range ctx.AllSizedArrayModifier() {
+		size, err := v.VisitSizedArrayModifier(sizeArrayModifierContext.(*parser.SizedArrayModifierContext))
 		if err != nil {
 			return nil, err
 		}
