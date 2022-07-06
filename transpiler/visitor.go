@@ -544,7 +544,7 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 
 		converted, err := ast.NewAstTypeConversion(expression, variableType)
 		if err != nil {
-			return nil, err
+			return nil, v.PositionedTranslationError(ctx.GetStart(), err.Error())
 		}
 
 		variable.Expression = converted
@@ -562,7 +562,7 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 			for i, expression := range expressions {
 				converted, err := ast.NewAstTypeConversion(expression, variableType.StructType.GetPropertyByIndex(i).Type)
 				if err != nil {
-					return nil, err
+					return nil, v.PositionedTranslationError(ctx.GetStart(), err.Error())
 				}
 
 				expressions[i] = converted
@@ -573,7 +573,7 @@ func (v *Visitor) VisitVariableDeclarationList(ctx *parser.VariableDeclarationLi
 			for i, expression := range expressions {
 				converted, err := ast.NewAstTypeConversion(expression, variableType.ArrayType)
 				if err != nil {
-					return nil, err
+					return nil, v.PositionedTranslationError(ctx.GetStart(), err.Error())
 				}
 
 				expressions[i] = converted
@@ -695,7 +695,7 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 			for i, expression := range expressions {
 				converted, err := ast.NewAstTypeConversion(expression, typ.StructType.GetPropertyByIndex(i).Type)
 				if err != nil {
-					return nil, err
+					return nil, v.PositionedTranslationError(ctx.GetStart(), err.Error())
 				}
 
 				expressions[i] = converted
@@ -713,7 +713,7 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 			for i, expression := range expressions {
 				converted, err := ast.NewAstTypeConversion(expression, typ.StructType.GetProperty(names[i]).Type)
 				if err != nil {
-					return nil, err
+					return nil, v.PositionedTranslationError(ctx.GetStart(), err.Error())
 				}
 
 				expressions[i] = converted
@@ -835,7 +835,7 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 
 		converted, err := ast.NewAstTypeConversion(right, left.GetType())
 		if err != nil {
-			return nil, err
+			return nil, v.PositionedTranslationError(ctx.GetStart(), err.Error())
 		}
 
 		return ast.NewASTExpressionBinary(left, child.AssignementOperator().GetText(), converted, left.GetType()), nil
@@ -860,7 +860,7 @@ func (v *Visitor) VisitExpressionWithConfigurableIsStatement(ctx parser.IExpress
 			var err error
 			converted, err = ast.NewAstTypeConversion(right, left.GetType())
 			if err != nil {
-				return nil, err
+				return nil, v.PositionedTranslationError(ctx.GetStart(), err.Error())
 			}
 		}
 
@@ -1796,7 +1796,7 @@ func (v *Visitor) VisitFunctionCallArguments(ctx *parser.FunctionCallArgumentsCo
 	if index < len(function.Args) {
 		expression, err = ast.NewAstTypeConversion(expression, function.Args[index].Type)
 		if err != nil {
-			return nil, err
+			return nil, v.PositionedTranslationError(ctx.GetStart(), err.Error())
 		}
 	}
 
