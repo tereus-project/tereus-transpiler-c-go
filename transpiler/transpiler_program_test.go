@@ -322,3 +322,101 @@ func main() {
 
 	assertTranspilation(t, source, target)
 }
+
+func TestTransposeMatrixProgram(t *testing.T) {
+	source := `
+#include <stdio.h>
+int main() {
+	int a[10][10], transpose[10][10], r, c;
+	printf("Enter rows and columns: ");
+	scanf("%d %d", &r, &c);
+
+	// asssigning elements to the matrix
+	printf("\nEnter matrix elements:\n");
+	for (int i = 0; i < r; ++i)
+	for (int j = 0; j < c; ++j) {
+	printf("Enter element a%d%d: ", i + 1, j + 1);
+	scanf("%d", &a[i][j]);
+	}
+
+	// printing the matrix a[][]
+	printf("\nEntered matrix: \n");
+	for (int i = 0; i < r; ++i)
+	for (int j = 0; j < c; ++j) {
+	printf("%d  ", a[i][j]);
+	if (j == c - 1)
+	printf("\n");
+	}
+
+	// computing the transpose
+	for (int i = 0; i < r; ++i)
+	for (int j = 0; j < c; ++j) {
+	transpose[j][i] = a[i][j];
+	}
+
+	// printing the transpose
+	printf("\nTranspose of the matrix:\n");
+	for (int i = 0; i < c; ++i)
+	for (int j = 0; j < r; ++j) {
+	printf("%d  ", transpose[i][j]);
+	if (j == r - 1)
+	printf("\n");
+	}
+	return 0;
+}
+`
+
+	target := `
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/tereus-project/tereus-transpiler-c-go/libc"
+)
+
+func main() {
+	a, transpose, r, c := [10][10]int{}, [10][10]int{}, 0, 0
+	fmt.Printf("Enter rows and columns: ")
+	fmt.Scanf("%d %d", &r, &c)
+	// asssigning elements to the matrix
+	fmt.Printf("\nEnter matrix elements:\n")
+	for i := 0; i < r; libc.PreInc(&i) {
+		for j := 0; j < c; libc.PreInc(&j) {
+			fmt.Printf("Enter element a%d%d: ", i+1, j+1)
+			fmt.Scanf("%d", &a[i][j])
+		}
+	}
+	// printing the matrix a[][]
+	fmt.Printf("\nEntered matrix: \n")
+	for i := 0; i < r; libc.PreInc(&i) {
+		for j := 0; j < c; libc.PreInc(&j) {
+			fmt.Printf("%d  ", a[i][j])
+			if j == c-1 {
+				fmt.Printf("\n")
+			}
+		}
+	}
+	// computing the transpose
+	for i := 0; i < r; libc.PreInc(&i) {
+		for j := 0; j < c; libc.PreInc(&j) {
+			transpose[j][i] = a[i][j]
+		}
+	}
+	// printing the transpose
+	fmt.Printf("\nTranspose of the matrix:\n")
+	for i := 0; i < c; libc.PreInc(&i) {
+		for j := 0; j < r; libc.PreInc(&j) {
+			fmt.Printf("%d  ", transpose[i][j])
+			if j == r-1 {
+				fmt.Printf("\n")
+			}
+		}
+	}
+	os.Exit(0)
+}
+`
+
+	assertTranspilation(t, source, target)
+}
