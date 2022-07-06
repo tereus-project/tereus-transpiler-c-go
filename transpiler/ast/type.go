@@ -166,7 +166,15 @@ func (t *ASTType) IsConvertibleTo(targetType *ASTType) bool {
 		return true
 	}
 
-	if targetType.IsInteger() || targetType.IsFloat() {
+	if targetType.IsInteger() {
+		if t.IsPointer() {
+			return true
+		}
+
+		return t.IsInteger() || t.IsFloat()
+	}
+
+	if targetType.IsFloat() {
 		return t.IsInteger() || t.IsFloat()
 	}
 

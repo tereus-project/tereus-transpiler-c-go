@@ -32,8 +32,14 @@ func (t *ASTTypeConversion) GetType() *ASTType {
 }
 
 func (t *ASTTypeConversion) String() string {
-	if t.Expression.GetType().IsSameTo(t.TargetType) {
+	originalType := t.Expression.GetType()
+
+	if originalType.IsSameTo(t.TargetType) {
 		return t.Expression.String()
+	}
+
+	if originalType.IsPointer() && t.TargetType.IsInteger() {
+		return fmt.Sprintf("%s(unsafe.Pointer(%s))", t.TargetType.String(), t.Expression.String())
 	}
 
 	if t.TargetType.IsInteger() || t.TargetType.IsFloat() || t.TargetType.Kind == ASTTypeKindByte {
