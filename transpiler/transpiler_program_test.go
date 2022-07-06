@@ -45,7 +45,8 @@ int main() {
     }
 
   return 0;
-}`
+}
+`
 
 	target := `
 package main
@@ -58,7 +59,13 @@ import (
 )
 
 func main() {
-	r, c, a, b, sum, i, j := 0, 0, [100][100]int{}, [100][100]int{}, [100][100]int{}, 0, 0
+	var r int
+	var c int
+	var a [100][100]int
+	var b [100][100]int
+	var sum [100][100]int
+	var i int
+	var j int
 	fmt.Printf("Enter the number of rows (between 1 and 100): ")
 	fmt.Scanf("%d", &r)
 	fmt.Printf("Enter the number of columns (between 1 and 100): ")
@@ -142,7 +149,8 @@ import (
 // function to check prime number
 
 func checkPrime(n int) int {
-	i, isPrime := 0, 1
+	var i int
+	isPrime := 1
 	// 0 and 1 are not prime numbers
 	if n == 0 || n == 1 {
 		isPrime = 0
@@ -195,7 +203,7 @@ import (
 )
 
 func reverseSentence() {
-	c := byte(0)
+	var c int8
 	fmt.Scanf("%c", &c)
 	if c != '\n' {
 		reverseSentence()
@@ -243,7 +251,10 @@ import (
 )
 
 func main() {
-	rows, i, j, space := 0, 0, 0, 0
+	var rows int
+	var i int
+	var j int
+	var space int
 	fmt.Printf("Enter the number of rows: ")
 	fmt.Scanf("%d", &rows)
 	for i = rows; i >= 1; libc.PreDec(&i) {
@@ -300,7 +311,10 @@ import (
 )
 
 func main() {
-	n, reversed, remainder, original := 0, 0, 0, 0
+	var n int
+	reversed := 0
+	var remainder int
+	var original int
 	fmt.Printf("Enter an integer: ")
 	fmt.Scanf("%d", &n)
 	original = n
@@ -377,7 +391,10 @@ import (
 )
 
 func main() {
-	a, transpose, r, c := [10][10]int{}, [10][10]int{}, 0, 0
+	var a [10][10]int
+	var transpose [10][10]int
+	var r int
+	var c int
 	fmt.Printf("Enter rows and columns: ")
 	fmt.Scanf("%d %d", &r, &c)
 	// asssigning elements to the matrix
@@ -481,7 +498,8 @@ import (
 // user-defined function to check prime number
 
 func checkPrimeNumber(n int) int {
-	j, flag := 0, 1
+	var j int
+	flag := 1
 	for j = 2; j <= n/2; libc.PreInc(&j) {
 		if n%j == 0 {
 			flag = 0
@@ -492,7 +510,10 @@ func checkPrimeNumber(n int) int {
 }
 
 func main() {
-	n1, n2, i, flag := 0, 0, 0, 0
+	var n1 int
+	var n2 int
+	var i int
+	var flag int
 	fmt.Printf("Enter two positive integers: ")
 	fmt.Scanf("%d %d", &n1, &n2)
 	// swap n1 and n2 if n1 > n2
