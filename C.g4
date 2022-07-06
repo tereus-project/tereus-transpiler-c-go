@@ -111,7 +111,7 @@ assignementOperator:
 
 conditionalBinaryOperator: '&&' | '||';
 
-equalityOperator: '==' | '!=' | '<=' | '>=';
+equalityOperator: '==' | '!=' | '<=' | '>=' | '<' | '>';
 
 binaryOperator:
 	'*'
@@ -123,9 +123,7 @@ binaryOperator:
 	| '>>'
 	| '&'
 	| '^'
-	| '|'
-	| '<'
-	| '>';
+	| '|';
 
 unaryOperatorPost: '++' | '--';
 
