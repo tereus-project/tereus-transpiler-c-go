@@ -102,6 +102,17 @@ func (v *Visitor) VisitDeclaration(ctx *parser.DeclarationContext) (ast.IASTItem
 		return v.VisitFunctionDeclaration(child.(*parser.FunctionDeclarationContext))
 	}
 
+	if child := ctx.VariableDeclaration(); child != nil {
+		variable, err := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext), true)
+		if err != nil {
+			return nil, err
+		}
+
+		variable.SetForceFullDeclaration(true)
+
+		return variable, nil
+	}
+
 	if child := ctx.StructDeclaration(); child != nil {
 		return v.VisitStructDeclaration(child.(*parser.StructDeclarationContext))
 	}
@@ -167,7 +178,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 
 		if len(function.Args) >= 1 {
 			argcType := ast.NewASTType(ast.ASTTypeKindInt, "int")
-			variables := ast.NewASTVariableDeclaration()
+			variables := ast.NewASTVariableDeclaration(false)
 			variables.Items = []*ast.ASTVariableDeclarationItem{
 				// TODO: change this to a proper structure when it gets implemented
 				ast.NewASTVariableDeclarationItem(
@@ -183,7 +194,7 @@ func (v *Visitor) VisitFunctionDeclaration(ctx *parser.FunctionDeclarationContex
 		}
 
 		if len(function.Args) >= 2 {
-			variables := ast.NewASTVariableDeclaration()
+			variables := ast.NewASTVariableDeclaration(false)
 
 			argvType := ast.NewASTType(ast.ASTTypeKindPointer, "pointer").
 				SetPointerType(
@@ -497,13 +508,13 @@ func (v *Visitor) VisitEnumProperties(ctx *parser.EnumPropertiesContext) ([]*ast
 	return properties, nil
 }
 
-func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext) (*ast.ASTVariableDeclaration, error) {
+func (v *Visitor) VisitVariableDeclaration(ctx *parser.VariableDeclarationContext, isStatement bool) (*ast.ASTVariableDeclaration, error) {
 	typ, err := v.VisitTypeSpecifierNoPointer(ctx.TypeSpecifierNoPointer())
 	if err != nil {
 		return nil, err
 	}
 
-	variable := ast.NewASTVariableDeclaration()
+	variable := ast.NewASTVariableDeclaration(isStatement)
 
 	items, err := v.VisitVariableDeclarationList(ctx.VariableDeclarationList().(*parser.VariableDeclarationListContext), typ)
 	if err != nil {
@@ -1834,7 +1845,7 @@ func (v *Visitor) VisitBlock(ctx *parser.BlockContext) (*ast.ASTBlock, error) {
 
 func (v *Visitor) VisitStatement(ctx *parser.StatementContext) (ast.IASTItem, error) {
 	if child := ctx.VariableDeclaration(); child != nil {
-		variableDeclaration, err := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
+		variableDeclaration, err := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext), true)
 		if err != nil {
 			return nil, err
 		}
@@ -2039,7 +2050,7 @@ func (v *Visitor) VisitForStatement(ctx *parser.ForStatementContext) (*ast.ASTFo
 	}
 
 	if child := ctx.VariableDeclaration(); child != nil {
-		variableDeclaration, err := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext))
+		variableDeclaration, err := v.VisitVariableDeclaration(child.(*parser.VariableDeclarationContext), false)
 		if err != nil {
 			return nil, err
 		}

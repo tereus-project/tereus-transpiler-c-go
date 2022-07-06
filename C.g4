@@ -4,6 +4,7 @@ translation: declaration*;
 
 declaration:
 	functionDeclaration
+	| (variableDeclaration ';')
 	| (structDeclaration ';')
 	| (enumDeclaration ';')
 	| includePreprocessor
