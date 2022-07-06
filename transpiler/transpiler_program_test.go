@@ -264,3 +264,61 @@ func main() {
 
 	assertTranspilation(t, source, target)
 }
+
+func TestNumberPalindromeProgram(t *testing.T) {
+	source := `
+#include <stdio.h>
+int main() {
+  int n, reversed = 0, remainder, original;
+    printf("Enter an integer: ");
+    scanf("%d", &n);
+    original = n;
+
+    // reversed integer is stored in reversed variable
+    while (n != 0) {
+        remainder = n % 10;
+        reversed = reversed * 10 + remainder;
+        n /= 10;
+    }
+
+    // palindrome if orignal and reversed are equal
+    if (original == reversed)
+        printf("%d is a palindrome.", original);
+    else
+        printf("%d is not a palindrome.", original);
+
+    return 0;
+}
+`
+
+	target := `
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	n, reversed, remainder, original := 0, 0, 0, 0
+	fmt.Printf("Enter an integer: ")
+	fmt.Scanf("%d", &n)
+	original = n
+	// reversed integer is stored in reversed variable
+	for n != 0 {
+		remainder = n % 10
+		reversed = reversed*10 + remainder
+		n /= 10
+	}
+	// palindrome if orignal and reversed are equal
+	if original == reversed {
+		fmt.Printf("%d is a palindrome.", original)
+	} else {
+		fmt.Printf("%d is not a palindrome.", original)
+	}
+	os.Exit(0)
+}
+`
+
+	assertTranspilation(t, source, target)
+}
