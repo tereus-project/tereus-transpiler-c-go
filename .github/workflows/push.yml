@@ -86,14 +86,14 @@ jobs:
   #     - name: Deploy app
   #       run: scw container container deploy ${{ secrets.SCW_CT_ID }}
 
-  deploy-fly:
-    name: Deploy app to fly
-    needs: [build, lint, test]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    steps:
-      - uses: actions/checkout@v2
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  # deploy-fly:
+  #   name: Deploy app to fly
+  #   needs: [build, lint, test]
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: superfly/flyctl-actions/setup-flyctl@master
+  #     - run: flyctl deploy --remote-only
+  #       env:
+  #         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
